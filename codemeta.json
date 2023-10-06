@@ -1,0 +1,40 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/GPL-3.0",
+    "codeRepository": "git+https://github.com/rsdoiel/skimmer",
+    "dateCreated": "2023-10-06",
+    "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
+    "name": "skimmer",
+    "version": "0.0.0",
+    "description": "No no frills feed reader. It is based on concepts from in the newsboat feed reader and the gofeed library written by @mmcdole on GitHub.",
+    "releaseNotes": "Proof of concept.",
+    "developmentStatus": "concept",
+    "programmingLanguage": [
+        "go"
+    ],
+    "operatingSystem": [
+        "POSIX"
+    ],
+    "softwareRequirements": [
+        "git >= 2.3",
+        "gnu make >= 3.8",
+        "pandoc >= 3.1",
+        "go >= 1.21.1",
+        "sqlite3 >= 3.43"
+    ],
+    "relatedLink": [
+        "https://github.com/mmcdole/gofeed",
+        "https://newsboat.org/",
+        "https://sqlite.org"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0003-0900-6903",
+            "givenName": "R. S.",
+            "familyName": "Doiel",
+            "email": "rsdoiel@gmail.com"
+        }
+    ]
+}
