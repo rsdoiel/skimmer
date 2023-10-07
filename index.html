@@ -1,38 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Codemeta + Pandoc Examples</title>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="EN">
+  <title>R. S. Doiel, Software Engineer/Analyst - README</title>
+
+  <link rel="stylesheet" type="text/css"  href="/printfonts/print.css" media="print" />
+  <link rel="stylesheet" type="text/css"  href="/webfonts/fonts.css" media="screen" />
+  <link rel="stylesheet" type="text/css"  href="/css/site.css" media="screen" />
+  <link title="RSS feed for rsdoiel's blog" rel="alternate" type="application/rss+xml" href="https://rsdoiel.github.io/rss.xml" />
+  <link title="markdown source for page" rel="alternative" type="application/markdown" href="README.md">
 </head>
 <body>
-<header>
-<a href="http://library.caltech.edu" title="link to Caltech Library Homepage"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
-</header>
 <nav>
 <ul>
-    <li><a href="/">Home</a></li>
-    <li><a href="index.html">README</a></li>
-    <li><a href="LICENSE">LICENSE</a></li>
-    <li><a href="about.html">About</a></li>
-	<li><a href="search.html">Project Search</a></li>
-    <li><a href="https://github.com/caltechlibrary/curl-installer-sh-example">GitHub</a></li>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="user-manual.html">User Manual</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="INSTALL.html">Install</a></li>
+<li><a href="search.html">Project Search</a></li>
+<li><a href="https://github.com/rsdoiel/stngo">GitHub</a></li>
+<li><a href="about.html">About</a></li>
 </ul>
 </nav>
 
 <section>
+<!--  <h1>README</h1> -->
+
 <h1 id="skimmer">skimmer</h1>
 <p>skimmer is a lightweight feed reader inspired by <a
-href="">newsboat</a> and <a href="">yarnc</a>. It is minimal and lacks
-future. That is skimmer’s feature. skimmer can do two things. A a list
-of feed URLs and download their items into an SQLite3 database. Display
-the contents fo the SQLite 3 database in reverse chronological order.
-That’s it. No paging, now UI other than the command line options and
+href="https://newsboat.org">newsboat</a> and <a
+href="https://git.mills.io/yarnsocial/yarn">yarnc</a>. skimmer is
+minimal and lacks features. That is skimmer’s best feature. skimmer can
+do two things.</p>
+<ul>
+<li>fetch a list of urls and download their items to an SQLite3
+database</li>
+<li>Display the contents of the SQLite3 database in reverse
+chronological order</li>
+</ul>
+<p>That’s it. No paging, now UI other than the command line options and
 what is sent to standard output.</p>
-<p>The URL is based on newsboat’s URL list. That is because I use
-Newsboat for my interactive feed reading. The skimmer application stores
-the list of URLs and the SQLite 3 database in your home directory under
-<code>.skimmer</code>.</p>
+<p>The URL file format is based on newsboat’s URL list. That is because
+I use Newsboat for my interactive feed reading. The skimmer application
+stores the list of URLs and the SQLite 3 database in your home directory
+under <code>.skimmer</code>.</p>
 <h2 id="options">OPTIONS</h2>
 <dl>
 <dt>-help</dt>
@@ -51,9 +64,19 @@ display version number and build hash
 <dd>
 Download items from the list of urls
 </dd>
-<dt>-read</dt>
+<dt>-display</dt>
 <dd>
 Display the contents of the SQLite 3 database
+</dd>
+<dt>-limit N</dt>
+<dd>
+Limit the display the N most recent items
+</dd>
+<dt>-prune TIMESTAMP</dt>
+<dd>
+The deletes items from the database that are older than TIMESTAMP.
+TIMESTAMP can be “now”,“today”, a day in YYYY-MM-DD format or a full
+timestamp in YYYY-MM-DD HH:MM:SS format.
 </dd>
 </dl>
 <h1 id="examples">Examples</h1>
@@ -61,12 +84,21 @@ Display the contents of the SQLite 3 database
 <pre><code>skimmer</code></pre>
 <p>Download some news to read later</p>
 <pre><code>skimmer -fetch</code></pre>
-<p>Read the downloaded news</p>
+<p>Display the downloaded news</p>
 <pre><code>skimmer -display</code></pre>
+<p>Limit the number of items sent to the screen.</p>
+<pre><code>skimmer -display -limit 25</code></pre>
+<p>Or my favorate is to run the output through Pandoc and page with
+less.</p>
+<pre><code>skimmer -display -limit 25 | \
+    pandoc -f markdown -t plain | \
+    less -R</code></pre>
+<p>Prune the items in the database older than today.</p>
+<pre><code>skimmer -prune today</code></pre>
 <h2 id="requirements">Requirements</h2>
-<p>skimmer is an experiment and binaries are not available at this time.
-You need to have git, make, pandoc and Go compile0 available to compile
-skimmer from source code.</p>
+<p>skimmer is an experiment and precompiled binaries are not available.
+To compile from source you need to have git, make, pandoc sqlite3 and
+Go.</p>
 <ul>
 <li>Git &gt;= 2</li>
 <li>Make &gt;= 3.8 (GNU Make)</li>
@@ -75,26 +107,22 @@ skimmer from source code.</p>
 <li>SQLite3 &gt; 3.4</li>
 </ul>
 <h2 id="installation">Installation</h2>
-<p>Installation process compile sequence to install skimmer in your home
-bin directory.</p>
+<p>Installation process I used to setup skimmer on a new machine.</p>
 <pre><code>git clone https://github.com/rsdoiel/skimmer
 cd skimmer
 make
 make install</code></pre>
 <p>A default urls list is provided as an example urls list. The first
-time you run skimmer. You should edit <code>$HOME/.skimmer/urls</code>
-to fit your needs.</p>
+time you run skimmer. You should edit
+<code>$HOME/.skimmer/skimmer.urls</code> to fit your needs.</p>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <p>This experiment would not be possible with the authors of newsboat,
-sqlite3, pandoc and <a
+sqlite3, Pandoc and the <a
 href="https://github.com/mmcdole/gofeed">gofeed</a> package.</p>
 </section>
 
 <footer>
-<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech Library</a></span>
-<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address>
-<span><a href="mailto:library@caltech.edu">Email Us</a></span>
-<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
 </footer>
+
 </body>
 </html>
