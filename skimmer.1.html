@@ -34,19 +34,22 @@
 <p>skimmer <a href="#options">OPTIONS</a></p>
 <h1 id="description">DESCRIPTION</h1>
 <p>skimmer is a extremely lightweight feed reader. It can do two things.
-Retrieve feeds from a list of urls and store the contents in a SQLite 3
-database. It can write the contents of the database to standard output
-(the default behavior). It displays the harvested content in reverse
-chronological order. The content display is not “paged” so typically you
-would use skimmer in conjunction with the POSIX command ‘more’ or GNU
-command ‘less’.</p>
+Retrieve feed items from a list of urls and store the contents in a
+SQLite 3 database (see -fetch option). It can write the contents of the
+SQLite 3 database to standard output (the default behavior if no options
+provided).</p>
+<p>skimmer displays the harvested content in reverse chronological
+order. The content displayed is not “paged” so typically you would use
+skimmer in conjunction with the POSIX command ‘more’ or GNU command
+‘less’.</p>
 <p>The url list file uses the newsboat url file format and skimmer looks
 in the <code>$HOME/.skimmer/skimmer.urls</code> directory for that
 file.</p>
-<p>By default (i.e. no options specified) skimmer will check the
-database and see if there are less than 100 items. If so it’ll perform a
-“fetch” operation then do a “display” operation. If there are items in
-the database a “display” option is attempted.</p>
+<p>By default (i.e. no options specified) skimmer just outputs the
+contents it find in the database. If you use the “fetch” it will
+download the contents identified in the feeds an update the database.
+Pulling things from the web can be slow so you need to explicitly invoke
+the “fetch” option to do this.</p>
 <p>The output format uses Pandoc’s style of markdown markup. - “–”
 starts the item record - This is followed by “##” (aka H2), followed by
 a date (updated or published), followed by title or if none an
@@ -88,8 +91,10 @@ hour in the YYYY-MM-DD or YYYY-MM-DD HH:MM:SS formats.
 </dd>
 </dl>
 <h1 id="example">EXAMPLE</h1>
-<p>skimmer read your feed items and page items with “less -R”.</p>
-<pre><code>skimmer | less -R</code></pre>
+<p>skimmer update your feed database and read your feed items and page
+items with “less -R”.</p>
+<pre><code>{app_name] -fetch
+skimmer | less -R</code></pre>
 <p>The fetch read the url file and download any feed items found.</p>
 <pre><code>skimmer -fetch</code></pre>
 <p>Display the current contents of feed item database in reverse
