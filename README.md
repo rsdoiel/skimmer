@@ -88,7 +88,7 @@ skimmer -prune today
 ## Installation instructions
 
 - [INSTALL](INSTALL.md) contains the general steps to install binary releases
-- You can download a release from <https://github.com/rsdoiel/stngo/releases>
+- You can download a release from <https://github.com/rsdoiel/skimmer/releases>
 
 ## Installation From Source
 

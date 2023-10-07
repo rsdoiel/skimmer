@@ -1,49 +1,99 @@
-
+---
+title: "Skimmer"
+pubDate: 2023-10-06
+keywords: [ "feeds", "reader", "rss", "atom", "jsonfeed" ]
+---
 # skimmer
 
-I have a problem. I like to read my feeds in newsboat but I can't seem to get it working on macOS Sonoma
-yet or get the send to pocket working under Windows 11 (native and lsw). There are also times I am using
-a device where I don't want to install newsboat I just want to look at some current content while I'm
-waiting on something. This has lead me to think about skimmer. Something that works with RSS, Atom
-and jsonfeeds in the same way I use `yarnc timeline | less -R`.  My inspiration is Dave Winer's 
-river of news but minus the outline modality. It's a stream because it is smaller and more ephemeral
-than a river. This has left me with some questions.
+By R. S. Doiel, 2023-10-06
+
+I have a problem. I like to read my feeds in newsboat but I can't seem to get it working on a few machines I use.
+I miss having access to read feeds. Additionally there are times I would like to read my feeds in the same way
+I read twtxt feeds using `yarnc timeline | less -R`. Just get a list of all items in reverse chronological order.
+
+I am not interested in reinventing newsboat, it does a really good job, but I do want an option where newsboat isn't
+available or is not not convenient to use.  This lead me to think about an experiment I am calling skimmer
+. Something that works with RSS, Atom and jsonfeeds in the same way I use `yarnc timeline | less -R`.  
+I'm also inspired by Dave Winer's a river of news site and his outline tooling. But in this case I don't want
+an output style output, just a simple list of items in reverse chronological order. I'm thinking of a more
+ephemeral experience in reading.
+
+This has left me with some questions.
 
 - How simple is would it be to write skimmer?
 - How much effort would be required to maintain it?
-- Can this tool incorporate support for twtxt feeds I follow?
+- Could this tool incorporate support for other feed types, e.g. twtxt, Gopher, Gemini?
 
 There is a Go package called [gofeed](https://github.com/mmcdole/gofeed). The README describes it
-as a "universal" feed reading parser.
+as a "universal" feed reading parser. That seems like a good starting point and picking a very narrowly
+focus task seems like a way to keep the experiment simple to implement.
 
 ## Design issues
 
-The reader tools needs to output to standard out in the same manner as `yarnc timeline` does. The goal isn't
-to be newsboat or Lynx but to present a stream of items usefully formatted.
+The reader tool needs to output to standard out in the same manner as `yarnc timeline` does. The goal isn't
+to be newsboat, or river of news, drummer, or Lynx but to present a stream of items usefully formatted to read
+from standard output.
 
-Some design questions
+Some design ideas
 
-1. Are feeds fetch by the same tool as the reader output I pipe to less?
-2. How do I handle articles that are reference in more than one feed? (I really don't need to see them more than once)
-3. For a given list of feed URLs do I display in descending timestamp order or by feed? Do I offer a choice?
-4. Can this tool consolidate my twtxt and RSS feed reading?
+1. Feeds should be fetched by the same tool as the reader but that should be done explicitly (downloads can take a while)
+2. I want to honor that RSS does not require titles! I need to handle that case gracefully
+3. For a given list of feed URLs I want to save the content in a SQLite3 database (useful down the road)
+4. I'd like the simplicity of newsboat's URL list but I want to eventually support OPML import/export
 
-# A thin wrapper around gofeed
+# Skimmer, a thin wrapper around gofeed
 
-I see one immediate design decision. Do I fetch the feeds and process them on each invocation or do
-I cache there results?  If two feeds point to the same article
-I think this could be used to fetch the feed content, parse it and store a common JSON model in a dataset
-collection using a SQL Store. This could be done as a tutorial for using dataset Go package. "Reading" records
-would then boil down to a query to retrieve the latest or use some other filter (e.g. like dsquery). Pandoc
-should work to render the content to the script in a pleasant way. 
+In terms of working with RSS, Atom and JSON feeds the [gofeed](https://github.com/mmcdole/gofeed) takes care of
+all the heavy lifting in parsing that content. The go http package provides a reliable client.
+There is a pure Go package, [go-sqlite](), for integrating with SQLite 3 database. The real task is knitting this
+together and a convenient package.
 
-I could take advantage of Go's concurrency model to allow updating the feeds in the db table while also
-reading what was available or I could provide them as separate capabilities.
+Here's some ideas about behavior.
 
-Another idea would be to render out to other text centered formats like Gemini and Gopher. This could be
-useful to for publishing Gemini and Gopher content from a static blog site while not simply replicating
-the repository. E.g. on sfg.org I could pull the content from rsdoiel.github.io and re-process it into
-a proper Gopher site and similarly to a Gemini implementation.
+To configure skimmer you just run the command. It'll create a directory at `$HOME/.skimmer` to store configuration
+much like newsboat does with `$HOME/.newsboat`.
 
+~~~
+skimmer
+~~~
 
+A default URL list to be created so when running the command you have something to fetch and read.
+
+Since fetching feed content can be slow (this is true of all news readers I've used) I think you should have to
+explicitly say fetch.
+
+~~~
+skimmer -fetch
+~~~
+
+This would read the URLs in the URL list and populate a simple SQLite 3 database table. Then running skimmer again 
+would display any harvested content (or running skimmer in another terminal session).
+
+Since we're accumulating data in a database there are some house keep chores like prune that need to be supported.
+Initial this can be very simple and if the experiment move forward I can improve them over time. I want something
+like saying prune everything up to today.
+
+~~~
+skimmer -prune today
+~~~
+
+There are times I just want to limit the number of items displayed so a limit options makes sense
+
+~~~
+skimmer -limit 10
+~~~
+
+Since I am displaying to standard out I should be able to output via Pandoc to pretty print the content.
+
+~~~
+skimmer -limit 50 | pandoc -t markdown -f plain | less -R
+~~~
+
+That seems a like a good set of design features for an initial experiment.
+
+## Proof of concept implementation
+
+Spending a little time this evening. I've release a proof of concept on GitHub
+at <https://github.com/rsdoiel/skimmer>, you can read the initial documentation
+at [skimmer](https://rsdoiel.github.io/skimmer).
 
