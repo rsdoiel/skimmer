@@ -172,7 +172,6 @@ downloading the zip file.
     skimmer -version
 ```
 
-
 Compiling from source
 ---------------------
 
@@ -183,7 +182,17 @@ as well as _skimmer_'s source code.
     go get -u github.com/rsdoiel/skimmer/...
 ```
 
-Or clone the repository and then compile
+If just Go and Git are installed.
+
+```
+cd
+git clone https://github.com/rsdoiel/skimmer
+cd skimmer
+go build cmd/skimmer/skimmer.go
+```
+
+If you have all the required software (e.g. Pandoc, Git, SQLite3, Go, Make)
+you can clone the repository and then compile in the traditional POSIX manner.
 
 ```shell
     cd
