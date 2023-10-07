@@ -1,6 +1,5 @@
 package skimmer
 
-import (
 	"bufio"
 	"bytes"
 	"database/sql"
@@ -97,7 +96,6 @@ func (app *Skimmer) Setup(appDir string) error {
 	if _, err := os.Stat(fName); os.IsNotExist(err) {
 		//fmt.Fprintf(app.eout, "Creating %s\n", fName)
 		src := []byte(`# This is an example url list. 
-https://transitinglosangeles.com/feed/ "~Transiting Los Angeles"
 https://laist.com/index.atom "~The LAist"
 `)
 		// Create a sample urls file
@@ -107,19 +105,7 @@ https://laist.com/index.atom "~The LAist"
 	}
 	// Check if we have a SQL schema file
 	fName = path.Join(appDir, SkimmerScheme)
-	stmt := fmt.Sprintf(`-- This is the scheme used for %s's SQLite 3 database
--- %s
-CREATE TABLE IF NOT EXISTS feed_items (
-	link PRIMARY KEY,
-	title TEXT,
-	description TEXT,
-	authors JSON,
-    updated DATETIME,
-	published DATETIME,
-	feedLabel TEXT,
-	retrieved DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-`, app.AppName, time.Now().Format("2006-01-02"))
+	stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
 	if _, err := os.Stat(fName); os.IsNotExist(err) {
 		//fmt.Fprintf(app.eout, "Creating %s\n", fName)
 		if err := os.WriteFile(fName, []byte(stmt), 0660); err != nil {
@@ -196,9 +182,7 @@ func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	if item.PublishedParsed != nil {
 		published = item.PublishedParsed.Format("2006-01-02 15:04:05")
 	}
-	stmt := `REPLACE INTO feed_items (
-link, title, description, updated, published, feedLabel)
-VALUES (?, ?, ?, ?, ?, ?);`
+	stmt := SQLUpdateItem
 	_, err := db.Exec(stmt,
 		item.Link, item.Title,
 		item.Description, updated, published,
@@ -262,8 +246,7 @@ func (app *Skimmer) ItemCount() (int, error) {
 		return -1, err
 	}
 	defer db.Close()
-	stmt := `-- Count the items in the feed_items table.
-SELECT COUNT(*) FROM feed_items;`
+	stmt := SQLItemCount
 	rows, err := db.Query(stmt)
 	cnt := 0
 	for rows.Next() {
@@ -283,9 +266,7 @@ func (app *Skimmer) PruneItems(dt time.Time) error {
 		return err
 	}
 	defer db.Close()
-	stmt := `DELETE FROM feed_items 
-WHERE (updated < ?) OR ((published < ?) AND (updated < ?)) 
-   OR (published = "" AND updated = "")`
+	stmt := SQLPruneItems
 	timestamp := dt.Format("2006-01-02 15:04:05")
 	_, err = db.Exec(stmt, timestamp, timestamp, timestamp)
 	if err != nil {
@@ -302,11 +283,7 @@ func (app *Skimmer) Write(out io.Writer) error {
 		return err
 	}
 	defer db.Close()
-	stmt := `-- Basic SQL to retrieve an ordered list of items from all feeds.
-SELECT link, title, description, updated, published, feedLabel AS label
-FROM feed_items
-WHERE description != ""
-ORDER BY updated DESC`
+	stmt := SQLDisplayItems
 	if app.Limit > 0 {
 		stmt = fmt.Sprintf("%s LIMIT %d", stmt, app.Limit)
 	}
@@ -324,13 +301,14 @@ ORDER BY updated DESC`
 			fmt.Fprint(app.eout, err)
 			continue
 		}
-		fmt.Fprintln(app.out, "\n--\n")
 		pressTime := published
 		if updated != "" {
 			pressTime = updated
 		}
 		if title == "" {
 			fmt.Fprintf(app.out, `
+--
+
 ## %s @%s
 
     <%s>
@@ -339,6 +317,8 @@ ORDER BY updated DESC`
 `, pressTime, label, link, description)
 		} else {
 			fmt.Fprintf(app.out, `
+--
+
 ## %s %s
 
     <%s>
