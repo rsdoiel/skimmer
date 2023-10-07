@@ -1,5 +1,6 @@
 package skimmer
 
+import (
 	"bufio"
 	"bytes"
 	"database/sql"
