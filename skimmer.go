@@ -366,14 +366,15 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 	}
 	// See what the user wants to do.
 	if (app.Fetch == false) && (app.Display == false) {
-		app.Display = true
 		cnt, err := app.ItemCount()
 		if err != nil {
-			fmt.Fprintf(eout, "fail to count items, %s", err)
+			fmt.Fprintf(app.eout, "fail to count items, %s", err)
 		}
-		if cnt < 100 {
-			app.Fetch = true
+		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt) 
+		if cnt == 0 {
+			fmt.Fprintf(app.out, "Try %s -fetch to populate the feed database", app.AppName)
 		}
+		app.Display = true
 	}
 	if app.Fetch {
 		if err := app.ReadUrls(); err != nil {

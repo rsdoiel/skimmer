@@ -26,19 +26,22 @@ var (
 # DESCRIPTION
 
 {app_name} is a extremely lightweight feed reader. It can do two things. Retrieve
-feeds from a list of urls and store the contents in a SQLite 3 database. It can
-write the contents of the database to standard output (the default behavior).
-It displays the harvested content in reverse chronological order. The content
-display is not "paged" so typically you would use {app_name} in conjunction with
+feed items from a list of urls and store the contents in a SQLite 3 database
+(see -fetch option). It can write the contents of the SQLite 3 database to 
+standard output (the default behavior if no options provided).
+
+{app_name} displays the harvested content in reverse chronological order. The content
+displayed is not "paged" so typically you would use {app_name} in conjunction with
 the POSIX command 'more' or GNU command 'less'.
 
 The url list file uses the newsboat url file format and {app_name} looks in the 
 `+"`"+`$HOME/.skimmer/skimmer.urls`+"`"+` directory for that file.
 
-By default (i.e. no options specified) {app_name} will check the database
-and see if there are less than 100 items. If so it'll perform a "fetch"
-operation then do a "display" operation. If there are items
-in the database a "display" option is attempted.
+By default (i.e. no options specified) {app_name} just outputs the 
+contents it find in the database. If you use the "fetch" it will download
+the contents identified in the feeds an update the database. Pulling things
+from the web can be slow so you need to explicitly invoke the "fetch" option
+to do this.
 
 The output format uses Pandoc's style of markdown markup. 
 - "--" starts the item record
@@ -76,9 +79,11 @@ the YYYY-MM-DD or YYYY-MM-DD HH:MM:SS formats.
 
 # EXAMPLE
 
-{app_name} read your feed items and page items with "less -R".
+{app_name} update your feed database and read your feed items
+and page items with "less -R".
 
 ~~~
+{app_name] -fetch
 {app_name} | less -R
 ~~~
 
