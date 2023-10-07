@@ -110,10 +110,10 @@ that this combination works nice.
 ~~~
 
 
-# Acknowledgements
+# Acknowledgments
 
 This project is an experiment it would not be possible without the authors of
-newsboat, sqlite3, Pandoc and mmcdole's gofeed package have provided excellent
+newsboat, SQLite3, Pandoc and mmcdole's gofeed package have provided excellent
 free software to the planet. - RSD, 2023-10-07
 
 `

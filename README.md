@@ -5,7 +5,7 @@ skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org
 [yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is minimal and lacks features. 
 That is skimmer's best feature. skimmer can do two things. 
 
-- fetch a list of urls and download their items to an SQLite3 database
+- fetch a list of URLs and download their items to an SQLite3 database
 - Display the contents of the SQLite3 database in reverse chronological order
 
 That's it.  No paging, now UI other than the command line options and what is sent
@@ -29,7 +29,7 @@ directory under `.skimmer`.
 : display version number and build hash
 
 -fetch
-: Download items from the list of urls
+: Download items from the list of URLs
 
 -display
 : Display the contents of the SQLite 3 database
@@ -69,7 +69,7 @@ Limit the number of items sent to the screen.
 skimmer -display -limit 25
 ~~~
 
-Or my favorate is to run the output through Pandoc
+Or my favorite is to run the output through Pandoc
 and page with less.
 
 ~~~
@@ -85,11 +85,17 @@ Prune the items in the database older than today.
 skimmer -prune today
 ~~~
 
+## Installation instructions
 
-## Requirements
+- [INSTALL](INSTALL.md) contains the general steps to install binary releases
+- You can download a release from <https://github.com/rsdoiel/stngo/releases>
 
-skimmer is an experiment and precompiled binaries are not available.
-To compile from source you need to have git, make, pandoc sqlite3 and Go.
+## Installation From Source
+
+### Requirements
+
+skimmer is an experimental. The precompiled binaries are not tested.
+To compile from source you need to have git, make, Pandoc SQLite3 and Go.
 
 - Git >= 2
 - Make >= 3.8 (GNU Make)
@@ -97,7 +103,7 @@ To compile from source you need to have git, make, pandoc sqlite3 and Go.
 - Go >= 1.21.1
 - SQLite3 > 3.4
 
-## Installation
+### Steps to compile and install
 
 Installation process I used to setup skimmer on a new machine.
 
@@ -108,11 +114,12 @@ make
 make install
 ~~~
 
-A default urls list is provided as an example urls list. The first time
+A default URLs list is provided as an example URLs list. The first time
 you run skimmer. You should edit `$HOME/.skimmer/skimmer.urls` to fit your needs.
 
-## Acknowledgements
 
-This experiment would not be possible with the authors of newsboat, sqlite3,
+## Acknowledgments
+
+This experiment would not be possible with the authors of newsboat, SQLite3,
 Pandoc and the [gofeed](https://github.com/mmcdole/gofeed) package.
 

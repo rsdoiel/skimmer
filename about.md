@@ -44,10 +44,10 @@ gofeed package by mmcdole on GitHub.
 
 - POSIX
 
-### Software Requiremets
+### Software Requirements
 
-- git &gt;= 2.3
-- gnu make &gt;= 3.8
-- pandoc &gt;= 3.1
-- go &gt;= 1.21.1
-- sqlite3 &gt;= 3.43
+- Git &gt;= 2.3
+- GNU Make &gt;= 3.8
+- Pandoc &gt;= 3.1
+- Go &gt;= 1.21.1
+- SQLite3 &gt;= 3.43

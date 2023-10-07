@@ -35,7 +35,7 @@ href="https://git.mills.io/yarnsocial/yarn">yarnc</a>. skimmer is
 minimal and lacks features. That is skimmer’s best feature. skimmer can
 do two things.</p>
 <ul>
-<li>fetch a list of urls and download their items to an SQLite3
+<li>fetch a list of URLs and download their items to an SQLite3
 database</li>
 <li>Display the contents of the SQLite3 database in reverse
 chronological order</li>
@@ -62,7 +62,7 @@ display version number and build hash
 </dd>
 <dt>-fetch</dt>
 <dd>
-Download items from the list of urls
+Download items from the list of URLs
 </dd>
 <dt>-display</dt>
 <dd>
@@ -88,16 +88,25 @@ timestamp in YYYY-MM-DD HH:MM:SS format.
 <pre><code>skimmer -display</code></pre>
 <p>Limit the number of items sent to the screen.</p>
 <pre><code>skimmer -display -limit 25</code></pre>
-<p>Or my favorate is to run the output through Pandoc and page with
+<p>Or my favorite is to run the output through Pandoc and page with
 less.</p>
 <pre><code>skimmer -display -limit 25 | \
     pandoc -f markdown -t plain | \
     less -R</code></pre>
 <p>Prune the items in the database older than today.</p>
 <pre><code>skimmer -prune today</code></pre>
-<h2 id="requirements">Requirements</h2>
-<p>skimmer is an experiment and precompiled binaries are not available.
-To compile from source you need to have git, make, pandoc sqlite3 and
+<h2 id="installation-instructions">Installation instructions</h2>
+<ul>
+<li><a href="INSTALL.html">INSTALL</a> contains the general steps to
+install binary releases</li>
+<li>You can download a release from <a
+href="https://github.com/rsdoiel/stngo/releases"
+class="uri">https://github.com/rsdoiel/stngo/releases</a></li>
+</ul>
+<h2 id="installation-from-source">Installation From Source</h2>
+<h3 id="requirements">Requirements</h3>
+<p>skimmer is an experimental. The precompiled binaries are not tested.
+To compile from source you need to have git, make, Pandoc SQLite3 and
 Go.</p>
 <ul>
 <li>Git &gt;= 2</li>
@@ -106,18 +115,18 @@ Go.</p>
 <li>Go &gt;= 1.21.1</li>
 <li>SQLite3 &gt; 3.4</li>
 </ul>
-<h2 id="installation">Installation</h2>
+<h3 id="steps-to-compile-and-install">Steps to compile and install</h3>
 <p>Installation process I used to setup skimmer on a new machine.</p>
 <pre><code>git clone https://github.com/rsdoiel/skimmer
 cd skimmer
 make
 make install</code></pre>
-<p>A default urls list is provided as an example urls list. The first
+<p>A default URLs list is provided as an example URLs list. The first
 time you run skimmer. You should edit
 <code>$HOME/.skimmer/skimmer.urls</code> to fit your needs.</p>
-<h2 id="acknowledgements">Acknowledgements</h2>
+<h2 id="acknowledgments">Acknowledgments</h2>
 <p>This experiment would not be possible with the authors of newsboat,
-sqlite3, Pandoc and the <a
+SQLite3, Pandoc and the <a
 href="https://github.com/mmcdole/gofeed">gofeed</a> package.</p>
 </section>
 

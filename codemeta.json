@@ -18,11 +18,11 @@
         "POSIX"
     ],
     "softwareRequirements": [
-        "git >= 2.3",
-        "gnu make >= 3.8",
-        "pandoc >= 3.1",
-        "go >= 1.21.1",
-        "sqlite3 >= 3.43"
+        "Git >= 2.3",
+        "GNU Make >= 3.8",
+        "Pandoc >= 3.1",
+        "Go >= 1.21.1",
+        "SQLite3 >= 3.43"
     ],
     "relatedLink": [
         "https://github.com/mmcdole/gofeed",

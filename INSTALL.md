@@ -21,14 +21,14 @@ curl https://rsdoiel.github.io/skimmer/installer.sh | sh
 This is generalized instructions for a release. 
 
 Compiled versions are available for Mac OS X (Intel and M1 processors, macOS-x86_64, macOS-arm64), 
-Linux Intel and ARM (x86_64, aarch64, arm7l ), Windows 11 Intel/ARM (x86_64, aarch64), 
-Rapsberry Pi (linux and arml7).
+Linux Intel and ARM (x86_64, aarch64, armv7l ), Windows 11 Intel/ARM (x86_64, aarch64), 
+Raspberry Pi (Linux and arml7).
 
 
-VERSION_NUMBER is a [symantic version number](http://semver.org/) (e.g. v0.1.2)
+VERSION_NUMBER is a [semantic version number](http://semver.org/) (e.g. v0.1.2)
 
 
-For all the released version go to the project page on Github and click latest release
+For all the released version go to the project page on GitHub and click latest release
 
 >    https://github.com/rsdoiel/skimmer/releases/latest
 
@@ -38,29 +38,31 @@ For all the released version go to the project page on Github and click latest r
 | Windows 11   | skimmer-VERSION_NUMBER-Windows-x86_64.zip |
 | Windows 11   | skimmer-VERSION_NUMBER-Windows-arm64.zip  |
 | Mac OS X     | skimmer-VERSION_NUMBER-macOS-x86_64.zip   |
-| Mac OS X     | skimmer-VERSION_NUMBER-macos-arm64.zip    |
+| Mac OS X     | skimmer-VERSION_NUMBER-macOS-arm64.zip    |
 | Linux/Intel  | skimmer-VERSION_NUMBER-Linux-x86_64.zip   |
-| Linux/ARM    | skimmer-VERSION_NUMBER-Linux-aarch64.zip  |
-| Linux/ARM 32 | skimmer-VERSION_NUMBER-Linux-arm7l.zip    | 
+| Linux/ARM 64 | skimmer-VERSION_NUMBER-Linux-aarch64.zip  |
+| Linux/ARM 32 | skimmer-VERSION_NUMBER-Linux-armv7l.zip    | 
 
 
 ## The basic recipe
 
-+ Find the Zip file listed matching the architecture you're running and download it
-    + (e.g. if you're on a Windows 11 laptop/Surface with a amd64 style CPU you'd choose the Zip file with "Windows-amd64" in the name).
-+ Download the zip file and unzip the file.  
-+ Copy the contents of the folder named "bin" to a folder that is in your path 
-    + (e.g. "$HOME/bin" is common).
-+ Adjust your PATH if needed
-    + (e.g. export PATH="$HOME/bin:$PATH")
-+ Test
-
+- Find the Zip file listed matching the architecture you're running and download it
+    - Example: if you're on a Windows 11 desktop or laptop using an Intel style
+      CPU and you would look for the name with "Windows-x86-64"
+    - Example: if you're on a Windows 11 Surface tablet with a arm64 CPU or the
+      "Windows ARM Developer Kit" you'd choose the Zip file with "Windows-arm64" in the name
+- Download the zip file and unzip the file.  
+- Copy the contents of the folder named "bin" to a folder that is in your path 
+    - (e.g. "$HOME/bin" is common).
+- Adjust your PATH if needed
+    - (e.g. export PATH="$HOME/bin:$PATH")
+- Test by displaying the version string
 
 ### macOS
 
 1. Download the zip file
 2. Unzip the zip file
-3. Copy the executables to $HOME/bin (or a folder in your path)
+3. Copy the executable to $HOME/bin (or a folder in your path)
 4. Make sure the new location in in our path
 5. Test
 
@@ -80,7 +82,7 @@ zip file.
 
 1. Download the zip file
 2. Unzip the zip file
-3. Copy the executables to $HOME/bin (or a folder in your path)
+3. Copy the executable to $HOME/bin (or a folder in your path)
 4. Test
 
 Here's an example of the commands run in from the Bash shell on Windows 10 after
@@ -89,14 +91,14 @@ downloading the zip file.
 ```shell
     cd Downloads/
     unzip skimmer-*-Windows-x86_64.zip
-    .\bin\skimmer -version
+    .\bin\skimmer.exe -version
 ```
 
 ### Windows 11 ARM
 
 1. Download the zip file
 2. Unzip the zip file
-3. Copy the executables to $HOME/bin (or a folder in your path)
+3. Copy the executable to $HOME/bin (or a folder in your path)
 4. Test
 
 Here's an example of the commands run in from the Bash shell on Windows 10 after
@@ -105,15 +107,15 @@ downloading the zip file.
 ```shell
     cd Downloads/
     unzip skimmer-*-Windows-arm64.zip
-    .\bin\skimmer -version
+    .\bin\skimmer.exe -version
 ```
 
 
-### Linux Intell
+### Linux Intel
 
 1. Download the zip file
 2. Unzip the zip file
-3. Copy the executables to $HOME/bin (or a folder in your path)
+3. Copy the executable to $HOME/bin (or a folder in your path)
 4. Test
 
 Here's an example of the commands run in from the Bash shell after
@@ -123,7 +125,7 @@ downloading the zip file.
     cd Downloads/
     unzip skimmer-*-Linux-x86_64.zip
     mkdir -p $HOME/bin
-    cp -v bin/* $HOME/bin/
+    cp -v bin/skimmer $HOME/bin/
     export PATH=$HOME/bin:$PATH
     skimmer -version
 ```
@@ -132,7 +134,7 @@ downloading the zip file.
 
 1. Download the zip file
 2. Unzip the zip file
-3. Copy the executables to $HOME/bin (or a folder in your path)
+3. Copy the executable to $HOME/bin (or a folder in your path)
 4. Test
 
 Here's an example of the commands run in from the Bash shell after
@@ -142,20 +144,20 @@ downloading the zip file.
     cd Downloads/
     unzip skimmer-*-Linux-aarch64.zip
     mkdir -p $HOME/bin
-    cp -v bin/* $HOME/bin/
+    cp -v bin/skimmer $HOME/bin/
     export PATH=$HOME/bin:$PATH
     skimmer -version
 ```
 
 
 
-### Raspberry Pi
+### Raspberry Pi OS
 
 Released version is for a Raspberry Pi 2 or later use (i.e. requires ARM 7 support).
 
 1. Download the zip file
 2. Unzip the zip file
-3. Copy the executables to $HOME/bin (or a folder in your path)
+3. Copy the executable to $HOME/bin (or a folder in your path)
 4. Test
 
 Here's an example of the commands run in from the Bash shell after
@@ -163,9 +165,9 @@ downloading the zip file.
 
 ```shell
     cd Downloads/
-    unzip skimmer-*-Linux-arm7l.zip
+    unzip skimmer-*-Linux-armv7l.zip
     mkdir -p $HOME/bin
-    cp -v bin/* $HOME/bin/
+    cp -v bin/skimmer $HOME/bin/
     export PATH=$HOME/bin:$PATH
     skimmer -version
 ```
@@ -174,14 +176,14 @@ downloading the zip file.
 Compiling from source
 ---------------------
 
-_skimmer_ is "go gettable".  Use the "go get" command to download the dependant packages
+_skimmer_ is "go get-able".  Use the "go get" command to download the dependent packages
 as well as _skimmer_'s source code.
 
 ```shell
     go get -u github.com/rsdoiel/skimmer/...
 ```
 
-Or clone the repstory and then compile
+Or clone the repository and then compile
 
 ```shell
     cd

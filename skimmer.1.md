@@ -1,4 +1,4 @@
-%skimmer(1) skimmer user manual | version 0.0.1 b7bbf8e
+%skimmer(1) skimmer user manual | version 0.0.1 2f14ed0
 % R. S. Doiel
 % 2023-10-06
 
@@ -97,10 +97,10 @@ skimmer -limit 100 | pandoc -f markdown -t plain | less -R
 ~~~
 
 
-# Acknowledgements
+# Acknowledgments
 
 This project is an experiment it would not be possible without the authors of
-newsboat, sqlite3, Pandoc and mmcdole's gofeed package have provided excellent
+newsboat, SQLite3, Pandoc and mmcdole's gofeed package have provided excellent
 free software to the planet. - RSD, 2023-10-07
 
 
