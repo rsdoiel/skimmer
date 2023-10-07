@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Codemeta + Pandoc Examples</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://caltechlibrary.github.io/css/site.css">
+</head>
+<body>
+<header>
+<a href="http://library.caltech.edu" title="link to Caltech Library Homepage"><img src="https://caltechlibrary.github.io/assets/liblogo.gif" alt="Caltech Library logo"></a>
+</header>
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="index.html">README</a></li>
+    <li><a href="LICENSE">LICENSE</a></li>
+    <li><a href="about.html">About</a></li>
+	<li><a href="search.html">Project Search</a></li>
+    <li><a href="https://github.com/caltechlibrary/curl-installer-sh-example">GitHub</a></li>
+</ul>
+</nav>
+
+<section>
+<h1 id="skimmer">skimmer</h1>
+<p>skimmer is a lightweight feed reader inspired by <a
+href="">newsboat</a> and <a href="">yarnc</a>. It is minimal and lacks
+future. That is skimmer’s feature. skimmer can do two things. A a list
+of feed URLs and download their items into an SQLite3 database. Display
+the contents fo the SQLite 3 database in reverse chronological order.
+That’s it. No paging, now UI other than the command line options and
+what is sent to standard output.</p>
+<p>The URL is based on newsboat’s URL list. That is because I use
+Newsboat for my interactive feed reading. The skimmer application stores
+the list of URLs and the SQLite 3 database in your home directory under
+<code>.skimmer</code>.</p>
+<h2 id="options">OPTIONS</h2>
+<dl>
+<dt>-help</dt>
+<dd>
+display a help page
+</dd>
+<dt>-license</dt>
+<dd>
+display license
+</dd>
+<dt>-version</dt>
+<dd>
+display version number and build hash
+</dd>
+<dt>-fetch</dt>
+<dd>
+Download items from the list of urls
+</dd>
+<dt>-read</dt>
+<dd>
+Display the contents of the SQLite 3 database
+</dd>
+</dl>
+<h1 id="examples">Examples</h1>
+<p>Fetch and read some news</p>
+<pre><code>skimmer</code></pre>
+<p>Download some news to read later</p>
+<pre><code>skimmer -fetch</code></pre>
+<p>Read the downloaded news</p>
+<pre><code>skimmer -display</code></pre>
+<h2 id="requirements">Requirements</h2>
+<p>skimmer is an experiment and binaries are not available at this time.
+You need to have git, make, pandoc and Go compile0 available to compile
+skimmer from source code.</p>
+<ul>
+<li>Git &gt;= 2</li>
+<li>Make &gt;= 3.8 (GNU Make)</li>
+<li>Pandoc &gt; 3</li>
+<li>Go &gt;= 1.21.1</li>
+<li>SQLite3 &gt; 3.4</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>Installation process compile sequence to install skimmer in your home
+bin directory.</p>
+<pre><code>git clone https://github.com/rsdoiel/skimmer
+cd skimmer
+make
+make install</code></pre>
+<p>A default urls list is provided as an example urls list. The first
+time you run skimmer. You should edit <code>$HOME/.skimmer/urls</code>
+to fit your needs.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>This experiment would not be possible with the authors of newsboat,
+sqlite3, pandoc and <a
+href="https://github.com/mmcdole/gofeed">gofeed</a> package.</p>
+</section>
+
+<footer>
+<span>&copy; 2023 <a href="https://www.library.caltech.edu/copyright">Caltech Library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+</footer>
+</body>
+</html>

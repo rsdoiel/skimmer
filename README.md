@@ -1,18 +1,21 @@
 
 # skimmer
 
-skimmer is a lightweight feed reader inspired by [newsboat]() and
-[yarnc](). It is minimal and lacks future. That is skimmer's 
-feature. skimmer can do two things. A a list of feed URLs and download
-their items into an SQLite3 database. Display the contents fo the
-SQLite 3 database in reverse chronological order.  That's it.
-No paging, now UI other than the command line options and what is sent
+skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
+[yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is minimal and lacks features. 
+That is skimmer's best feature. skimmer can do two things. 
+
+- fetch a list of urls and download their items to an SQLite3 database
+- Display the contents of the SQLite3 database in reverse chronological order
+
+That's it.  No paging, now UI other than the command line options and what is sent
 to standard output.
 
-The URL is based on newsboat's URL list. That is because I use 
+The URL file format is based on newsboat's URL list. That is because I use 
 Newsboat for my interactive feed reading. The skimmer application
 stores the list of URLs and the SQLite 3 database in your home
 directory under `.skimmer`.
+
 
 ## OPTIONS
 
@@ -28,8 +31,17 @@ directory under `.skimmer`.
 -fetch
 : Download items from the list of urls
 
--read
+-display
 : Display the contents of the SQLite 3 database
+
+-limit N
+: Limit the display the N most recent items
+
+-prune TIMESTAMP
+: The deletes items from the database that are older than TIMESTAMP.
+TIMESTAMP can be "now","today", a day in YYYY-MM-DD format or a full
+timestamp in YYYY-MM-DD HH:MM:SS format.
+
 
 # Examples
 
@@ -45,17 +57,39 @@ Download some news to read later
 skimmer -fetch
 ~~~
 
-Read the downloaded news
+Display the downloaded news
 
 ~~~
 skimmer -display
 ~~~
 
+Limit the number of items sent to the screen.
+
+~~~
+skimmer -display -limit 25
+~~~
+
+Or my favorate is to run the output through Pandoc
+and page with less.
+
+~~~
+skimmer -display -limit 25 | \
+    pandoc -f markdown -t plain | \
+    less -R
+~~~
+
+
+Prune the items in the database older than today.
+
+~~~
+skimmer -prune today
+~~~
+
+
 ## Requirements
 
-skimmer is an experiment and binaries are not available at this time.
-You need to have git, make, pandoc and Go compile0 available to compile
-skimmer from source code.
+skimmer is an experiment and precompiled binaries are not available.
+To compile from source you need to have git, make, pandoc sqlite3 and Go.
 
 - Git >= 2
 - Make >= 3.8 (GNU Make)
@@ -65,8 +99,7 @@ skimmer from source code.
 
 ## Installation
 
-Installation process compile sequence to install skimmer in 
-your home bin directory.
+Installation process I used to setup skimmer on a new machine.
 
 ~~~
 git clone https://github.com/rsdoiel/skimmer
@@ -76,10 +109,10 @@ make install
 ~~~
 
 A default urls list is provided as an example urls list. The first time
-you run skimmer. You should edit `$HOME/.skimmer/urls` to fit your needs.
+you run skimmer. You should edit `$HOME/.skimmer/skimmer.urls` to fit your needs.
 
 ## Acknowledgements
 
 This experiment would not be possible with the authors of newsboat, sqlite3,
-pandoc and [gofeed](https://github.com/mmcdole/gofeed) package.
+Pandoc and the [gofeed](https://github.com/mmcdole/gofeed) package.
 

@@ -19,3 +19,11 @@
 
 # Go workspace file
 go.work
+
+# project ignores
+*.swp
+*~
+*.tmp
+bin
+man
+test_output
