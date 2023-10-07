@@ -21,9 +21,11 @@
 go.work
 
 # project ignores
+*.bak
 *.swp
 *~
 *.tmp
 bin
 man
 test_output
+dist
