@@ -18,12 +18,6 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-const (
-	SkimmerURLs   = "skimmer.urls"
-	SkimmerScheme = "skimmer.scheme"
-	SkimmerDB     = "skimmer.db"
-)
-
 // ParseURLList takes a filename and byte slice source, parses the contents
 // returning a map of urls to labels and an error value.
 func ParseURLList(fName string, src []byte) (map[string]string, error) {
@@ -55,12 +49,9 @@ func ParseURLList(fName string, src []byte) (map[string]string, error) {
 type Skimmer struct {
 	// AppName holds the name of the application
 	AppName string `json:"app_name,omitempty"`
-	// AppDir holds the path to the directory where the urls and feed_items.db are held
-	AppDir string `json:"app_dir,omitempty"`
 	// Fetch indicates that items need to be retrieved from the url list and stored in the database
 	Fetch bool `json:"fetch,omitempty"`
-	// Display indicates the contents of the database needs to be streamed to output
-	Display bool `json:"read,omitempty"`
+
 	// Urls are the map of urls to labels to be fetched or read
 	Urls map[string]string `json:"urls,omitempty"`
 
@@ -68,7 +59,16 @@ type Skimmer struct {
 	Limit int `json:"limit,omitempty"`
 
 	// Prune contains the date to use to prune the database.
-	Prune string `json:"prune,omitempty"`
+	Prune bool `json:"prune,omitempty"`
+
+	// Interactive if true causes Run to display one item at a time with a minimal of input
+	Interactive string `json:"interactive,omitempty"`
+
+	// AsURLs, output the skimmer feeds as a newsboat style url file
+	AsURLs bool `json:"urls,omitempty"`
+
+	// AsOPML, output the skimmer feeds as OPML
+	AsOPML bool `json:"opml,omittempty"`
 
 	// Map in some private data to keep things easy to work with.
 	out  io.Writer
@@ -84,69 +84,65 @@ func NewSkimmer(out io.Writer, eout io.Writer, appName string) (*Skimmer, error)
 }
 
 // Setup checks to see if anything needs to be setup (or fixed) for skimmer to run.
-func (app *Skimmer) Setup(appDir string) error {
+func (app *Skimmer) Setup(fPath string) error {
 	// Check if we have an appDir
-	if _, err := os.Stat(appDir); os.IsNotExist(err) {
-		//fmt.Fprintf(app.eout, "Creating %s\n", appDir)
-		if err := os.MkdirAll(appDir, 0750); err != nil {
-			return err
+	bName := path.Base(fPath)
+	xName := path.Ext(bName)
+	if xName != ".skim" {
+		fName := strings.TrimSuffix(bName, xName) + ".skim"
+		// Check to see if we have an existing skimmer file
+		if _, err := os.Stat(fName); os.IsNotExist(err) {
+			stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
+			dsn := fName
+			//fmt.Printf("SQLite 3 dsn -> %q\n", dsn)
+			db, err := sql.Open("sqlite", dsn)
+			if err != nil {
+				return err
+			}
+			defer db.Close()
+			if db == nil {
+				return fmt.Errorf("%s opened and returned nil", fName)
+			}
+			_, err = db.Exec(stmt)
+			if err != nil {
+				return err
+			}
 		}
 	}
-	// Check to see if we have a url list, if not create a default one.
-	fName := path.Join(appDir, SkimmerURLs)
-	if _, err := os.Stat(fName); os.IsNotExist(err) {
-		//fmt.Fprintf(app.eout, "Creating %s\n", fName)
-		src := []byte(`# This is an example url list. 
-https://laist.com/index.atom "~The LAist"
-`)
-		// Create a sample urls file
-		if err := os.WriteFile(fName, src, 0660); err != nil {
-			return err
-		}
-	}
-	// Check if we have a SQL schema file
-	fName = path.Join(appDir, SkimmerScheme)
-	stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
-	if _, err := os.Stat(fName); os.IsNotExist(err) {
-		//fmt.Fprintf(app.eout, "Creating %s\n", fName)
-		if err := os.WriteFile(fName, []byte(stmt), 0660); err != nil {
-			return err
-		}
-	}
-	fName = path.Join(appDir, SkimmerDB)
-	if _, err := os.Stat(fName); os.IsNotExist(err) {
-		dsn := fName
-		//fmt.Printf("SQLite 3 dsn -> %q\n", dsn)
-		db, err := sql.Open("sqlite", dsn)
-		if err != nil {
-			return err
-		}
-		defer db.Close()
-		if db == nil {
-			return fmt.Errorf("%s opened and returned nil", fName)
-		}
-		_, err = db.Exec(stmt)
-		if err != nil {
-			return err
-		}
-	}
-	// If we got this far then the appDir is the one we want to remember.
-	app.AppDir = appDir
 	return nil
 }
 
-// ReadUrls reads the $HOME/.skimmer/urls file and populates the app.Urls map.
+// ReadUrls reads urls or OPML file provided and updates the feeds in the skimmer
+// skimmer file.
+//
 // Newsboat's url file format is `<URL><SPACE>"~<LABEL>"` one entry per line
 // The hash mark, "#" at the start of the line indicates a comment line.
-func (app *Skimmer) ReadUrls() error {
-	fName := path.Join(app.AppDir, SkimmerURLs)
+//
+// OPML is documented at http://opml.org
+//
+func (app *Skimmer) ReadUrls(fName string) error {
+	xName := path.Ext(fName)
 	src, err := os.ReadFile(fName)
 	if err != nil {
 		return err
 	}
-	app.Urls, err = ParseURLList(fName, src)
-	if err != nil {
-		return err
+	if xName == ".opml" {
+		return fmt.Errorf("opml implort not implemeted, opml packages need to support ToMap")
+		/*
+		var o *opml.OPML
+		if o, err = opml.Parse(src); err != nil {
+			return err
+		}
+		app.Urls, err = o.ToMap(urls)
+		if err != nil [
+			return err
+		}
+		*/
+	} else {
+		app.Urls, err = ParseURLList(fName, src)
+		if err != nil {
+			return err
+		}
 	}
 	if len(app.Urls) == 0 {
 		return fmt.Errorf("no urls found")
@@ -273,7 +269,7 @@ func (app *Skimmer) PruneItems(dt time.Time) error {
 	if err != nil {
 		return err
 	}
-	return err	
+	return err
 }
 
 // Display the contents from database
@@ -336,54 +332,62 @@ func (app *Skimmer) Write(out io.Writer) error {
 func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 	app.out = out
 	app.eout = eout
-
-	// Find our "home" directory.
-	homeDir := os.Getenv("HOME")
-	// Find out application directory
-	appDir := path.Join(homeDir, "."+app.AppName)
+	if len(args) == 0 {
+		return fmt.Errorf("expected a .skim, an OPML or urls file to process")
+	}
+	fPath := args[0]
+	xName := path.Ext(fName)
 	// See if we need to setup things.
-	if err := app.Setup(appDir); err != nil {
+	if err := app.Setup(fPath); err != nil {
 		return err
 	}
-	// See what the user wants to do.
-	if (app.Fetch == false) && (app.Display == false) {
+	// See if we need to update the channels
+	if xName != ".skim" {
+		if err := app.ReadUrls(fPath); err != nil {
+			return err
+		}
+		if err := app.ResetChannels(); err != nil {
+			return err
+		}
+		// By Downloading the urls all the channel data will get created/updated.
+		if err := app.Download(); err != nil {
+			return err
+		}
 		cnt, err := app.ItemCount()
 		if err != nil {
 			fmt.Fprintf(app.eout, "fail to count items, %s", err)
 		}
-		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt) 
-		if cnt == 0 {
-			fmt.Fprintf(app.out, "Try %s -fetch to populate the feed database", app.AppName)
-		}
-		app.Display = true
-	}
-	if app.Fetch {
-		if err := app.ReadUrls(); err != nil {
-			return err
-		}
+		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
+	} else if app.Fetch {
 		if err := app.Download(); err != nil {
 			return err
 		}
+		cnt, err := app.ItemCount()
+		if err != nil {
+			fmt.Fprintf(app.eout, "fail to count items, %s", err)
+		}
+		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
+		return nil
 	}
 	if app.Prune != "" {
 		fmtStr := "2006-01-02"
 		switch {
-			case app.Prune == "today":
-				fmtStr = "2006-01-02"
-				app.Prune = time.Now().Format(fmtStr)
-			case app.Prune == "now":
-				fmtStr = "2006-01-02 15:04:05"
-				app.Prune = time.Now().Format(fmtStr)
-			case len(app.Prune) == 10:
-				fmtStr = "2006-01-02"
-			case len(app.Prune) == 12:
-				fmtStr = "2006-01-02 15"
-			case len(app.Prune) == 15:
-				fmtStr = "2006-01-02 15:04"
-			case len(app.Prune) == 18:
-				fmtStr = "2006-01-02 15:04:05"
-			default:
-				return fmt.Errorf("bad prune date %q", app.Prune)
+		case app.Prune == "today":
+			fmtStr = "2006-01-02"
+			app.Prune = time.Now().Format(fmtStr)
+		case app.Prune == "now":
+			fmtStr = "2006-01-02 15:04:05"
+			app.Prune = time.Now().Format(fmtStr)
+		case len(app.Prune) == 10:
+			fmtStr = "2006-01-02"
+		case len(app.Prune) == 12:
+			fmtStr = "2006-01-02 15"
+		case len(app.Prune) == 15:
+			fmtStr = "2006-01-02 15:04"
+		case len(app.Prune) == 18:
+			fmtStr = "2006-01-02 15:04:05"
+		default:
+			return fmt.Errorf("bad prune date %q", app.Prune)
 		}
 		dt, err := time.Parse(fmtStr, app.Prune)
 		if err != nil {
@@ -392,11 +396,23 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		if err := app.PruneItems(dt); err != nil {
 			return err
 		}
-	}
-	if app.Display {
-		if err := app.Write(out); err != nil {
-			return err
+		cnt, err := app.ItemCount()
+		if err != nil {
+			fmt.Fprintf(app.eout, "fail to count items, %s", err)
 		}
+		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
+	}
+	if app.OPML {
+		return fmt.Errorf("OPML output not implemented")
+	}
+	if app.URLs {
+		return fmt.Errorf("URLs output not implemented")
+	}
+	if app.Interactive {
+		return fmt.Errorf("interactive not implemented")
+	}
+	if err := app.Write(out); err != nil {
+		return err
 	}
 	return nil
 }

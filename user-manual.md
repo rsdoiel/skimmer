@@ -6,4 +6,3 @@ user manual
 ===========
 
 - [skimmer](skimmer.1.md)
-

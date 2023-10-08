@@ -35,6 +35,21 @@ CREATE TABLE IF NOT EXISTS items (
 	retrieved DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 `
+	// SQLResetChannels clear the channels talbe
+	SQLResetChannels = `DELETE FROM channels`
+
+	// Update the channels in the skimmer file
+	SQLUpdateChannel = `REPLACE INTO channel (
+link, title, description, published, updated, feed_type,
+feed_version, copyright, language, authors, categories,
+dublin_code, feed_link, links
+) VALUES (
+?, ?, ?, ?, ?, ?,
+?, ?, ?, ?, ?, 
+?, ?, ?
+)`
+
+	// Update a feed item in the items table
 	SQLUpdateItem = `REPLACE INTO items (
 link, title, description, updated, published, feedLabel)
 VALUES (?, ?, ?, ?, ?, ?);`
@@ -53,7 +68,7 @@ ORDER BY updated DESC
 	// SQLPruneItems will prune our items table for all items that have easier
 	// a updated or publication date early than the timestamp provided.
 	SQLPruneItems = `DELETE FROM items 
-WHERE (updated < ?) OR ((published < ?) AND (updated < ?)) 
+WHERE (updated IS NOT NULL AND updated < ?) OR (published IS NOT NULL AND published < ?) 
    OR (published = "" AND updated = "")
 `
 
