@@ -49,6 +49,10 @@ func ParseURLList(fName string, src []byte) (map[string]string, error) {
 type Skimmer struct {
 	// AppName holds the name of the application
 	AppName string `json:"app_name,omitempty"`
+
+	// DbName holds the path to the SQLite3 database 
+	DBName string `json:"db_name,omitempty"`
+
 	// Fetch indicates that items need to be retrieved from the url list and stored in the database
 	Fetch bool `json:"fetch,omitempty"`
 
@@ -62,7 +66,7 @@ type Skimmer struct {
 	Prune bool `json:"prune,omitempty"`
 
 	// Interactive if true causes Run to display one item at a time with a minimal of input
-	Interactive string `json:"interactive,omitempty"`
+	Interactive bool `json:"interactive,omitempty"`
 
 	// AsURLs, output the skimmer feeds as a newsboat style url file
 	AsURLs bool `json:"urls,omitempty"`
@@ -89,7 +93,7 @@ func (app *Skimmer) Setup(fPath string) error {
 	bName := path.Base(fPath)
 	xName := path.Ext(bName)
 	if xName != ".skim" {
-		fName := strings.TrimSuffix(bName, xName) + ".skim"
+		fName := strings.TrimSuffix(fPath, xName) + ".skim"
 		// Check to see if we have an existing skimmer file
 		if _, err := os.Stat(fName); os.IsNotExist(err) {
 			stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
@@ -108,6 +112,7 @@ func (app *Skimmer) Setup(fPath string) error {
 				return err
 			}
 		}
+		app.DBName = fName
 	}
 	return nil
 }
@@ -190,10 +195,14 @@ func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	return nil
 }
 
+func (app *Skimmer) ResetChannels() error {
+	return fmt.Errorf("ResetChannels() not implemented")
+}
+
 // Download the contents from app.Urls
 func (app *Skimmer) Download() error {
 	eCnt := 0
-	dsn := path.Join(app.AppDir, SkimmerDB)
+	dsn := app.DBName
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return err
@@ -237,7 +246,7 @@ func (app *Skimmer) Download() error {
 
 // ItemCount returns the total number items in the database.
 func (app *Skimmer) ItemCount() (int, error) {
-	dsn := path.Join(app.AppDir, SkimmerDB)
+	dsn := app.DBName
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return -1, err
@@ -256,16 +265,17 @@ func (app *Skimmer) ItemCount() (int, error) {
 
 // PruneItems takes a timestamp and performs a row delete on the table
 // for items that are older than the timestamp.
-func (app *Skimmer) PruneItems(dt time.Time) error {
-	dsn := path.Join(app.AppDir, SkimmerDB)
+func (app *Skimmer) PruneItems(startDT time.Time, endDT time.Time) error {
+	dsn := app.DBName
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 	stmt := SQLPruneItems
-	timestamp := dt.Format("2006-01-02 15:04:05")
-	_, err = db.Exec(stmt, timestamp, timestamp, timestamp)
+	start := startDT.Format("2006-01-02 15:04:05")
+	end := endDT.Format("2006-01-02 15:04:05")
+	_, err = db.Exec(stmt, start, start, end, end)
 	if err != nil {
 		return err
 	}
@@ -274,7 +284,7 @@ func (app *Skimmer) PruneItems(dt time.Time) error {
 
 // Display the contents from database
 func (app *Skimmer) Write(out io.Writer) error {
-	dsn := path.Join(app.AppDir, SkimmerDB)
+	dsn := app.DBName
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return err
@@ -328,6 +338,31 @@ func (app *Skimmer) Write(out io.Writer) error {
 	return nil
 }
 
+// normalizeTFormat sorts out the format string to used to parse the datestamp/timestamp
+func normalizeTFormat(t string) (string, error) {
+	fmtStr := "2006-01-02"
+	switch {
+	case t == "today":
+		fmtStr = "2006-01-02"
+		t = time.Now().Format(fmtStr)
+	case t  == "now":
+		fmtStr = "2006-01-02 15:04:05"
+		t = time.Now().Format(fmtStr)
+	case len(t) == 10:
+		fmtStr = "2006-01-02"
+	case len(t) == 12:
+		fmtStr = "2006-01-02 15"
+	case len(t) == 15:
+		fmtStr = "2006-01-02 15:04"
+	case len(t) == 18:
+		fmtStr = "2006-01-02 15:04:05"
+	default:
+		return "", fmt.Errorf("bad prune date %q", t)
+	}
+	return fmtStr, nil
+}
+
+
 // Run provides the runner for skimmer. It allows for testing of much of the cli functionality
 func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 	app.out = out
@@ -336,7 +371,7 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		return fmt.Errorf("expected a .skim, an OPML or urls file to process")
 	}
 	fPath := args[0]
-	xName := path.Ext(fName)
+	xName := path.Ext(fPath)
 	// See if we need to setup things.
 	if err := app.Setup(fPath); err != nil {
 		return err
@@ -369,31 +404,36 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 		return nil
 	}
-	if app.Prune != "" {
-		fmtStr := "2006-01-02"
-		switch {
-		case app.Prune == "today":
-			fmtStr = "2006-01-02"
-			app.Prune = time.Now().Format(fmtStr)
-		case app.Prune == "now":
-			fmtStr = "2006-01-02 15:04:05"
-			app.Prune = time.Now().Format(fmtStr)
-		case len(app.Prune) == 10:
-			fmtStr = "2006-01-02"
-		case len(app.Prune) == 12:
-			fmtStr = "2006-01-02 15"
-		case len(app.Prune) == 15:
-			fmtStr = "2006-01-02 15:04"
-		case len(app.Prune) == 18:
-			fmtStr = "2006-01-02 15:04:05"
-		default:
-			return fmt.Errorf("bad prune date %q", app.Prune)
+	if app.Prune {
+		var err error
+		if len(args) < 3 {
+			return fmt.Errorf("expected a date or date range for prune")
 		}
-		dt, err := time.Parse(fmtStr, app.Prune)
+		start, end := "0001-01-01 00:00:00", time.Now().Format("2006-01-02 15:04:05")
+		if len(args) == 2 {
+			end = args[1]
+		}
+		if len(args) == 3 {
+			start = args[1]
+			end = args[2]
+		}
+		startFmt, err := normalizeTFormat(start)
 		if err != nil {
 			return err
 		}
-		if err := app.PruneItems(dt); err != nil {
+		endFmt, err := normalizeTFormat(end)
+		if err != nil {
+			return err
+		}
+		startDt, err := time.Parse(startFmt, start)
+		if err != nil {
+			return err
+		}
+		endDt, err := time.Parse(endFmt, end)
+		if err != nil {
+			return err
+		}
+		if err := app.PruneItems(startDt, endDt); err != nil {
 			return err
 		}
 		cnt, err := app.ItemCount()
@@ -402,10 +442,10 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 	}
-	if app.OPML {
+	if app.AsOPML {
 		return fmt.Errorf("OPML output not implemented")
 	}
-	if app.URLs {
+	if app.AsURLs {
 		return fmt.Errorf("URLs output not implemented")
 	}
 	if app.Interactive {

@@ -68,8 +68,9 @@ ORDER BY updated DESC
 	// SQLPruneItems will prune our items table for all items that have easier
 	// a updated or publication date early than the timestamp provided.
 	SQLPruneItems = `DELETE FROM items 
-WHERE (updated IS NOT NULL AND updated < ?) OR (published IS NOT NULL AND published < ?) 
-   OR (published = "" AND updated = "")
+WHERE (updated IS NULL AND publish IS NULL) 
+   OR ((updated >= ? OR published >= ?) AND
+   	(updated < ? AND published < ?))
 `
 
 )

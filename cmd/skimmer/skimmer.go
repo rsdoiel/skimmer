@@ -35,7 +35,7 @@ in [newsboat's](https://newsboat.org) urls file format or as an [OPML](http://op
 file. 
 
 If either type of these files is provided on the command line then the file will be read
-and a similarly named SQLite3 database will be created with a `+"`"+`.skim`+"`"` extension.
+and a similarly named SQLite3 database will be created with a `+"`"+`.skim`+"`"+` extension.
 {app_name} will then display the downloaded content.
 
 After populating your skimmer database you can update it using the `+"`"+`-fetach`+"`"+`
@@ -143,7 +143,7 @@ free software to the planet. - RSD, 2023-10-07
 func main() {
 	appName := path.Base(os.Args[0])
 	showHelp, showVersion, showLicense := false, false, false
-	fetch, interactive, urls, opml := false, false, urls, opml
+	fetch, interactive, urls, opml := false, false, false, false
 	prune, limit := false, 0
 	flag.BoolVar(&showHelp, "help", showHelp, "display help")
 	flag.BoolVar(&showVersion, "version", showVersion, "display version")
@@ -186,8 +186,8 @@ func main() {
 	app.Limit = limit
 	app.Prune = prune
 	app.Interactive = interactive
-	app.OPML = opml
-	app.URLs = urls
+	app.AsOPML = opml
+	app.AsURLs = urls
 	if err := app.Run(out, eout, args); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		os.Exit(1)
