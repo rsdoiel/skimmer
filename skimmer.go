@@ -259,6 +259,10 @@ func (app *Skimmer) ResetChannels(db *sql.DB) error {
 	return nil
 }
 
+func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
+	return nil, fmt.Errorf("ChannelsToUrls() not implement")
+}
+
 // Download the contents from app.Urls
 func (app *Skimmer) Download(db *sql.DB) error {
 	eCnt := 0
@@ -510,8 +514,14 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		return fmt.Errorf("OPML output not implemented")
 	}
 	if app.AsURLs {
-		return fmt.Errorf("URLs output not implemented")
+		src, err := app.ChannelsToUrls(db)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(app.out, "%s\n", src)
+		return nil
 	}
+
 	if app.Interactive {
 		return fmt.Errorf("interactive not implemented")
 	}
