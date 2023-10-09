@@ -434,7 +434,6 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		err error
 	)
 
-	fmt.Fprintf(eout, "DEBUG app.DBName %q\n", app.DBName)
 	dsn := app.DBName
 	db, err = sql.Open("sqlite", dsn)
 	if err != nil {
