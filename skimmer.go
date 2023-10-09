@@ -32,11 +32,11 @@ func ParseURLList(fName string, src []byte) (map[string]string, error) {
 			parts := strings.SplitN(txt, " ", 2)
 			switch len(parts) {
 			case 1:
-				key, val = parts[0], parts[0]
+				key, val = parts[0], ""
 			case 2:
 				key, val = parts[0], parts[1]
 			}
-			urls[key] = strings.Trim(val, `"~`)
+			urls[key] = val
 			key, val = "", ""
 		}
 		line++
@@ -92,13 +92,14 @@ func (app *Skimmer) Setup(fPath string) error {
 	// Check if we have an appDir
 	bName := path.Base(fPath)
 	xName := path.Ext(bName)
+	fName := fPath
 	if xName != ".skim" {
-		fName := strings.TrimSuffix(fPath, xName) + ".skim"
+		fName = strings.TrimSuffix(fPath, xName) + ".skim"
 		// Check to see if we have an existing skimmer file
 		if _, err := os.Stat(fName); os.IsNotExist(err) {
 			stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
 			dsn := fName
-			//fmt.Printf("SQLite 3 dsn -> %q\n", dsn)
+			fmt.Printf("SQLite 3 dsn -> %q\n", dsn)
 			db, err := sql.Open("sqlite", dsn)
 			if err != nil {
 				return err
@@ -112,8 +113,8 @@ func (app *Skimmer) Setup(fPath string) error {
 				return err
 			}
 		}
-		app.DBName = fName
 	}
+	app.DBName = fName
 	return nil
 }
 
@@ -173,6 +174,60 @@ func webget(url string) (*gofeed.Feed, error) {
 	return feed, nil
 }
 
+func saveChannel(db *sql.DB, feedLabel string, channel *gofeed.Feed) error {
+/*
+link, title, description, feed_link, links,
+updated, published, 
+authors, language, copyright, generator,
+categories, feed_type, feed_version
+*/
+	var (
+		err error
+		src []byte
+		title string
+		linksStr string
+		authorsStr string
+		categoriesStr string
+	)
+	if feedLabel == "" {
+		title = channel.Title
+	} else {
+		title = feedLabel
+	}
+	if channel.Links != nil {
+		src, err = JSONMarshal(channel.Links)
+		if err != nil {
+			return err
+		}
+		linksStr = fmt.Sprintf("%s", src)
+	}
+	if channel.Authors != nil {
+		src, err = JSONMarshal(channel.Authors)
+		if err != nil {
+			return err
+		}
+		authorsStr = fmt.Sprintf("%s", src)
+	}
+	if channel.Categories != nil {
+		src, err = JSONMarshal(channel.Categories)
+		if err != nil {
+			return err
+		}
+		categoriesStr = fmt.Sprintf("%s", src)
+	}
+
+	stmt := SQLUpdateChannel
+	_, err = db.Exec(stmt,
+		channel.Link, &title, channel.Description, channel.FeedLink, linksStr, 
+		channel.Updated, channel.Published,
+		authorsStr, channel.Language, channel.Copyright, channel.Generator,
+		categoriesStr, channel.FeedType, channel.FeedVersion)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	var (
 		published string
@@ -195,12 +250,17 @@ func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	return nil
 }
 
-func (app *Skimmer) ResetChannels() error {
-	return fmt.Errorf("ResetChannels() not implemented")
+func (app *Skimmer) ResetChannels(db *sql.DB) error {
+	stmt := SQLResetChannels
+	_, err := db.Exec(stmt)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Download the contents from app.Urls
-func (app *Skimmer) Download() error {
+func (app *Skimmer) Download(db *sql.DB) error {
 	eCnt := 0
 	dsn := app.DBName
 	db, err := sql.Open("sqlite", dsn)
@@ -215,6 +275,11 @@ func (app *Skimmer) Download() error {
 			fmt.Fprintf(app.eout, "failed to get %q, %s\n", k, err)
 			continue
 		}
+		if err := saveChannel(db, v, feed); err != nil {
+			fmt.Fprintf(app.eout, "failed to save chanel %q, %s\n", k, err)
+		    continue	
+		}
+
 		// Setup a progress output
 		t0 := time.Now()
 		rptTime := time.Now()
@@ -245,15 +310,12 @@ func (app *Skimmer) Download() error {
 }
 
 // ItemCount returns the total number items in the database.
-func (app *Skimmer) ItemCount() (int, error) {
-	dsn := app.DBName
-	db, err := sql.Open("sqlite", dsn)
+func (app *Skimmer) ItemCount(db *sql.DB) (int, error) {
+	stmt := SQLItemCount
+	rows, err := db.Query(stmt)
 	if err != nil {
 		return -1, err
 	}
-	defer db.Close()
-	stmt := SQLItemCount
-	rows, err := db.Query(stmt)
 	cnt := 0
 	for rows.Next() {
 		if err := rows.Scan(&cnt); err != nil {
@@ -265,17 +327,11 @@ func (app *Skimmer) ItemCount() (int, error) {
 
 // PruneItems takes a timestamp and performs a row delete on the table
 // for items that are older than the timestamp.
-func (app *Skimmer) PruneItems(startDT time.Time, endDT time.Time) error {
-	dsn := app.DBName
-	db, err := sql.Open("sqlite", dsn)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) error {
 	stmt := SQLPruneItems
 	start := startDT.Format("2006-01-02 15:04:05")
 	end := endDT.Format("2006-01-02 15:04:05")
-	_, err = db.Exec(stmt, start, start, end, end)
+	_, err := db.Exec(stmt, start, start, end, end)
 	if err != nil {
 		return err
 	}
@@ -283,18 +339,15 @@ func (app *Skimmer) PruneItems(startDT time.Time, endDT time.Time) error {
 }
 
 // Display the contents from database
-func (app *Skimmer) Write(out io.Writer) error {
-	dsn := app.DBName
-	db, err := sql.Open("sqlite", dsn)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+func (app *Skimmer) Write(db *sql.DB) error {
 	stmt := SQLDisplayItems
 	if app.Limit > 0 {
 		stmt = fmt.Sprintf("%s LIMIT %d", stmt, app.Limit)
 	}
 	rows, err := db.Query(stmt)
+	if err != nil {
+		return err
+	}
 	for rows.Next() {
 		var (
 			link        string
@@ -376,28 +429,40 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 	if err := app.Setup(fPath); err != nil {
 		return err
 	}
+	var (
+		db *sql.DB
+		err error
+	)
+
+	fmt.Fprintf(eout, "DEBUG app.DBName %q\n", app.DBName)
+	dsn := app.DBName
+	db, err = sql.Open("sqlite", dsn)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
 	// See if we need to update the channels
 	if xName != ".skim" {
 		if err := app.ReadUrls(fPath); err != nil {
 			return err
 		}
-		if err := app.ResetChannels(); err != nil {
+		if err := app.ResetChannels(db); err != nil {
 			return err
 		}
 		// By Downloading the urls all the channel data will get created/updated.
-		if err := app.Download(); err != nil {
+		if err := app.Download(db); err != nil {
 			return err
 		}
-		cnt, err := app.ItemCount()
+		cnt, err := app.ItemCount(db)
 		if err != nil {
 			fmt.Fprintf(app.eout, "fail to count items, %s", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 	} else if app.Fetch {
-		if err := app.Download(); err != nil {
+		if err := app.Download(db); err != nil {
 			return err
 		}
-		cnt, err := app.ItemCount()
+		cnt, err := app.ItemCount(db)
 		if err != nil {
 			fmt.Fprintf(app.eout, "fail to count items, %s", err)
 		}
@@ -433,10 +498,10 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		if err != nil {
 			return err
 		}
-		if err := app.PruneItems(startDt, endDt); err != nil {
+		if err := app.PruneItems(db, startDt, endDt); err != nil {
 			return err
 		}
-		cnt, err := app.ItemCount()
+		cnt, err := app.ItemCount(db)
 		if err != nil {
 			fmt.Fprintf(app.eout, "fail to count items, %s", err)
 		}
@@ -451,7 +516,7 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 	if app.Interactive {
 		return fmt.Errorf("interactive not implemented")
 	}
-	if err := app.Write(out); err != nil {
+	if err := app.Write(db); err != nil {
 		return err
 	}
 	return nil

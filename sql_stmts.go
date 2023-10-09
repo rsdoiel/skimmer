@@ -10,17 +10,17 @@ CREATE TABLE IF NOT EXISTS channels (
 	link PRIMARY KEY,
 	title TEXT,
 	description TEXT,
-	published DATETIME,
-	updated DATETIME,
-	feed_type TEXT,
-	feed_version TEXT,
-	copyright TEXT,
-	language TEXT,
-	authors JSON,
-	categories JSON,
-	dublin_core JSON,
 	feed_link TEXT,
 	links JSON,
+	updated DATETIME,
+	published DATETIME,
+	authors JSON,
+	language TEXT,
+	copyright TEXT,
+	generator TEXT,
+	categories JSON,
+	feed_type TEXT,
+	feed_version TEXT
 );
 
 CREATE TABLE IF NOT EXISTS items (
@@ -36,18 +36,20 @@ CREATE TABLE IF NOT EXISTS items (
 );
 `
 	// SQLResetChannels clear the channels talbe
-	SQLResetChannels = `DELETE FROM channels`
+	SQLResetChannels = `DELETE FROM channels;`
 
 	// Update the channels in the skimmer file
-	SQLUpdateChannel = `REPLACE INTO channel (
-link, title, description, published, updated, feed_type,
-feed_version, copyright, language, authors, categories,
-dublin_code, feed_link, links
+	SQLUpdateChannel = `REPLACE INTO channels (
+link, title, description, feed_link, links,
+updated, published, 
+authors, language, copyright, generator,
+categories, feed_type, feed_version
 ) VALUES (
-?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?, 
+?, ?,
+?, ?, ?, ?,
 ?, ?, ?
-)`
+);`
 
 	// Update a feed item in the items table
 	SQLUpdateItem = `REPLACE INTO items (
@@ -63,8 +65,8 @@ SELECT COUNT(*) FROM items;`
 SELECT link, title, description, updated, published, feedLabel AS label
 FROM items
 WHERE description != ""
-ORDER BY updated DESC
-`
+ORDER BY updated DESC;`
+
 	// SQLPruneItems will prune our items table for all items that have easier
 	// a updated or publication date early than the timestamp provided.
 	SQLPruneItems = `DELETE FROM items 
