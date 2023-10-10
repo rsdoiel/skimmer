@@ -29,91 +29,75 @@
 <!--  <h1>README</h1> -->
 
 <h1 id="skimmer">skimmer</h1>
-<p>skimmer is a lightweight feed reader inspired by <a
-href="https://newsboat.org">newsboat</a> and <a
-href="https://git.mills.io/yarnsocial/yarn">yarnc</a>. skimmer is
-minimal and lacks features. That is skimmer’s best feature. skimmer can
-do two things.</p>
+<p>skimmer is a lightweight feed reader inspired by <a href="https://newsboat.org">newsboat</a> and <a href="https://git.mills.io/yarnsocial/yarn">yarnc</a>. skimmer is very minimal and lacks features. That is skimmer’s best feature. skimmer tries to do two things well.</p>
 <ul>
-<li>fetch a list of URLs and download their items to an SQLite3
-database</li>
-<li>Display the contents of the SQLite3 database in reverse
-chronological order</li>
+<li>fetch a list of URLs and download their items to an SQLite3 database</li>
+<li>Display the contents of the SQLite3 database in reverse chronological order</li>
 </ul>
-<p>That’s it. No paging, now UI other than the command line options and
-what is sent to standard output.</p>
-<p>The URL file format is based on newsboat’s URL list. That is because
-I use Newsboat for my interactive feed reading. The skimmer application
-stores the list of URLs and the SQLite 3 database in your home directory
-under <code>.skimmer</code>.</p>
+<p>That’s it. No elaborate UI beyond what is easily accomplished using standard input, standard output and standard err.</p>
+<p>skimmer needs to know what feeds to download and display. That is done by reading either a newsboat style url file or and <a href="http://opml.org/">OPML</a> file. These are read and stored in an SQLite 3 database with the same base name of the file read but with a file extension of <code>.skim</code>. This allows you to easily maintain separate list of feeds to skim and potentially re-use the feed output.</p>
+<p>Presently skimmer is focused on reading RSS 2, Atom and JSONfeeds. If this experiment evolves further than I hope to add support for txtxt as well as support for reading feeds from Gopher, Gemini and SFTP sites.</p>
+<h1 id="synosis">SYNOSIS</h1>
+<pre><code>skimmer [OPTIONS] FILENAE [TIME_RANGE]</code></pre>
 <h2 id="options">OPTIONS</h2>
 <dl>
 <dt>-help</dt>
-<dd>
-display a help page
+<dd>display a help page
 </dd>
 <dt>-license</dt>
-<dd>
-display license
+<dd>display license
 </dd>
 <dt>-version</dt>
-<dd>
-display version number and build hash
+<dd>display version number and build hash
 </dd>
 <dt>-fetch</dt>
-<dd>
-Download items from the list of URLs
-</dd>
-<dt>-display</dt>
-<dd>
-Display the contents of the SQLite 3 database
+<dd>Download items from the list of URLs
 </dd>
 <dt>-limit N</dt>
-<dd>
-Limit the display the N most recent items
+<dd>Limit the display the N most recent items
 </dd>
-<dt>-prune TIMESTAMP</dt>
-<dd>
-The deletes items from the database that are older than TIMESTAMP.
-TIMESTAMP can be “now”,“today”, a day in YYYY-MM-DD format or a full
-timestamp in YYYY-MM-DD HH:MM:SS format.
+<dt>-prune</dt>
+<dd>The deletes items from the items table for the skimmer file provided. If a time range is provided then the items in the time range will be deleted. If a single time is provided everything older than that time is deleted. A time can be specified in several ways. An alias of “today” would remove all items older than today. If “now” is specified then all items older then the current time would be removed. Otherwise time can be specified as a date in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
+</dd>
+<dt>-i, -interactive</dt>
+<dd>display an item and prompt for next action. e.g. (n)ext, (p)rev, (s)ave, (/)search, (d)elete
 </dd>
 </dl>
 <h1 id="examples">Examples</h1>
-<p>Fetch and read some news</p>
-<pre><code>skimmer</code></pre>
-<p>Download some news to read later</p>
-<pre><code>skimmer -fetch</code></pre>
+<p>Fetch and read my newsboat feeds from <code>.newsboat/urls</code>. This will create a <code>.newsboat/urls.skim</code>.</p>
+<pre class="shell"><code>skimmer .newsboat/urls</code></pre>
+<p>Fetch and read the feeds from <code>my-news.opml</code>. This will create a <code>my-news.skim</code> file.</p>
+<pre class="shell"><code>skimmer my-news.opml</code></pre>
+<p>Get the latest items for the skimmer file “my-news.skim” Download some news to read later</p>
+<pre class="shell"><code>skimmer -fetch my-news.skim</code></pre>
+<p>Read the last downloaded content from <code>my-news.skim</code></p>
 <p>Display the downloaded news</p>
-<pre><code>skimmer -display</code></pre>
+<pre class="shell"><code>skimmer my-news.skim</code></pre>
 <p>Limit the number of items sent to the screen.</p>
-<pre><code>skimmer -display -limit 25</code></pre>
-<p>Or my favorite is to run the output through Pandoc and page with
-less.</p>
-<pre><code>skimmer -display -limit 25 | \
+<pre class="shell"><code>skimmer -display -limit 25 my-news.skim</code></pre>
+<p>Or my favorite is to run the output through Pandoc and page with less.</p>
+<pre class="shell"><code>skimmer -display -limit 25 my-news.skim | \
     pandoc -f markdown -t plain | \
     less -R</code></pre>
 <p>Prune the items in the database older than today.</p>
-<pre><code>skimmer -prune today</code></pre>
+<pre class="shell"><code>skimmer -prune my-news.skim today</code></pre>
+<p>Prune the items from the month of September 2023.</p>
+<pre class="shell"><code>skimmer -prune my-news.skim \
+    &quot;2023-09-01 00:00:00&quot; &quot;2023-09-30 23:59:59&quot;</code></pre>
 <h2 id="installation-instructions">Installation instructions</h2>
 <ul>
-<li><a href="INSTALL.html">INSTALL</a> contains the general steps to
-install binary releases</li>
-<li>You can download a release from <a
-href="https://github.com/rsdoiel/skimmer/releases"
-class="uri">https://github.com/rsdoiel/skimmer/releases</a></li>
+<li><a href="INSTALL.html">INSTALL.md</a> contains the general steps to install binary releases</li>
+<li>You can download a release from <a href="https://github.com/rsdoiel/skimmer/releases" class="uri">https://github.com/rsdoiel/skimmer/releases</a></li>
 </ul>
 <h2 id="installation-from-source">Installation From Source</h2>
 <h3 id="requirements">Requirements</h3>
-<p>skimmer is an experimental. The precompiled binaries are not tested.
-To compile from source you need to have git, make, Pandoc SQLite3 and
-Go.</p>
+<p>skimmer is an experimental. The precompiled binaries are not necessarily tested. To compile from source you need to have git, make, Pandoc SQLite3 and Go.</p>
 <ul>
 <li>Git &gt;= 2</li>
 <li>Make &gt;= 3.8 (GNU Make)</li>
 <li>Pandoc &gt; 3</li>
-<li>Go &gt;= 1.21.1</li>
 <li>SQLite3 &gt; 3.4</li>
+<li>Go &gt;= 1.21.1</li>
 </ul>
 <h3 id="steps-to-compile-and-install">Steps to compile and install</h3>
 <p>Installation process I used to setup skimmer on a new machine.</p>
@@ -121,13 +105,8 @@ Go.</p>
 cd skimmer
 make
 make install</code></pre>
-<p>A default URLs list is provided as an example URLs list. The first
-time you run skimmer. You should edit
-<code>$HOME/.skimmer/skimmer.urls</code> to fit your needs.</p>
 <h2 id="acknowledgments">Acknowledgments</h2>
-<p>This experiment would not be possible with the authors of newsboat,
-SQLite3, Pandoc and the <a
-href="https://github.com/mmcdole/gofeed">gofeed</a> package.</p>
+<p>This experiment would not be possible with the authors of newsboat, SQLite3, Pandoc and the <a href="https://github.com/mmcdole/gofeed">gofeed</a> package.</p>
 </section>
 
 <footer>
