@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"database/sql"
 	"strings"
+	"time"
 )
 
 // Skim2Md supports the skim2md cli.
@@ -14,6 +15,10 @@ type Skim2Md struct {
 
 	// DbName holds the path to the SQLite3 database
 	DBName string `json:"db_name,omitempty"`
+
+	// Title if this is set the title will be included
+	// when generating the markdown of saved items
+	Title string `json:"title,omitempty"`
 
 	out io.Writer
 	eout io.Writer
@@ -39,9 +44,9 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 		label = strings.Trim(label, `"~`)
 	}
 	if title == "" {
-		title = fmt.Sprintf("**@%s** (date: %s, from %s)", label, pressTime, label)
+		title = fmt.Sprintf("**@%s** (date: %s, from: %s)", label, pressTime, label)
 	} else {
-		title = fmt.Sprintf("## %s\n\ndate: %s, from %s", title, pressTime, label)
+		title = fmt.Sprintf("## %s\n\ndate: %s, from: %s", title, pressTime, label)
 	}
 	fmt.Fprintf(app.out, `---
 
@@ -58,6 +63,13 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 
 // Write, display the contents from database
 func (app *Skim2Md) Write(db *sql.DB) error {
+	if app.Title != "" {
+		fmt.Fprintf(app.out, `# %s
+
+(date: %s)
+
+`, app.Title, time.Now().Format("2006-01-02 15:04:05"))
+	}
 	stmt := SQLDisplayItems
 	rows, err := db.Query(stmt, "saved")
 	if err != nil {

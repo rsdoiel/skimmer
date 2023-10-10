@@ -39,6 +39,8 @@ to the display in a Markdown friendly way.
 -license
 : display license
 
+-title
+: Set a page title to be included in the output of saved items
 
 # EXAMPLE
 
@@ -61,9 +63,11 @@ func main() {
 	appName := path.Base(os.Args[0])
 
 	showHelp, showLicense, showVersion := false, false, false
+	title := ""
 	flag.BoolVar(&showHelp, "help", showHelp, "display help")
 	flag.BoolVar(&showLicense, "license", showLicense, "display license")
 	flag.BoolVar(&showVersion, "version", showVersion, "display version")
+	flag.StringVar(&title, "title", title, "set the page title for output")
 	flag.Parse()
 
 	args := flag.Args()
@@ -90,6 +94,7 @@ func main() {
 		fmt.Fprintf(eout, "%s\n", err)
 		os.Exit(1)
     }
+	app.Title = title
 
 	if err := app.Run(out, eout, args); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)

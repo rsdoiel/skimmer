@@ -1,4 +1,4 @@
-%skim2md(1) skim2md user manual | version 0.0.5-dev 989fe41
+%skim2md(1) skim2md user manual | version 0.0.5-dev de7a28c
 % R. S. Doiel
 % 2023-10-10
 
@@ -26,6 +26,8 @@ to the display in a Markdown friendly way.
 -license
 : display license
 
+-title
+: Set a page title to be included in the output of saved items
 
 # EXAMPLE
 
