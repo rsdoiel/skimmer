@@ -83,6 +83,6 @@ ORDER BY published DESC, updated DESC;`
 	SQLPruneItems = `DELETE FROM items 
 WHERE (updated IS NULL AND published IS NULL) OR
    (updated == '' AND published == '')
-   OR ((updated < ? AND published < ?)
+   OR (updated < ? AND published < ?);
 `
 )

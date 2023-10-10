@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"html"
 
 	// 3rd Party Packages
 	_ "github.com/glebarez/go-sqlite"
@@ -271,7 +271,7 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 	stmt := SQLChannelsAsUrls
 	rows, err := db.Query(stmt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	defer rows.Close()
 	lines := []string{}
@@ -359,7 +359,7 @@ func (app *Skimmer) ItemCount(db *sql.DB) (int, error) {
 	stmt := SQLItemCount
 	rows, err := db.Query(stmt)
 	if err != nil {
-		return -1, err
+		return -1, fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	defer rows.Close()
 	cnt := 0
@@ -381,7 +381,7 @@ func (app *Skimmer) PruneItems(db *sql.DB, pruneDT time.Time) error {
 	dt := pruneDT.Format("2006-01-02 15:04:05")
 	_, err := db.Exec(stmt, dt, dt)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	return err
 }
@@ -721,6 +721,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
+		return nil
 	}
 	if app.AsURLs {
 		src, err := app.ChannelsToUrls(db)

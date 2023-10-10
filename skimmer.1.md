@@ -1,4 +1,4 @@
-%skimmer(1) skimmer user manual | version 0.0.5-dev deb9f5f
+%skimmer(1) skimmer user manual | version 0.0.5-dev fe33fd4
 % R. S. Doiel
 % 2023-10-10
 
