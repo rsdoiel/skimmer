@@ -39,9 +39,9 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 		label = strings.Trim(label, `"~`)
 	}
 	if title == "" {
-		title = fmt.Sprintf("**@%s** (date: %s, %s)", label, pressTime, label)
+		title = fmt.Sprintf("**@%s** (date: %s, from %s)", label, pressTime, label)
 	} else {
-		title = fmt.Sprintf("## %s\n\ndate: %s, %s", title, pressTime, label)
+		title = fmt.Sprintf("## %s\n\ndate: %s, from %s", title, pressTime, label)
 	}
 	fmt.Fprintf(app.out, `---
 
