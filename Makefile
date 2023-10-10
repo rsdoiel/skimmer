@@ -9,7 +9,7 @@ RELEASE_DATE=$(shell date +'%Y-%m-%d')
 
 RELEASE_HASH=$(shell git log --pretty=format:'%h' -n 1)
 
-PROGRAMS = $(shell ls -1 cmd)
+PROGRAMS = skimmer skim2md # $(shell ls -1 cmd)
 
 MAN_PAGES = $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
 

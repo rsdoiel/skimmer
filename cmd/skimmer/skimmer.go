@@ -174,7 +174,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	app, err := skimmer.NewSkimmer(out, eout, appName)
+	app, err := skimmer.NewSkimmer(appName)
 	if err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		os.Exit(1)

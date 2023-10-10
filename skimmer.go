@@ -76,10 +76,8 @@ type Skimmer struct {
 	eout io.Writer
 }
 
-func NewSkimmer(out io.Writer, eout io.Writer, appName string) (*Skimmer, error) {
+func NewSkimmer(appName string) (*Skimmer, error) {
 	app := new(Skimmer)
-	app.out = out
-	app.eout = eout
 	app.AppName = appName
 	return app, nil
 }
@@ -389,7 +387,7 @@ func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) e
 	return err
 }
 
-func displayItem(out io.Writer, link string, title string, description string, updated string, published string, label string, tags string) error {
+func (app *Skimmer) DisplayItem(out io.Writer, link string, title string, description string, updated string, published string, label string, tags string) error {
 
 	// Then see about formatting things.
 
@@ -424,7 +422,7 @@ func (app *Skimmer) Write(db *sql.DB) error {
 	if app.Limit > 0 {
 		stmt = fmt.Sprintf("%s LIMIT %d", stmt, app.Limit)
 	}
-	rows, err := db.Query(stmt)
+	rows, err := db.Query(stmt, "")
 	if err != nil {
 		return err
 	}
@@ -443,7 +441,7 @@ func (app *Skimmer) Write(db *sql.DB) error {
 			fmt.Fprint(app.eout, "%s\n", err)
 			continue
 		}
-		if err := displayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 	}
@@ -494,7 +492,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	if app.Limit > 0 {
 		stmt = fmt.Sprintf("%s LIMIT %d", stmt, app.Limit)
 	}
-	rows, err := db.Query(stmt)
+	rows, err := db.Query(stmt, "")
 	if err != nil {
 		return err
 	}
@@ -535,7 +533,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		// Now sanitize each element
 		title = html.UnescapeString(p.Sanitize(title))
 		description = html.UnescapeString(p.Sanitize(description))
-		if err := displayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 		// Wait for some input
@@ -577,7 +575,8 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 							"tag":  tag,
 						})
 					}
-
+					// Tagged items should also be auto-saved.
+					savedItems = append(savedItems, link)
 				}
 				prompt = true
 			case "q":

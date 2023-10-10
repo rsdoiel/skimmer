@@ -69,7 +69,7 @@ SELECT COUNT(*) FROM items;`
 	SQLDisplayItems = `-- Basic SQL to retrieve an ordered list of items from all feeds.
 SELECT link, title, description, updated, published, feedLabel AS label, tags
 FROM items
-WHERE description != "" AND status = ""
+WHERE description != "" AND status = ?
 ORDER BY published DESC, updated DESC;`
 
 	SQLMarkItem = `UPDATE items SET status = ? WHERE link = ?;`
