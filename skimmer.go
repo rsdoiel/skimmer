@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"html"
 
 	// 3rd Party Packages
 	_ "github.com/glebarez/go-sqlite"
@@ -271,7 +271,7 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 	stmt := SQLChannelsAsUrls
 	rows, err := db.Query(stmt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	defer rows.Close()
 	lines := []string{}
@@ -359,7 +359,7 @@ func (app *Skimmer) ItemCount(db *sql.DB) (int, error) {
 	stmt := SQLItemCount
 	rows, err := db.Query(stmt)
 	if err != nil {
-		return -1, err
+		return -1, fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	defer rows.Close()
 	cnt := 0
@@ -376,13 +376,12 @@ func (app *Skimmer) ItemCount(db *sql.DB) (int, error) {
 
 // PruneItems takes a timestamp and performs a row delete on the table
 // for items that are older than the timestamp.
-func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) error {
+func (app *Skimmer) PruneItems(db *sql.DB, pruneDT time.Time) error {
 	stmt := SQLPruneItems
-	start := startDT.Format("2006-01-02 15:04:05")
-	end := endDT.Format("2006-01-02 15:04:05")
-	_, err := db.Exec(stmt, start, start, end, end)
+	dt := pruneDT.Format("2006-01-02 15:04:05")
+	_, err := db.Exec(stmt, dt, dt)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	return err
 }
@@ -671,6 +670,11 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		err error
 	)
 
+	datestamp := ""
+	if len(args) > 1 {
+		datestamp = args[1]
+	}
+
 	dsn := app.DBName
 	db, err = sql.Open("sqlite", dsn)
 	if err != nil {
@@ -698,34 +702,18 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 	}
 	if app.Prune {
 		var err error
-		if len(args) < 3 {
-			return fmt.Errorf("expected a date or date range for prune")
+		if len(args) < 2 {
+			return fmt.Errorf("expected a date or timestamp for pruning")
 		}
-		start, end := "0001-01-01 00:00:00", time.Now().Format("2006-01-02 15:04:05")
-		if len(args) == 2 {
-			end = args[1]
-		}
-		if len(args) == 3 {
-			start = args[1]
-			end = args[2]
-		}
-		startFmt, err := normalizeTFormat(start)
+		datestampFmt, err := normalizeTFormat(datestamp)
 		if err != nil {
 			return err
 		}
-		endFmt, err := normalizeTFormat(end)
+		dt, err := time.Parse(datestampFmt, datestamp)
 		if err != nil {
 			return err
 		}
-		startDt, err := time.Parse(startFmt, start)
-		if err != nil {
-			return err
-		}
-		endDt, err := time.Parse(endFmt, end)
-		if err != nil {
-			return err
-		}
-		if err := app.PruneItems(db, startDt, endDt); err != nil {
+		if err := app.PruneItems(db, dt); err != nil {
 			return err
 		}
 		cnt, err := app.ItemCount(db)
@@ -733,6 +721,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
+		return nil
 	}
 	if app.AsURLs {
 		src, err := app.ChannelsToUrls(db)

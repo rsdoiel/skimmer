@@ -21,37 +21,32 @@ var (
 
 # SYNOPSIS
 
-{app_name} [OPTIONS] FILENAME [TIME_RANGE]
+{app_name} [OPTIONS] FILENAME [DATESTAMP]
 
 # DESCRIPTION
 
-{app_name} is a extremely lightweight feed reader. It trys to do two things well.
+skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
+[yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and lacks features.
+That is skimmer's best feature. skimmer tries to do two things well.
 
-1. Download feed content
-2. Display feed content
+- Read a list of URLs and fetch the items and saving them to an SQLite 3 database
+- Display the contents of the SQLite3 database in reverse chronological order
 
-To download feed content you need a list of URLs. A list of URLs can be provided
-in [newsboat's](https://newsboat.org) urls file format or as an [OPML](http://opml.org/) 
-file. 
+That's it. That is skimmer secret power. It does only two things. There is no elaborate
+user interface beyond standard input, standard output and standard error found on POSIX
+type operating systems.
 
-If either type of these files is provided on the command line then the file will be read
-and a similarly named SQLite3 database will be created with a ` + "`" + `.skim` + "`" + ` extension.
-{app_name} will then display the downloaded content.
+skimmer needs to know what feed items to download and display. This done by providing a
+newsboat style URLs file. The feeds are read and the channel and item information is
+stored in an SQLite3 database of a similarly named file but with the `+"`"+`.skim`+"`"+`
+extension. When you want to read the downloaded items you invoke skimmer again with
+the `+"`"+`.skim`+"`"+` file.  This allows you to easily maintain separate list of feeds
+to skim and potentially re-use the feed output.
 
-After populating your skimmer database you can update it using the ` + "`" + `-fetach` + "`" + `
-option or read it by providing the skimmer file instead of a urls file or OPML file.
-
-
-{app_name} followed by a skimmer file displays the harvested content in reverse 
-chronological order. The content displayed is not "paged" unless you use the 
-` + "`" + `-interactive` + "`" + ` option. Typically you would use {app_name} in 
-conjunction with the POSIX command 'more' or GNU command 'less'. If you provide
-a time range then only items published or updated in that time range will be display.
-If you only include one timestamp then the items starting with that published or updates
-times will be display.
+Presently skimmer is focused on reading RSS 2, Atom and jsonfeeds.
 
 The output format uses Pandoc's style of markdown markup. 
-- "--" starts the item record
+- "---" starts the item record
 - This is followed by "##" (aka H2), followed by a date 
 (updated or published), followed by title or if none an
 "@<LABEL>" where LABEL is the feed's title. 
@@ -73,12 +68,12 @@ The output format uses Pandoc's style of markdown markup.
 : display the N most recent items.
 
 -prune 
-: The deletes items from the items table for the skimmer file provided. If a time range is provided
-then the items in the time range will be deleted. If a single time is provided everything older than
-that time is deleted.  A time can be specified in several ways. An alias of "today" would remove all
-items older than today (this is the oposite behavior of reading items). If "now" is specified then
-all items older then the current time would be removed. Otherwise time can be specified as a date
-in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
+: The deletes items from the items table in the skimmer database that are older than the date
+or timestamp provided after the skimmer filename.  Timestamp can be specified in several ways.
+An alias of "today" would remove all items older than today (this is the oposite behavior of
+reading items). If "now" is specified then all items older then the current time would be
+removed. Otherwise time can be specified as a date in YYYY-MM-DD format or
+timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
 : display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press
@@ -118,7 +113,7 @@ In this example we're pruning all the items older than today and displaying the 
 five items.
 
 ~~~
-{app_name} -prune today -limit 5 my-news.skim
+{app_name} -prune -limit 5 my-news.skim today
 ~~~
 
 If I limit the number of items I am reading to about 100 or so I've found
