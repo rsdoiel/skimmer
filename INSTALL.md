@@ -172,6 +172,24 @@ downloading the zip file.
     skimmer -version
 ```
 
+### Windows 11
+
+The general steps
+
+1. Download the zip file into your "Downloads" folder with your web browser
+2. Setup your path to where you will install the `.exe` file
+3. Unzip the zip file
+4. Copy the executable to the "bin" directory in to someplace where Windows cmd shell file find it
+5. Test
+
+```shell
+    mkdir %userprofile%\bin
+    set PATH=%PATH%;%userprofile$\bin
+    powershell Expand-Archive Downloads\dataset-*-Windows-*.zip Dataset
+    copy Dataset\bin\*.exe %userprofile%\bin\
+    skimmer -version
+```
+
 Compiling from source
 ---------------------
 
@@ -182,17 +200,20 @@ as well as _skimmer_'s source code.
     go get -u github.com/rsdoiel/skimmer/...
 ```
 
-If just Go and Git are installed.
+### Requirements for compiling
 
-```
-cd
-git clone https://github.com/rsdoiel/skimmer
-cd skimmer
-go build cmd/skimmer/skimmer.go
-```
+1. Git
+2. GNU Make
+3. SQLite 3
+4. Pandoc > 3
+5. Go >= 1.21.1
 
-If you have all the required software (e.g. Pandoc, Git, SQLite3, Go, Make)
+
+### Compiling on a POSIX system
+
+If you have all the required software (e.g. Git, GNU Make, Pandoc, SQLite3, Go)
 you can clone the repository and then compile in the traditional POSIX manner.
+
 
 ```shell
     cd
@@ -201,5 +222,17 @@ you can clone the repository and then compile in the traditional POSIX manner.
     make
     make test
     make install
+```
+
+#### Compiling on a Windows machine
+
+On a Windows box in the command shell these are the steps I would take
+
+```shell
+	cd %userprofile%
+	set PATH=%PATH%;%userprofile%\bin
+	go build cmd\skimmer\skimmer.go
+	copy skimmer.exe %userprofile%\bin\
+	skimmer -version
 ```
 
