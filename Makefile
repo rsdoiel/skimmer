@@ -11,7 +11,7 @@ RELEASE_HASH=$(shell git log --pretty=format:'%h' -n 1)
 
 PROGRAMS = skimmer skim2md # $(shell ls -1 cmd)
 
-MAN_PAGES = $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
+MAN_PAGES = skimmer.1 skim2md.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
 
 HTML_PAGES = $(shell find . -type f | grep -E '\.html')
 

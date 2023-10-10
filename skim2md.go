@@ -25,7 +25,7 @@ func NewSkim2Md(appName string) (*Skim2Md, error) {
 	return app, nil
 }
 
-func (app *Skim2Md) DisplayItem(out io.Writer, link string, title string, description string, updated string, published string, label string, tags string) error {
+func (app *Skim2Md) DisplayItem(link string, title string, description string, updated string, published string, label string, tags string) error {
 	// Then see about formatting things.
 	pressTime := published
 	if updated != "" {
@@ -39,7 +39,7 @@ func (app *Skim2Md) DisplayItem(out io.Writer, link string, title string, descri
 	} else {
 		title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
 	}
-	fmt.Fprintf(out, `--
+	fmt.Fprintf(app.out, `--
 
 %s
 
@@ -75,7 +75,7 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 			fmt.Fprint(app.eout, "%s\n", err)
 			continue
 		}
-		if err := app.DisplayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 	}
@@ -92,6 +92,8 @@ func (app *Skim2Md) Run(out io.Writer, eout io.Writer, args []string) error {
 	if len(args) > 1 {
 		return fmt.Errorf("expected only one skimmer database file")
 	}
+	app.out = out
+	app.eout = eout
 	dsn := args[0]
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {

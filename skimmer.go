@@ -387,7 +387,7 @@ func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) e
 	return err
 }
 
-func (app *Skimmer) DisplayItem(out io.Writer, link string, title string, description string, updated string, published string, label string, tags string) error {
+func (app *Skimmer) DisplayItem(link string, title string, description string, updated string, published string, label string, tags string) error {
 
 	// Then see about formatting things.
 
@@ -403,7 +403,7 @@ func (app *Skimmer) DisplayItem(out io.Writer, link string, title string, descri
 	} else {
 		title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
 	}
-	fmt.Fprintf(out, `--
+	fmt.Fprintf(app.out, `--
 
 %s
 
@@ -441,7 +441,7 @@ func (app *Skimmer) Write(db *sql.DB) error {
 			fmt.Fprint(app.eout, "%s\n", err)
 			continue
 		}
-		if err := app.DisplayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 	}
@@ -533,7 +533,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		// Now sanitize each element
 		title = html.UnescapeString(p.Sanitize(title))
 		description = html.UnescapeString(p.Sanitize(description))
-		if err := app.DisplayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 		// Wait for some input
