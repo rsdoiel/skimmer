@@ -1,9 +1,9 @@
 package main
 
 import (
-	"os"
 	"flag"
 	"fmt"
+	"os"
 	"path"
 
 	// Application package
@@ -35,16 +35,16 @@ in [newsboat's](https://newsboat.org) urls file format or as an [OPML](http://op
 file. 
 
 If either type of these files is provided on the command line then the file will be read
-and a similarly named SQLite3 database will be created with a `+"`"+`.skim`+"`"+` extension.
+and a similarly named SQLite3 database will be created with a ` + "`" + `.skim` + "`" + ` extension.
 {app_name} will then display the downloaded content.
 
-After populating your skimmer database you can update it using the `+"`"+`-fetach`+"`"+`
+After populating your skimmer database you can update it using the ` + "`" + `-fetach` + "`" + `
 option or read it by providing the skimmer file instead of a urls file or OPML file.
 
 
 {app_name} followed by a skimmer file displays the harvested content in reverse 
 chronological order. The content displayed is not "paged" unless you use the 
-`+"`"+`-interactive`+"`"+` option. Typically you would use {app_name} in 
+` + "`" + `-interactive` + "`" + ` option. Typically you would use {app_name} in 
 conjunction with the POSIX command 'more' or GNU command 'less'. If you provide
 a time range then only items published or updated in that time range will be display.
 If you only include one timestamp then the items starting with that published or updates
@@ -85,7 +85,7 @@ all items older then the current time would be removed. Otherwise time can be sp
 in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
-: display an item and prompt for next action. e.g. (n)ext, (p)rev, (s)ave, (/)search, (d)elete
+: display an item and prompt for next action. e.g. (n)ext, (r)read, (s)ave, (l)abel, (q)uit
 
 -urls
 : Output the contents of the SQLite 3 database channels table as a newsboat URLs list

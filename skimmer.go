@@ -16,8 +16,8 @@ import (
 
 	// 3rd Party Packages
 	_ "github.com/glebarez/go-sqlite"
-	"github.com/mmcdole/gofeed"
 	"github.com/kayako/bluemonday"
+	"github.com/mmcdole/gofeed"
 )
 
 // ParseURLList takes a filename and byte slice source, parses the contents
@@ -52,7 +52,7 @@ type Skimmer struct {
 	// AppName holds the name of the application
 	AppName string `json:"app_name,omitempty"`
 
-	// DbName holds the path to the SQLite3 database 
+	// DbName holds the path to the SQLite3 database
 	DBName string `json:"db_name,omitempty"`
 
 	// Fetch indicates that items need to be retrieved from the url list and stored in the database
@@ -128,7 +128,6 @@ func (app *Skimmer) Setup(fPath string) error {
 // The hash mark, "#" at the start of the line indicates a comment line.
 //
 // OPML is documented at http://opml.org
-//
 func (app *Skimmer) ReadUrls(fName string) error {
 	xName := path.Ext(fName)
 	src, err := os.ReadFile(fName)
@@ -138,14 +137,14 @@ func (app *Skimmer) ReadUrls(fName string) error {
 	if xName == ".opml" {
 		return fmt.Errorf("opml implort not implemeted, opml packages need to support ToMap")
 		/*
-		var o *opml.OPML
-		if o, err = opml.Parse(src); err != nil {
-			return err
-		}
-		app.Urls, err = o.ToMap(urls)
-		if err != nil [
-			return err
-		}
+			var o *opml.OPML
+			if o, err = opml.Parse(src); err != nil {
+				return err
+			}
+			app.Urls, err = o.ToMap(urls)
+			if err != nil [
+				return err
+			}
 		*/
 	} else {
 		app.Urls, err = ParseURLList(fName, src)
@@ -178,18 +177,18 @@ func webget(url string) (*gofeed.Feed, error) {
 }
 
 func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed) error {
-/*
-link, title, description, feed_link, links,
-updated, published, 
-authors, language, copyright, generator,
-categories, feed_type, feed_version
-*/
+	/*
+	   link, title, description, feed_link, links,
+	   updated, published,
+	   authors, language, copyright, generator,
+	   categories, feed_type, feed_version
+	*/
 	var (
-		err error
-		src []byte
-		title string
-		linksStr string
-		authorsStr string
+		err           error
+		src           []byte
+		title         string
+		linksStr      string
+		authorsStr    string
 		categoriesStr string
 	)
 	if feedLabel == "" {
@@ -221,12 +220,12 @@ categories, feed_type, feed_version
 
 	stmt := SQLUpdateChannel
 	_, err = db.Exec(stmt,
-		&link, &title, channel.Description, channel.FeedLink, linksStr, 
+		&link, &title, channel.Description, channel.FeedLink, linksStr,
 		channel.Updated, channel.Published,
 		authorsStr, channel.Language, channel.Copyright, channel.Generator,
 		categoriesStr, channel.FeedType, channel.FeedVersion)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	return nil
 }
@@ -248,7 +247,7 @@ func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 		item.Description, updated, published,
 		feedLabel)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	return nil
 }
@@ -257,7 +256,7 @@ func (app *Skimmer) ResetChannels(db *sql.DB) error {
 	stmt := SQLResetChannels
 	_, err := db.Exec(stmt)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	return nil
 }
@@ -265,6 +264,24 @@ func (app *Skimmer) ResetChannels(db *sql.DB) error {
 func (app *Skimmer) MarkItem(db *sql.DB, link string, val string) error {
 	stmt := SQLMarkItem
 	_, err := db.Exec(stmt, val, link)
+	if err != nil {
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
+	}
+	return nil
+}
+
+func (app *Skimmer) RelabelItem(db *sql.DB, link string, label string) error {
+	stmt := SQLRelabelItem
+	_, err := db.Exec(stmt, label, link)
+	if err != nil {
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
+	}
+	return nil
+}
+
+func (app *Skimmer) TagItem(db *sql.DB, link string, tag string) error {
+	stmt := SQLTagItem
+	_, err := db.Exec(stmt, tag, link)
 	if err != nil {
 		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
@@ -286,7 +303,7 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 	}
 	for rows.Next() {
 		var (
-			link string
+			link  string
 			title string
 		)
 		if err := rows.Scan(&link, &title); err != nil {
@@ -300,7 +317,7 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 				lines = append(lines, fmt.Sprintf(`%s "~%s"%s`, link, title, "\n"))
 				app.Urls[link] = fmt.Sprintf(`"~%s"`, title)
 			} else {
-				lines = append(lines, fmt.Sprintf(`%s%s`, link,"\n"))
+				lines = append(lines, fmt.Sprintf(`%s%s`, link, "\n"))
 				app.Urls[link] = ""
 			}
 		}
@@ -329,7 +346,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 		}
 		if err := saveChannel(db, k, v, feed); err != nil {
 			fmt.Fprintf(app.eout, "failed to save chanel %q, %s\n", k, err)
-		    continue	
+			continue
 		}
 
 		// Setup a progress output
@@ -463,7 +480,7 @@ func normalizeTFormat(t string) (string, error) {
 	case t == "today":
 		fmtStr = "2006-01-02"
 		t = time.Now().Format(fmtStr)
-	case t  == "now":
+	case t == "now":
 		fmtStr = "2006-01-02 15:04:05"
 		t = time.Now().Format(fmtStr)
 	case len(t) == 10:
@@ -491,7 +508,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		return err
 	}
 	padding := int(len(fmt.Sprintf("%d", tot)))
-	promptStr := "[n]ext, [r]ead, [s]ave, [q]uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
+	promptStr := "(n)ext, (r)ead, (s)ave, (l)abel, (t)ag, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
 
 	stmt := SQLDisplayItems
 	if app.Limit > 0 {
@@ -504,9 +521,17 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	i := 0
 	readItems := []string{}
 	savedItems := []string{}
+	relabelItems := []map[string]string{}
+	tagItems := []map[string]string{}
 	// Step 1 don't trust the data, sanitize it with BlueMonday
+	//p :=  bluemonday.UGCPolicy()
 	p := bluemonday.NewPolicy()
+	p.AllowStandardURLs()
 	p.AllowAttrs("href").Matching(regexp.MustCompile(`(?i)mailto|http|https|gopher|ftp?`)).OnElements("a")
+	p.AllowElements("p")
+	p.AllowElements("b")
+	p.AllowElements("i")
+	// Step 2 get data and then sanitize it.
 	for rows.Next() {
 		var (
 			link        string
@@ -529,7 +554,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		}
 		// Wait for some input
 		quit := false
-		prompt := true 
+		prompt := true
 		for prompt {
 			buf := bufio.NewReader(app.in)
 			fmt.Fprintf(app.out, promptStr, i)
@@ -541,26 +566,60 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			}
 			answer := strings.ToLower(strings.Trim(string(src), " \t\r\n"))
 			switch answer {
-				case "n":
-					prompt = false
-					ClearScreen()
-				case "":
-					prompt = false
-					ClearScreen()
-				case "q":
-					prompt = false
-					quit = true
-				case "r":
-					readItems = append(readItems, link)
-					prompt = false
-					ClearScreen()
-				case "s":
-					savedItems = append(savedItems, link)
-					prompt = false
-					ClearScreen()
-				default:
-					fmt.Fprintf(app.eout, "do not understand %q?\n", answer)
-					prompt = true
+			case "n":
+				prompt = false
+				ClearScreen()
+			case "":
+				prompt = false
+				ClearScreen()
+			case "q":
+				prompt = false
+				quit = true
+			case "r":
+				readItems = append(readItems, link)
+				prompt = false
+				ClearScreen()
+			case "s":
+				savedItems = append(savedItems, link)
+				prompt = false
+				ClearScreen()
+			case "l":
+				fmt.Fprintf(app.out, "Enter a label > ")
+				labelBuf := bufio.NewReader(app.in)
+				src, err = labelBuf.ReadBytes('\n')
+				if err != nil {
+					fmt.Fprintf(app.eout, "failed to read label, %sn", err)
+				} else {
+					label = string(src)
+					if label != "" {
+						relabelItems = append(relabelItems, map[string]string{
+							"link":  link,
+							"label": label,
+						})
+					}
+
+				}
+				prompt = true
+			case "t":
+				fmt.Fprintf(app.out, "Enter tags (separated by commas) > ")
+				tagBuf := bufio.NewReader(app.in)
+				src, err = tagBuf.ReadBytes('\n')
+				if err != nil {
+					fmt.Fprintf(app.eout, "failed to read tags, %sn", err)
+				} else {
+					tag := string(src)
+					if tag != "" {
+						tagItems = append(tagItems, map[string]string{
+							"link": link,
+							"tag":  tag,
+						})
+					}
+
+				}
+				prompt = true
+			default:
+				fmt.Fprintf(app.eout, "do not understand %q?\n", answer)
+				prompt = true
 			}
 		}
 		if quit {
@@ -571,21 +630,62 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		return err
 	}
 	rows.Close()
-	fmt.Fprintf(app.out, "saving %d items ...\n", len(savedItems))
-	for _, link := range savedItems {
-		if err := app.MarkItem(db, link, "saved"); err != nil {
-			return err
+	if len(savedItems) > 0 {
+		fmt.Fprintf(app.out, "saving %d items ...\n", len(savedItems))
+		for _, link := range savedItems {
+			if err := app.MarkItem(db, link, "saved"); err != nil {
+				return err
+			}
 		}
 	}
-	fmt.Fprintf(app.out, "marking %d items read ...\n", len(readItems))
-	for _, link := range readItems {
-		if err := app.MarkItem(db, link, "read"); err != nil {
-			return err
+	if len(readItems) > 0 {
+		fmt.Fprintf(app.out, "marking %d items read ...\n", len(readItems))
+		for _, link := range readItems {
+			if err := app.MarkItem(db, link, "read"); err != nil {
+				return err
+			}
 		}
 	}
+	if len(relabelItems) > 0 {
+		fmt.Fprintf(app.out, "relabeling %d items ...\n", len(relabelItems))
+		for _, obj := range relabelItems {
+			if link, hasLink := obj["link"]; hasLink {
+				if label, hasLabel := obj["label"]; hasLabel && label != "" {
+					if err := app.RelabelItem(db, link, label); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+	if len(tagItems) > 0 {
+		fmt.Fprintf(app.out, "tagging %d items ...\n", len(tagItems))
+		for _, obj := range tagItems {
+			if link, hasLink := obj["link"]; hasLink {
+				if tag, hasTag := obj["tag"]; hasTag && tag != "" {
+					if strings.Contains(tag, ",") {
+						tags := strings.Split(tag, ",")
+						for i, s := range tags {
+							tags[i] = strings.TrimSpace(s)
+						}
+						src, err := JSONMarshal(tags)
+						if err != nil {
+							return err
+						}
+						tag = string(src)
+					} else {
+						tag = fmt.Sprintf("[%q]", tag)
+					}
+					if err := app.RelabelItem(db, link, tag); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+
 	return nil
 }
-
 
 // Run provides the runner for skimmer. It allows for testing of much of the cli functionality
 func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []string) error {
@@ -602,7 +702,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		return err
 	}
 	var (
-		db *sql.DB
+		db  *sql.DB
 		err error
 	)
 

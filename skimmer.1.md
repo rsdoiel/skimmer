@@ -1,4 +1,4 @@
-%skimmer(1) skimmer user manual | version 0.0.3-dev 0899fcc
+%skimmer(1) skimmer user manual | version 0.0.3-dev 06aa0dc
 % R. S. Doiel
 % 2023-10-09
 
@@ -72,7 +72,7 @@ all items older then the current time would be removed. Otherwise time can be sp
 in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
-: display an item and prompt for next action. e.g. (n)ext, (p)rev, (s)ave, (/)search, (d)elete
+: display an item and prompt for next action. e.g. (n)ext, (r)read, (s)ave, (l)abel, (q)uit
 
 -urls
 : Output the contents of the SQLite 3 database channels table as a newsboat URLs list
