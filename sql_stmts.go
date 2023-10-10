@@ -67,16 +67,16 @@ SELECT COUNT(*) FROM items;`
 
 	// SQLDisplayItems returns a list of items in decending chronological order.
 	SQLDisplayItems = `-- Basic SQL to retrieve an ordered list of items from all feeds.
-SELECT link, title, description, updated, published, feedLabel AS label
+SELECT link, title, description, updated, published, feedLabel AS label, tags
 FROM items
 WHERE description != "" AND status = ""
-ORDER BY updated DESC;`
+ORDER BY published DESC, updated DESC;`
 
 	SQLMarkItem = `UPDATE items SET status = ? WHERE link = ?;`
 
 	SQLRelabelItem = `UPDATE items SET feedlabel = ? WHERE link = ?;`
 
-	SQLTagItem = `UPDATE items SET tag = ? WHERE link = ?;`
+	SQLTagItem = `UPDATE items SET tags = ? WHERE link = ?;`
 
 	// SQLPruneItems will prune our items table for all items that have easier
 	// a updated or publication date early than the timestamp provided.

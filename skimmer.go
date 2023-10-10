@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"html"
 
 	// 3rd Party Packages
 	_ "github.com/glebarez/go-sqlite"
@@ -102,7 +103,7 @@ func (app *Skimmer) Setup(fPath string) error {
 		if _, err := os.Stat(fName); os.IsNotExist(err) {
 			stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
 			dsn := fName
-			fmt.Printf("SQLite 3 dsn -> %q\n", dsn)
+			//fmt.Printf("DEBUG SQLite 3 dsn -> %q\n", dsn)
 			db, err := sql.Open("sqlite", dsn)
 			if err != nil {
 				return err
@@ -411,7 +412,7 @@ func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) e
 	return err
 }
 
-func displayItem(out io.Writer, link string, title string, description string, updated string, published string, label string) error {
+func displayItem(out io.Writer, link string, title string, description string, updated string, published string, label string, tags string) error {
 
 	// Then see about formatting things.
 
@@ -423,19 +424,20 @@ func displayItem(out io.Writer, link string, title string, description string, u
 		pressTime = pressTime[0:10]
 	}
 	if title == "" {
-		title = fmt.Sprintf("@%s", label)
+		title = fmt.Sprintf("@%s (date: %s)", label, pressTime)
+	} else {
+		title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
 	}
 	fmt.Fprintf(out, `--
 
-## %s
-
-date: %s
+%s
 
 %s 
 
 <%s>
 
-`, title, pressTime, description, link)
+%s
+`, title, description, link, tags)
 	return nil
 }
 
@@ -458,12 +460,13 @@ func (app *Skimmer) Write(db *sql.DB) error {
 			updated     string
 			published   string
 			label       string
+			tags        string
 		)
-		if err := rows.Scan(&link, &title, &description, &updated, &published, &label); err != nil {
-			fmt.Fprint(app.eout, err)
+		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
+			fmt.Fprint(app.eout, "%s\n", err)
 			continue
 		}
-		if err := displayItem(app.out, link, title, description, updated, published, label); err != nil {
+		if err := displayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 	}
@@ -508,7 +511,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		return err
 	}
 	padding := int(len(fmt.Sprintf("%d", tot)))
-	promptStr := "(n)ext, (r)ead, (s)ave, (l)abel, (t)ag, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
+	promptStr := "(n)ext, mark (r)ead, (s)ave, (l)abel, (t)ag, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
 
 	stmt := SQLDisplayItems
 	if app.Limit > 0 {
@@ -531,6 +534,11 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	p.AllowElements("p")
 	p.AllowElements("b")
 	p.AllowElements("i")
+	p.AllowElements("ul")
+	p.AllowElements("ol")
+	p.AllowElements("li")
+	p.AllowElements("code")
+	p.AllowElements("pre")
 	// Step 2 get data and then sanitize it.
 	for rows.Next() {
 		var (
@@ -540,16 +548,17 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			updated     string
 			published   string
 			label       string
+			tags        string
 		)
 		i++
-		if err := rows.Scan(&link, &title, &description, &updated, &published, &label); err != nil {
-			fmt.Fprint(app.eout, err)
+		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
+			fmt.Fprintf(app.eout, "%s\n", err)
 			continue
 		}
 		// Now sanitize each element
-		title = p.Sanitize(title)
-		description = p.Sanitize(description)
-		if err := displayItem(app.out, link, title, description, updated, published, label); err != nil {
+		title = html.UnescapeString(p.Sanitize(title))
+		description = html.UnescapeString(p.Sanitize(description))
+		if err := displayItem(app.out, link, title, description, updated, published, label, tags); err != nil {
 			return err
 		}
 		// Wait for some input
@@ -588,7 +597,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 				labelBuf := bufio.NewReader(app.in)
 				src, err = labelBuf.ReadBytes('\n')
 				if err != nil {
-					fmt.Fprintf(app.eout, "failed to read label, %sn", err)
+					fmt.Fprintf(app.eout, "failed to read label, %s\n", err)
 				} else {
 					label = string(src)
 					if label != "" {
@@ -605,7 +614,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 				tagBuf := bufio.NewReader(app.in)
 				src, err = tagBuf.ReadBytes('\n')
 				if err != nil {
-					fmt.Fprintf(app.eout, "failed to read tags, %sn", err)
+					fmt.Fprintf(app.eout, "failed to read tags, %s\n", err)
 				} else {
 					tag := string(src)
 					if tag != "" {
@@ -676,7 +685,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 					} else {
 						tag = fmt.Sprintf("[%q]", tag)
 					}
-					if err := app.RelabelItem(db, link, tag); err != nil {
+					if err := app.TagItem(db, link, tag); err != nil {
 						return err
 					}
 				}
@@ -726,7 +735,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		}
 		cnt, err := app.ItemCount(db)
 		if err != nil {
-			fmt.Fprintf(app.eout, "fail to count items, %s", err)
+			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 	} else if app.Fetch {
@@ -738,7 +747,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		}
 		cnt, err := app.ItemCount(db)
 		if err != nil {
-			fmt.Fprintf(app.eout, "fail to count items, %s", err)
+			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 		return nil
@@ -777,7 +786,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		}
 		cnt, err := app.ItemCount(db)
 		if err != nil {
-			fmt.Fprintf(app.eout, "fail to count items, %s", err)
+			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 	}
