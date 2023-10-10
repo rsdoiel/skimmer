@@ -1,6 +1,6 @@
-%skimmer(1) skimmer user manual | version 0.0.3 486dcb4
+%skimmer(1) skimmer user manual | version 0.0.4 ba2b668
 % R. S. Doiel
-% 2023-10-09
+% 2023-10-10
 
 # NAME
 
@@ -56,12 +56,8 @@ The output format uses Pandoc's style of markdown markup.
 -version
 : display version and release hash
 
--fetch
-: download the latest feed content
-
 -limit N
 : display the N most recent items.
-
 
 -prune 
 : The deletes items from the items table for the skimmer file provided. If a time range is provided
@@ -72,20 +68,22 @@ all items older then the current time would be removed. Otherwise time can be sp
 in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
-: display an item and prompt for next action. e.g. (n)ext, (r)read, (s)ave, (l)abel, (q)uit
+: display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press
+enter the next item will be displayed without marking changing the items state (e.g. marking it
+read). If you press "n" the item will be marked as read before displaying the next item. If you
+press "s" the item will be tagged as saved and next item will be displayed. If you press "t" you
+can tag the items. Tagged items are treated as save but the next item is not fetched.
+Pressing "q" will quit interactive mode without changing the last items state.
 
 -urls
-: Output the contents of the SQLite 3 database channels table as a newsboat URLs list
-
--opml
-: Output the contents of the SQLite 3 database channels table as an OPML file.
+: Output the contents of the SQLite 3 database channels table as a newsboat style URLs list
 
 # EXAMPLE
 
-Create a "my-news.skim" database from "my-news.opml".
+Create a "my-news.skim" database from "my-news.urls".
 
 ~~~
-{app_name] my-news.opml
+{app_name] my-news.urls
 ~~~
 
 Now that my-news.skim exists we can read it with
@@ -94,13 +92,13 @@ Now that my-news.skim exists we can read it with
 skimmer my-news.skim
 ~~~
 
-Update and read the my-news.skim file.
+Update and read the my-news.skim file by first using the urls file then using the
+`.skim` file.
 
 ~~~
-skimmer -fetch my-news.skim
+skimmer my-news.urls
 skimmer my-news.skim
 ~~~
-
 
 skimmer can prune it's own database and also limit the count of items displayed.
 In this example we're pruning all the items older than today and displaying the recent

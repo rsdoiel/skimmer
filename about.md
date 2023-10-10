@@ -10,7 +10,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.3
+version: 0.0.4
 license-url: "https://spdx.org/licenses/MIT"
 
 
@@ -19,7 +19,7 @@ license-url: "https://spdx.org/licenses/MIT"
 About this software
 ===================
 
-## skimmer 0.0.3
+## skimmer 0.0.4
 
 ### Authors
 
@@ -40,12 +40,15 @@ No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed pa
 
 ### Operating Systems
 
-- POSIX
+- Windows
+- macOS
+- Linux
+- Raspberry Pi OS
 
 ### Software Requirements
 
 - Git &gt;= 2.3
 - GNU Make &gt;= 3.8
 - Pandoc &gt;= 3.1
-- Go &gt;= 1.21.1
 - SQLite3 &gt;= 3.43
+- Go &gt;= 1.21.1

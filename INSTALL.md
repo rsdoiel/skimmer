@@ -200,14 +200,13 @@ as well as _skimmer_'s source code.
     go get -u github.com/rsdoiel/skimmer/...
 ```
 
-### Requirements for compiling
+### Requirements for compiling using GNU Make
 
-1. Git
-2. GNU Make
-3. SQLite 3
+1. Git >= 2
+2. GNU Make >= 3.8
+3. SQLite3 > 3.4
 4. Pandoc > 3
 5. Go >= 1.21.1
-
 
 ### Compiling on a POSIX system
 
@@ -226,13 +225,16 @@ you can clone the repository and then compile in the traditional POSIX manner.
 
 #### Compiling on a Windows machine
 
+For Windows you need to have Go installed. I am assuming you will NOT be regenerating versions.go
+using Pandoc.
+
 On a Windows box in the command shell these are the steps I would take
 
 ```shell
 	cd %userprofile%
 	set PATH=%PATH%;%userprofile%\bin
 	go build cmd\skimmer\skimmer.go
-	copy skimmer.exe %userprofile%\bin\
+	move skimmer.exe %userprofile%\bin\
 	skimmer -version
 ```
 

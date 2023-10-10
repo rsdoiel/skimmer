@@ -1,31 +1,26 @@
 
 # skimmer
 
-skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
-[yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and lacks features.
-That is skimmer's best feature. skimmer tries to do two things well.
+skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and [yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and lacks features.  That is skimmer's best feature. skimmer tries to do two things well.
 
-- fetch a list of URLs and download their items to an SQLite3 database
+- Read a list of URLs and fetch the items and saving them to an SQLite 3 database
 - Display the contents of the SQLite3 database in reverse chronological order
 
-That's it.  No elaborate UI beyond what is easily accomplished using standard input,
-standard output and standard err.
+That's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems.
 
-skimmer needs to know what feeds to download and display. That is done by 
-reading either a newsboat style url file or and [OPML](http://opml.org/) file.
-These are read and stored in an SQLite 3 database with the same base name of the file read
-but with a file extension of `.skim`.  This allows you to easily maintain separate
-list of feeds to skim and potentially re-use the feed output.
+skimmer needs to know what feed items to download and display. This done by providing a newsboat style URLs file. The feeds are read and the channel and item information is stored in an SQLite3 database of a similarly named file but with the `.skim` extension. When you want to read the downloaded items you invoke skimmer again with the `.skim` file.  This allows you to easily maintain separate list of feeds to skim and potentially re-use the feed output.
 
-Presently skimmer is focused on reading RSS 2, Atom and JSONfeeds. If this
-experiment evolves further than I hope to add support for txtxt as well as
-support for reading feeds from Gopher, Gemini and SFTP sites.
+Presently skimmer is focused on reading RSS 2, Atom and jsonfeeds.
 
-# SYNOSIS
+
+# SYNOPSIS
 
 ~~~
-skimmer [OPTIONS] FILENAE [TIME_RANGE]
+skimmer [OPTIONS] URL_LIST_FILENAME
+skimmer [OPTIONS] SKIMMER_DB_FILENAME [TIME_RANGE]
 ~~~
+
+skimmer have two ways to invoke it. You can fetch the contents from list of URLs in newsboat urls file format. You can read the items from the related skimmer database.
 
 ## OPTIONS
 
@@ -37,9 +32,6 @@ skimmer [OPTIONS] FILENAE [TIME_RANGE]
 
 -version
 : display version number and build hash
-
--fetch
-: Download items from the list of URLs
 
 -limit N
 : Limit the display the N most recent items
@@ -53,50 +45,35 @@ removed. Otherwise time can be specified as a date in YYYY-MM-DD format or times
 YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
-: display an item and prompt for next action. e.g. (n)ext, (p)rev, (s)ave, (/)search, (d)elete
+: display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press enter the next item will be displayed without marking changing the items state (e.g. marking it read). If you press "n" the item will be marked as read before displaying the next item. If you press "s" the item will be tagged as saved and next item will be displayed. If you press "t" you can tag the items. Tagged items are treated as save but the next item is not fetched. Pressing "q" will quit interactive mode without changing the last items state.
+
 
 # Examples
 
-Fetch and read my newsboat feeds from `.newsboat/urls`. This will create a `.newsboat/urls.skim`.
+Fetch and read my newsboat feeds from `.newsboat/urls`. This will create a `.newsboat/urls.skim` 
+if it doesn't exist. Remember invoking skimmer with a URLs file will retrieve feeds and their contents and invoking skimmer with the skimmer database file will let you read them.
 
 ~~~shell
 skimmer .newsboat/urls
+skimmer .newsboat/urls.skim
 ~~~
 
-Fetch and read the feeds from `my-news.opml`. This will create a `my-news.skim` file.
+This will fetch and read the feeds from`my-news.urls`. This will create a `my-news.skim` file.
+When the skimmer database is read a simplistic interactive mode is presented.
 
 ~~~shell
-skimmer my-news.opml
+skimmer my-news.urls
+skimmer -i my-news.skim
 ~~~
 
-Get the latest items for the skimmer file "my-news.skim"
-Download some news to read later
+The same method is used to update your `my-news.skim` file and read it.
+
+Export the current state of the skimmer database channels to a urls file. Feeds that failed
+to be retrieved will not be in the database channels table channels table. This is an 
+easy way to get rid of the cruft and dead feeds.
 
 ~~~shell
-skimmer -fetch my-news.skim
-~~~
-
-Read the last downloaded content from `my-news.skim`
-
-Display the downloaded news
-
-~~~shell
-skimmer my-news.skim
-~~~
-
-Limit the number of items sent to the screen.
-
-~~~shell
-skimmer -display -limit 25 my-news.skim
-~~~
-
-Or my favorite is to run the output through Pandoc
-and page with less.
-
-~~~shell
-skimmer -display -limit 25 my-news.skim | \
-    pandoc -f markdown -t plain | \
-    less -R
+skimmer -urls my-news.skim >my-news.urls
 ~~~
 
 Prune the items in the database older than today.
@@ -121,8 +98,8 @@ skimmer -prune my-news.skim \
 
 ### Requirements
 
-skimmer is an experimental. The precompiled binaries are not necessarily tested.
-To compile from source you need to have git, make, Pandoc SQLite3 and Go.
+skimmer is an experimental. The compiled binaries are not necessarily tested.
+To compile from source you need to have git, make, Pandoc, SQLite3 and Go.
 
 - Git >= 2
 - Make >= 3.8 (GNU Make)

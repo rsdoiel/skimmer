@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -56,9 +55,6 @@ type Skimmer struct {
 	// DbName holds the path to the SQLite3 database
 	DBName string `json:"db_name,omitempty"`
 
-	// Fetch indicates that items need to be retrieved from the url list and stored in the database
-	Fetch bool `json:"fetch,omitempty"`
-
 	// Urls are the map of urls to labels to be fetched or read
 	Urls map[string]string `json:"urls,omitempty"`
 
@@ -73,9 +69,6 @@ type Skimmer struct {
 
 	// AsURLs, output the skimmer feeds as a newsboat style url file
 	AsURLs bool `json:"urls,omitempty"`
-
-	// AsOPML, output the skimmer feeds as OPML
-	AsOPML bool `json:"opml,omittempty"`
 
 	// Map in some private data to keep things easy to work with.
 	in   io.Reader
@@ -130,28 +123,13 @@ func (app *Skimmer) Setup(fPath string) error {
 //
 // OPML is documented at http://opml.org
 func (app *Skimmer) ReadUrls(fName string) error {
-	xName := path.Ext(fName)
 	src, err := os.ReadFile(fName)
 	if err != nil {
 		return err
 	}
-	if xName == ".opml" {
-		return fmt.Errorf("opml implort not implemeted, opml packages need to support ToMap")
-		/*
-			var o *opml.OPML
-			if o, err = opml.Parse(src); err != nil {
-				return err
-			}
-			app.Urls, err = o.ToMap(urls)
-			if err != nil [
-				return err
-			}
-		*/
-	} else {
-		app.Urls, err = ParseURLList(fName, src)
-		if err != nil {
-			return err
-		}
+	app.Urls, err = ParseURLList(fName, src)
+	if err != nil {
+		return err
 	}
 	if len(app.Urls) == 0 {
 		return fmt.Errorf("no urls found")
@@ -356,7 +334,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 		reportProgress := false
 		tot := feed.Len()
 		// FIXME: the logger should really be writing to app.out or app.eout
-		log.Printf("processing %d items from %s\n", tot, v)
+		fmt.Fprintf(app.out, "processing %d items from %s\n", tot, v)
 		i := 0
 		for _, item := range feed.Items {
 			// Add items from feed to database table
@@ -365,13 +343,12 @@ func (app *Skimmer) Download(db *sql.DB) error {
 			}
 			if rptTime, reportProgress = CheckWaitInterval(rptTime, (20 * time.Second)); reportProgress {
 				// FIXME: the logger should really be writing to app.out or app.eout
-				log.Printf("(%d/%d) %s", i, tot, ProgressETA(t0, i, tot))
+				fmt.Fprintf(app.out, "(%d/%d) %s", i, tot, ProgressETA(t0, i, tot))
 			}
 			i++
 		}
 		// FIXME: the logger should really be writing to app.out or app.eout
-		log.Printf("processed %d/%d from %s\n", i, tot, v)
-
+		fmt.Fprintf(app.out, "processed %d/%d from %s\n", i, tot, v)
 	}
 	if eCnt > 0 {
 		return fmt.Errorf("%d errors encounter downloading feeds", eCnt)
@@ -511,7 +488,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		return err
 	}
 	padding := int(len(fmt.Sprintf("%d", tot)))
-	promptStr := "(n)ext, mark (r)ead, (s)ave, (l)abel, (t)ag, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
+	promptStr := "(n)ext, (s)ave, (t)ag, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
 
 	stmt := SQLDisplayItems
 	if app.Limit > 0 {
@@ -575,16 +552,10 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			}
 			answer := strings.ToLower(strings.Trim(string(src), " \t\r\n"))
 			switch answer {
-			case "n":
-				prompt = false
-				ClearScreen()
 			case "":
 				prompt = false
 				ClearScreen()
-			case "q":
-				prompt = false
-				quit = true
-			case "r":
+			case "n":
 				readItems = append(readItems, link)
 				prompt = false
 				ClearScreen()
@@ -592,23 +563,6 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 				savedItems = append(savedItems, link)
 				prompt = false
 				ClearScreen()
-			case "l":
-				fmt.Fprintf(app.out, "Enter a label > ")
-				labelBuf := bufio.NewReader(app.in)
-				src, err = labelBuf.ReadBytes('\n')
-				if err != nil {
-					fmt.Fprintf(app.eout, "failed to read label, %s\n", err)
-				} else {
-					label = string(src)
-					if label != "" {
-						relabelItems = append(relabelItems, map[string]string{
-							"link":  link,
-							"label": label,
-						})
-					}
-
-				}
-				prompt = true
 			case "t":
 				fmt.Fprintf(app.out, "Enter tags (separated by commas) > ")
 				tagBuf := bufio.NewReader(app.in)
@@ -626,6 +580,9 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 
 				}
 				prompt = true
+			case "q":
+				prompt = false
+				quit = true
 			default:
 				fmt.Fprintf(app.eout, "do not understand %q?\n", answer)
 				prompt = true
@@ -738,18 +695,6 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
-	} else if app.Fetch {
-		if _, err := app.ChannelsToUrls(db); err != nil {
-			return err
-		}
-		if err := app.Download(db); err != nil {
-			return err
-		}
-		cnt, err := app.ItemCount(db)
-		if err != nil {
-			fmt.Fprintf(app.eout, "fail to count items, %s\n", err)
-		}
-		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 		return nil
 	}
 	if app.Prune {
@@ -790,9 +735,6 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 	}
-	if app.AsOPML {
-		return fmt.Errorf("OPML output not implemented")
-	}
 	if app.AsURLs {
 		src, err := app.ChannelsToUrls(db)
 		if err != nil {
@@ -801,7 +743,6 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		fmt.Fprintf(app.out, "%s\n", src)
 		return nil
 	}
-
 	if app.Interactive {
 		return app.RunInteractive(db)
 	}

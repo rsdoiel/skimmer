@@ -69,12 +69,8 @@ The output format uses Pandoc's style of markdown markup.
 -version
 : display version and release hash
 
--fetch
-: download the latest feed content
-
 -limit N
 : display the N most recent items.
-
 
 -prune 
 : The deletes items from the items table for the skimmer file provided. If a time range is provided
@@ -85,20 +81,22 @@ all items older then the current time would be removed. Otherwise time can be sp
 in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
-: display an item and prompt for next action. e.g. (n)ext, (r)read, (s)ave, (l)abel, (q)uit
+: display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press
+enter the next item will be displayed without marking changing the items state (e.g. marking it
+read). If you press "n" the item will be marked as read before displaying the next item. If you
+press "s" the item will be tagged as saved and next item will be displayed. If you press "t" you
+can tag the items. Tagged items are treated as save but the next item is not fetched.
+Pressing "q" will quit interactive mode without changing the last items state.
 
 -urls
-: Output the contents of the SQLite 3 database channels table as a newsboat URLs list
-
--opml
-: Output the contents of the SQLite 3 database channels table as an OPML file.
+: Output the contents of the SQLite 3 database channels table as a newsboat style URLs list
 
 # EXAMPLE
 
-Create a "my-news.skim" database from "my-news.opml".
+Create a "my-news.skim" database from "my-news.urls".
 
 ~~~
-{app_name] my-news.opml
+{app_name] my-news.urls
 ~~~
 
 Now that my-news.skim exists we can read it with
@@ -107,13 +105,13 @@ Now that my-news.skim exists we can read it with
 {app_name} my-news.skim
 ~~~
 
-Update and read the my-news.skim file.
+Update and read the my-news.skim file by first using the urls file then using the
+`+"`"+`.skim`+"`"+` file.
 
 ~~~
-skimmer -fetch my-news.skim
+skimmer my-news.urls
 skimmer my-news.skim
 ~~~
-
 
 {app_name} can prune it's own database and also limit the count of items displayed.
 In this example we're pruning all the items older than today and displaying the recent
@@ -143,18 +141,16 @@ free software to the planet. - RSD, 2023-10-07
 func main() {
 	appName := path.Base(os.Args[0])
 	showHelp, showVersion, showLicense := false, false, false
-	fetch, interactive, urls, opml := false, false, false, false
+	interactive, urls := false, false
 	prune, limit := false, 0
 	flag.BoolVar(&showHelp, "help", showHelp, "display help")
 	flag.BoolVar(&showVersion, "version", showVersion, "display version")
 	flag.BoolVar(&showLicense, "license", showLicense, "display license")
-	flag.BoolVar(&fetch, "fetch", fetch, "import feed content into database")
 	flag.BoolVar(&interactive, "i", interactive, "interactively display items one at a time in reverse chronologically order")
 	flag.BoolVar(&interactive, "interactive", interactive, "interactively display items one at a time in reverse chronologically order")
 	flag.BoolVar(&prune, "prune", prune, "remove items in the skimmer file for the time range provided")
 	flag.IntVar(&limit, "limit", limit, "limit the number of items output")
 	flag.BoolVar(&urls, "urls", urls, "output the substribed feeds in newsboat's urls file format.")
-	flag.BoolVar(&opml, "opml", opml, "output the substribed feeds in OPML format.")
 	flag.Parse()
 
 	args := flag.Args()
@@ -184,11 +180,9 @@ func main() {
 		os.Exit(1)
 	}
 	// Setup our options
-	app.Fetch = fetch
 	app.Limit = limit
 	app.Prune = prune
 	app.Interactive = interactive
-	app.AsOPML = opml
 	app.AsURLs = urls
 	if err := app.Run(in, out, eout, args); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
