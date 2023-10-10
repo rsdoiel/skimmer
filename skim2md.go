@@ -4,6 +4,7 @@ import (
 	"io"
 	"fmt"
 	"database/sql"
+	"strings"
 )
 
 // Skim2Md supports the skim2md cli.
@@ -34,12 +35,15 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 	if len(pressTime) > 10 {
 		pressTime = pressTime[0:10]
 	}
-	if title == "" {
-		title = fmt.Sprintf("**@%s** (date: %s)", label, pressTime)
-	} else {
-		title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
+	if strings.HasPrefix(label, `"~`) {
+		label = strings.Trim(label, `"~`)
 	}
-	fmt.Fprintf(app.out, `--
+	if title == "" {
+		title = fmt.Sprintf("**@%s** (date: %s, %s)", label, pressTime, label)
+	} else {
+		title = fmt.Sprintf("## %s\n\ndate: %s, %s", title, pressTime, label)
+	}
+	fmt.Fprintf(app.out, `---
 
 %s
 
