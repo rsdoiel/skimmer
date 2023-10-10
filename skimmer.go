@@ -10,12 +10,14 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
 	// 3rd Party Packages
 	_ "github.com/glebarez/go-sqlite"
 	"github.com/mmcdole/gofeed"
+	"github.com/kayako/bluemonday"
 )
 
 // ParseURLList takes a filename and byte slice source, parses the contents
@@ -393,6 +395,9 @@ func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) e
 }
 
 func displayItem(out io.Writer, link string, title string, description string, updated string, published string, label string) error {
+
+	// Then see about formatting things.
+
 	pressTime := published
 	if updated != "" {
 		pressTime = updated
@@ -499,6 +504,9 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	i := 0
 	readItems := []string{}
 	savedItems := []string{}
+	// Step 1 don't trust the data, sanitize it with BlueMonday
+	p := bluemonday.NewPolicy()
+	p.AllowAttrs("href").Matching(regexp.MustCompile(`(?i)mailto|http|https|gopher|ftp?`)).OnElements("a")
 	for rows.Next() {
 		var (
 			link        string
@@ -513,6 +521,9 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			fmt.Fprint(app.eout, err)
 			continue
 		}
+		// Now sanitize each element
+		title = p.Sanitize(title)
+		description = p.Sanitize(description)
 		if err := displayItem(app.out, link, title, description, updated, published, label); err != nil {
 			return err
 		}
