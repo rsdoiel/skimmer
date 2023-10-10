@@ -149,6 +149,7 @@ func main() {
 	flag.BoolVar(&showVersion, "version", showVersion, "display version")
 	flag.BoolVar(&showLicense, "license", showLicense, "display license")
 	flag.BoolVar(&fetch, "fetch", fetch, "import feed content into database")
+	flag.BoolVar(&interactive, "i", interactive, "interactively display items one at a time in reverse chronologically order")
 	flag.BoolVar(&interactive, "interactive", interactive, "interactively display items one at a time in reverse chronologically order")
 	flag.BoolVar(&prune, "prune", prune, "remove items in the skimmer file for the time range provided")
 	flag.IntVar(&limit, "limit", limit, "limit the number of items output")
@@ -158,6 +159,7 @@ func main() {
 
 	args := flag.Args()
 
+	in := os.Stdin
 	out := os.Stdout
 	eout := os.Stderr
 
@@ -188,7 +190,7 @@ func main() {
 	app.Interactive = interactive
 	app.AsOPML = opml
 	app.AsURLs = urls
-	if err := app.Run(out, eout, args); err != nil {
+	if err := app.Run(in, out, eout, args); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		os.Exit(1)
 	}

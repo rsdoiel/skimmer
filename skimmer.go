@@ -75,6 +75,7 @@ type Skimmer struct {
 	AsOPML bool `json:"opml,omittempty"`
 
 	// Map in some private data to keep things easy to work with.
+	in   io.Reader
 	out  io.Writer
 	eout io.Writer
 }
@@ -174,7 +175,7 @@ func webget(url string) (*gofeed.Feed, error) {
 	return feed, nil
 }
 
-func saveChannel(db *sql.DB, feedLabel string, channel *gofeed.Feed) error {
+func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed) error {
 /*
 link, title, description, feed_link, links,
 updated, published, 
@@ -218,7 +219,7 @@ categories, feed_type, feed_version
 
 	stmt := SQLUpdateChannel
 	_, err = db.Exec(stmt,
-		channel.Link, &title, channel.Description, channel.FeedLink, linksStr, 
+		&link, &title, channel.Description, channel.FeedLink, linksStr, 
 		channel.Updated, channel.Published,
 		authorsStr, channel.Language, channel.Copyright, channel.Generator,
 		categoriesStr, channel.FeedType, channel.FeedVersion)
@@ -259,8 +260,53 @@ func (app *Skimmer) ResetChannels(db *sql.DB) error {
 	return nil
 }
 
+func (app *Skimmer) MarkItem(db *sql.DB, link string, val string) error {
+	stmt := SQLMarkItem
+	_, err := db.Exec(stmt, val, link)
+	if err != nil {
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
+	}
+	return nil
+}
+
+// ChannelsToUrls converts the current channels table to Urls formated output
+// and refreshes app.Urls data structure.
 func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
-	return nil, fmt.Errorf("ChannelsToUrls() not implement")
+	stmt := SQLChannelsAsUrls
+	rows, err := db.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	lines := []string{}
+	if app.Urls == nil {
+		app.Urls = map[string]string{}
+	}
+	for rows.Next() {
+		var (
+			link string
+			title string
+		)
+		if err := rows.Scan(&link, &title); err != nil {
+			return nil, err
+		}
+		if strings.HasPrefix(title, `"`) {
+			title = strings.Trim(title, `"~`)
+		}
+		if link != "" {
+			if title != "" {
+				lines = append(lines, fmt.Sprintf(`%s "~%s"%s`, link, title, "\n"))
+				app.Urls[link] = fmt.Sprintf(`"~%s"`, title)
+			} else {
+				lines = append(lines, fmt.Sprintf(`%s%s`, link,"\n"))
+				app.Urls[link] = ""
+			}
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return []byte(strings.Join(lines, "")), nil
 }
 
 // Download the contents from app.Urls
@@ -279,7 +325,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 			fmt.Fprintf(app.eout, "failed to get %q, %s\n", k, err)
 			continue
 		}
-		if err := saveChannel(db, v, feed); err != nil {
+		if err := saveChannel(db, k, v, feed); err != nil {
 			fmt.Fprintf(app.eout, "failed to save chanel %q, %s\n", k, err)
 		    continue	
 		}
@@ -320,11 +366,15 @@ func (app *Skimmer) ItemCount(db *sql.DB) (int, error) {
 	if err != nil {
 		return -1, err
 	}
+	defer rows.Close()
 	cnt := 0
 	for rows.Next() {
 		if err := rows.Scan(&cnt); err != nil {
 			return -1, err
 		}
+	}
+	if err := rows.Err(); err != nil {
+		return -1, err
 	}
 	return cnt, nil
 }
@@ -342,6 +392,31 @@ func (app *Skimmer) PruneItems(db *sql.DB, startDT time.Time, endDT time.Time) e
 	return err
 }
 
+func displayItem(out io.Writer, link string, title string, description string, updated string, published string, label string) error {
+	pressTime := published
+	if updated != "" {
+		pressTime = updated
+	}
+	if len(pressTime) > 10 {
+		pressTime = pressTime[0:10]
+	}
+	if title == "" {
+		title = fmt.Sprintf("@%s", label)
+	}
+	fmt.Fprintf(out, `--
+
+## %s
+
+date: %s
+
+%s 
+
+<%s>
+
+`, title, pressTime, description, link)
+	return nil
+}
+
 // Display the contents from database
 func (app *Skimmer) Write(db *sql.DB) error {
 	stmt := SQLDisplayItems
@@ -352,6 +427,7 @@ func (app *Skimmer) Write(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var (
 			link        string
@@ -365,32 +441,12 @@ func (app *Skimmer) Write(db *sql.DB) error {
 			fmt.Fprint(app.eout, err)
 			continue
 		}
-		pressTime := published
-		if updated != "" {
-			pressTime = updated
+		if err := displayItem(app.out, link, title, description, updated, published, label); err != nil {
+			return err
 		}
-		if title == "" {
-			fmt.Fprintf(app.out, `
---
-
-## %s @%s
-
-    <%s>
-
-%s 
-`, pressTime, label, link, description)
-		} else {
-			fmt.Fprintf(app.out, `
---
-
-## %s %s
-
-    <%s>
-
-%s 
-
-`, pressTime, title, link, description)
-		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
 	}
 	return nil
 }
@@ -419,9 +475,110 @@ func normalizeTFormat(t string) (string, error) {
 	return fmtStr, nil
 }
 
+// RunInteractive provides a sliver of interactive UI, basically displaying an item then
+// prompting for an action.
+func (app *Skimmer) RunInteractive(db *sql.DB) error {
+	SetupScreen(app.out)
+	ClearScreen()
+	// Get the item count
+	tot, err := app.ItemCount(db)
+	if err != nil {
+		return err
+	}
+	padding := int(len(fmt.Sprintf("%d", tot)))
+	promptStr := "[n]ext, [r]ead, [s]ave, [q]uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
+
+	stmt := SQLDisplayItems
+	if app.Limit > 0 {
+		stmt = fmt.Sprintf("%s LIMIT %d", stmt, app.Limit)
+	}
+	rows, err := db.Query(stmt)
+	if err != nil {
+		return err
+	}
+	i := 0
+	readItems := []string{}
+	savedItems := []string{}
+	for rows.Next() {
+		var (
+			link        string
+			title       string
+			description string
+			updated     string
+			published   string
+			label       string
+		)
+		i++
+		if err := rows.Scan(&link, &title, &description, &updated, &published, &label); err != nil {
+			fmt.Fprint(app.eout, err)
+			continue
+		}
+		if err := displayItem(app.out, link, title, description, updated, published, label); err != nil {
+			return err
+		}
+		// Wait for some input
+		quit := false
+		prompt := true 
+		for prompt {
+			buf := bufio.NewReader(app.in)
+			fmt.Fprintf(app.out, promptStr, i)
+			src, err := buf.ReadBytes('\n')
+			if err != nil {
+				fmt.Fprintf(app.eout, "do not understand %q?\n", src)
+			} else {
+				prompt = false
+			}
+			answer := strings.ToLower(strings.Trim(string(src), " \t\r\n"))
+			switch answer {
+				case "n":
+					prompt = false
+					ClearScreen()
+				case "":
+					prompt = false
+					ClearScreen()
+				case "q":
+					prompt = false
+					quit = true
+				case "r":
+					readItems = append(readItems, link)
+					prompt = false
+					ClearScreen()
+				case "s":
+					savedItems = append(savedItems, link)
+					prompt = false
+					ClearScreen()
+				default:
+					fmt.Fprintf(app.eout, "do not understand %q?\n", answer)
+					prompt = true
+			}
+		}
+		if quit {
+			break
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	rows.Close()
+	fmt.Fprintf(app.out, "saving %d items ...\n", len(savedItems))
+	for _, link := range savedItems {
+		if err := app.MarkItem(db, link, "saved"); err != nil {
+			return err
+		}
+	}
+	fmt.Fprintf(app.out, "marking %d items read ...\n", len(readItems))
+	for _, link := range readItems {
+		if err := app.MarkItem(db, link, "read"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 
 // Run provides the runner for skimmer. It allows for testing of much of the cli functionality
-func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
+func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []string) error {
+	app.in = in
 	app.out = out
 	app.eout = eout
 	if len(args) == 0 {
@@ -462,6 +619,9 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 		}
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 	} else if app.Fetch {
+		if _, err := app.ChannelsToUrls(db); err != nil {
+			return err
+		}
 		if err := app.Download(db); err != nil {
 			return err
 		}
@@ -523,7 +683,7 @@ func (app *Skimmer) Run(out io.Writer, eout io.Writer, args []string) error {
 	}
 
 	if app.Interactive {
-		return fmt.Errorf("interactive not implemented")
+		return app.RunInteractive(db)
 	}
 	if err := app.Write(db); err != nil {
 		return err

@@ -28,11 +28,12 @@ CREATE TABLE IF NOT EXISTS items (
 	title TEXT,
 	description TEXT,
 	authors JSON,
-    updated DATETIME,
+	updated DATETIME,
 	published DATETIME,
 	feedLabel TEXT,
 	channel TEXT,
-	retrieved DATETIME DEFAULT CURRENT_TIMESTAMP
+	retrieved DATETIME DEFAULT CURRENT_TIMESTAMP,
+	status TEXT DEFAULT ''
 );
 `
 	// SQLResetChannels clear the channels talbe
@@ -55,6 +56,9 @@ categories, feed_type, feed_version
 	SQLUpdateItem = `REPLACE INTO items (
 link, title, description, updated, published, feedLabel)
 VALUES (?, ?, ?, ?, ?, ?);`
+ 
+ 	// Return link and title for Urls formatted output
+ 	SQLChannelsAsUrls = `SELECT link, title FROM channels ORDER BY link;`
 
 	// SQLItemCount returns a list of items in the items table
 	SQLItemCount = `-- Count the items in the feed_items table.
@@ -64,8 +68,11 @@ SELECT COUNT(*) FROM items;`
 	SQLDisplayItems = `-- Basic SQL to retrieve an ordered list of items from all feeds.
 SELECT link, title, description, updated, published, feedLabel AS label
 FROM items
-WHERE description != ""
+WHERE description != "" AND status = ""
 ORDER BY updated DESC;`
+
+	SQLMarkItem = `-- This will mark the status value in the items table.
+UPDATE items SET status = ? WHERE link = ?;`
 
 	// SQLPruneItems will prune our items table for all items that have easier
 	// a updated or publication date early than the timestamp provided.
