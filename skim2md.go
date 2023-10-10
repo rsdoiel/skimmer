@@ -51,8 +51,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 
 <%s>
 
-%s
-`, title, description, link, tags)
+`, title, description, link)
 	return nil
 }
 
