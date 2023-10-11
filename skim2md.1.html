@@ -34,25 +34,36 @@
 <h1 id="synopsis">SYNOPSIS</h1>
 <p>skim2md <a href="#options">OPTIONS</a> SKIM_DB_FILENAME</p>
 <h1 id="description">DESCRIPTION</h1>
-<p>skim2md reads a skimmer DB and writes the saved or tagged items to the display in a Markdown friendly way.</p>
+<p>skim2md reads a skimmer DB and writes the saved or tagged items to
+the display in a Markdown friendly way.</p>
 <h1 id="options">OPTIONS</h1>
 <dl>
 <dt>-help</dt>
-<dd>display help
+<dd>
+display help
 </dd>
 <dt>-version</dt>
-<dd>display version info
+<dd>
+display version info
 </dd>
 <dt>-license</dt>
-<dd>display license
+<dd>
+display license
+</dd>
+<dt>-title</dt>
+<dd>
+Set a page title to be included in the output of saved items
 </dd>
 </dl>
 <h1 id="example">EXAMPLE</h1>
-<p>In the example we fetch URL content, read some feeds, save some interactively then use skim2md to generate a webpage of saved or tagged items.</p>
+<p>In the example we fetch URL content, read some feeds, save some
+interactively then use skim2md to generate a webpage of saved or tagged
+items.</p>
 <pre><code>skimmer myfeeds.urls
 skimmer -i myfeeds.skim
 skim2md myfeeds.skim &gt;save_items.md</code></pre>
-<p>You could then process the “saved_items.md” file further with Pandoc.</p>
+<p>You could then process the “saved_items.md” file further with
+Pandoc.</p>
 </section>
 
 <footer>
