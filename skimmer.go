@@ -393,7 +393,7 @@ func (app *Skimmer) DisplayItem(link string, title string, description string, u
 	} else {
 		title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
 	}
-	fmt.Fprintf(app.out, `--
+	fmt.Fprintf(app.out, `---
 
 %s
 
@@ -503,6 +503,8 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	p.AllowElements("li")
 	p.AllowElements("code")
 	p.AllowElements("pre")
+	p.AllowElements("blockquote")
+	//p.AllowElements("div")
 	// Step 2 get data and then sanitize it.
 	for rows.Next() {
 		var (
