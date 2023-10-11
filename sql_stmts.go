@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS items (
 	authors JSON,
 	updated DATETIME,
 	published DATETIME,
-	feedLabel TEXT,
+	label TEXT,
 	tags JSON DEFAULT '',
 	channel TEXT,
 	retrieved DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -54,35 +54,37 @@ categories, feed_type, feed_version
 );`
 
 	// Update a feed item in the items table
-	SQLUpdateItem = `REPLACE INTO items (
-link, title, description, updated, published, feedLabel)
-VALUES (?, ?, ?, ?, ?, ?);`
+	SQLUpdateItem = `INSERT INTO items (
+	link, title, description, updated, published, label)
+VALUES (
+	?1, ?2, ?3, ?4, ?5, ?6
+) ON CONFLICT (link) DO
+  UPDATE SET title = ?2, description = ?3, updated = ?4,
+      published = ?5, label = ?6;`
 
 	// Return link and title for Urls formatted output
 	SQLChannelsAsUrls = `SELECT link, title FROM channels ORDER BY link;`
 
 	// SQLItemCount returns a list of items in the items table
-	SQLItemCount = `-- Count the items in the feed_items table.
-SELECT COUNT(*) FROM items;`
+	SQLItemCount = `SELECT COUNT(*) FROM items;`
 
 	// SQLDisplayItems returns a list of items in decending chronological order.
-	SQLDisplayItems = `-- Basic SQL to retrieve an ordered list of items from all feeds.
-SELECT link, title, description, updated, published, feedLabel AS label, tags
+	SQLDisplayItems = `SELECT link, title, description, 
+	updated, published, label, tags
 FROM items
 WHERE description != "" AND status = ?
 ORDER BY published DESC, updated DESC;`
 
 	SQLMarkItem = `UPDATE items SET status = ? WHERE link = ?;`
 
-	SQLRelabelItem = `UPDATE items SET feedlabel = ? WHERE link = ?;`
-
 	SQLTagItem = `UPDATE items SET tags = ? WHERE link = ?;`
 
 	// SQLPruneItems will prune our items table for all items that have easier
 	// a updated or publication date early than the timestamp provided.
 	SQLPruneItems = `DELETE FROM items 
-WHERE (updated IS NULL AND published IS NULL) OR
+WHERE ((updated IS NULL AND published IS NULL) OR
    (updated == '' AND published == '')
-   OR (updated < ? AND published < ?);
+   OR (updated < ? AND published < ?))
+   AND status = '';
 `
 )

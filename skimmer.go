@@ -247,15 +247,6 @@ func (app *Skimmer) MarkItem(db *sql.DB, link string, val string) error {
 	return nil
 }
 
-func (app *Skimmer) RelabelItem(db *sql.DB, link string, label string) error {
-	stmt := SQLRelabelItem
-	_, err := db.Exec(stmt, label, link)
-	if err != nil {
-		return fmt.Errorf("%s\nstmt: %s", err, stmt)
-	}
-	return nil
-}
-
 func (app *Skimmer) TagItem(db *sql.DB, link string, tag string) error {
 	stmt := SQLTagItem
 	_, err := db.Exec(stmt, tag, link)
@@ -498,7 +489,6 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	i := 0
 	readItems := []string{}
 	savedItems := []string{}
-	relabelItems := []map[string]string{}
 	tagItems := []map[string]string{}
 	// Step 1 don't trust the data, sanitize it with BlueMonday
 	//p :=  bluemonday.UGCPolicy()
@@ -607,18 +597,6 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		for _, link := range readItems {
 			if err := app.MarkItem(db, link, "read"); err != nil {
 				return err
-			}
-		}
-	}
-	if len(relabelItems) > 0 {
-		fmt.Fprintf(app.out, "relabeling %d items ...\n", len(relabelItems))
-		for _, obj := range relabelItems {
-			if link, hasLink := obj["link"]; hasLink {
-				if label, hasLabel := obj["label"]; hasLabel && label != "" {
-					if err := app.RelabelItem(db, link, label); err != nil {
-						return err
-					}
-				}
 			}
 		}
 	}
