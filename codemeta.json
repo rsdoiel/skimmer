@@ -7,7 +7,7 @@
     "dateReleased": "2023-10-12",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
-    "version": "0.0.5",
+    "version": "0.0.6-dev",
     "description": "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.",
     "releaseNotes": "Proof of concept.",
     "developmentStatus": "concept",

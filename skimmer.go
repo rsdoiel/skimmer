@@ -465,6 +465,27 @@ func normalizeTFormat(t string) (string, error) {
 	return fmtStr, nil
 }
 
+func displayStats(out io.Writer, db *sql.DB, dbName string) error {
+	stmt := SQLItemStats
+	rows, err := db.Query(stmt)
+	if err != nil {
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
+	}
+	defer rows.Close()
+	fmt.Fprintf(out, "stats: %s\n\tstatus\tcount\n", dbName)
+	for rows.Next() {
+		var (
+			status string
+			cnt int
+		)
+		if err := rows.Scan(&status, &cnt); err != nil {
+			return fmt.Errorf("%s\nstmt: %s", err, stmt)
+		}
+		fmt.Fprintf(out, "\t%s\t%d\n", status, cnt)
+	}
+	return nil
+}
+
 // RunInteractive provides a sliver of interactive UI, basically displaying an item then
 // prompting for an action.
 func (app *Skimmer) RunInteractive(db *sql.DB) error {
@@ -576,6 +597,11 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			case "q":
 				prompt = false
 				quit = true
+			case "stats":
+				prompt = true
+				if err := displayStats(app.out, db, app.DBName); err != nil {
+					fmt.Fprintf(app.eout, "%s\n", err)
+				}
 			default:
 				fmt.Fprintf(app.eout, "do not understand %q?\n", answer)
 				prompt = true
