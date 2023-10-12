@@ -3,15 +3,14 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "skimmer"
-abstract: "No no frills feed reader. Inspired by newsboat and yarnc,
-based on the gofeed package by mmcdole on GitHub."
+abstract: "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub."
 authors:
   - family-names: Doiel
     given-names: R. S.
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.5-dev
+version: 0.0.5
 license-url: "https://spdx.org/licenses/MIT"
 
 
@@ -20,7 +19,7 @@ license-url: "https://spdx.org/licenses/MIT"
 About this software
 ===================
 
-## skimmer 0.0.5-dev
+## skimmer 0.0.5
 
 ### Authors
 
@@ -28,8 +27,7 @@ About this software
 
 
 
-No no frills feed reader. Inspired by newsboat and yarnc, based on the
-gofeed package by mmcdole on GitHub.
+No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.
 
 - License: <https://spdx.org/licenses/MIT>
 - GitHub: <git+https://github.com/rsdoiel/skimmer>

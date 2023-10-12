@@ -1,16 +1,29 @@
 
 # skimmer
 
-skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and [yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and lacks features.  That is skimmer's best feature. skimmer tries to do two things well.
+skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and **yarnc** from [yarn.social](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and deliberately lacks features.  That is to say skimmer's best feature is what it doesn't do. skimmer tries to do two things well.
 
-- Read a list of URLs and fetch the items and saving them to an SQLite 3 database
-- Display the contents of the SQLite3 database in reverse chronological order
+1. Read a list of URLs, fetch the feeds and write the items to an SQLite 3 database
+2. Display the items in the SQLite 3 database in reverse chronological order
 
-That's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems.
+That's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems. Even if you invoke it in "interactive" mode your choices are limited, press enter and go to next item, press "n" and mark the item read, press "s" and save the item, press "q" and quit interactive mode.
 
-skimmer needs to know what feed items to download and display. This done by providing a newsboat style URLs file. The feeds are read and the channel and item information is stored in an SQLite3 database of a similarly named file but with the `.skim` extension. When you want to read the downloaded items you invoke skimmer again with the `.skim` file.  This allows you to easily maintain separate list of feeds to skim and potentially re-use the feed output.
+By storing the item information in an SQLite3 database (like newsboat's cache.db file) I can re-purpose the feed content as needed. An example would be generating a personal news aggregation page. Another might be to convert the entries to BibTeX and manage them as reference. Lots of options are possible.
 
-Presently skimmer is focused on reading RSS 2, Atom and jsonfeeds.
+## skimmer's url list
+
+As mentioned skimmer was very much inspired by newsboat. In fact it uses newsboat's urls list format. That's because skimmer isn't trying to replace newsboat as a reader of all feeds but instead gives me more options for how I read the feeds I've collected.
+
+The newsboat urls file boils down to a list of urls, one per line with an optional "label" added after the url using the notation of space, double quote, tilde, label content followed by a double quote and end of line. That's really easy to parse.  You can add comments using the hash mark with hash mark and anything to the right ignored when the urls are read in to skimmer.
+
+## skimmer's SQLite 3 database
+
+skimmer uses SQLite 3 database with two tables for managing feeds and their content. It doesn't use newsboat's cache.db. The name of the skimmer database ends in ".skim" and pairs with the name of the urls file. Example if I have
+a urls list named "my_news.txt" skimmer will use a database file (and create it if it doesn't exist) called "my_news.skim".  Each time skimmer reads the urls file it will replace the content in the skimmer database file except for any notations about a given item having been read or saved.
+
+## skimmer feed types
+
+Presently skimmer is focused on reading RSS 2, Atom and jsonfeeds as that is provided by the Go package skimmer uses (i.e. [goread](https://github.com/mmcdole/goread)). Someday, maybe, I hope to include support for Gopher or Gemini feeds.
 
 
 # SYNOPSIS
@@ -82,11 +95,11 @@ Prune the items in the database older than today.
 skimmer -prune my-news.skim today
 ~~~
 
-Prune the items from the month of September 2023.
+Prune the items older than September 30, 2023.
 
 ~~~shell
 skimmer -prune my-news.skim \
-    "2023-09-01 00:00:00" "2023-09-30 23:59:59"
+    "2023-09-30 23:59:59"
 ~~~
 
 ## Installation instructions
@@ -98,7 +111,7 @@ skimmer -prune my-news.skim \
 
 ### Requirements
 
-skimmer is an experimental. The compiled binaries are not necessarily tested.
+skimmer is an experiment. The compiled binaries are not necessarily tested.
 To compile from source you need to have git, make, Pandoc, SQLite3 and Go.
 
 - Git >= 2
@@ -121,4 +134,4 @@ make install
 ## Acknowledgments
 
 This experiment would not be possible with the authors of newsboat, SQLite3,
-Pandoc and the [gofeed](https://github.com/mmcdole/gofeed) package.
+Pandoc and the [gofeed](https://github.com/mmcdole/gofeed) package for Go.

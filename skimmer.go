@@ -105,7 +105,7 @@ func (app *Skimmer) Setup(fPath string) error {
 			}
 			_, err = db.Exec(stmt)
 			if err != nil {
-				return err
+				return fmt.Errorf("%s\nstmt: %s", err, stmt)
 			}
 		}
 	}
@@ -414,7 +414,7 @@ func (app *Skimmer) Write(db *sql.DB) error {
 	}
 	rows, err := db.Query(stmt, "")
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -476,7 +476,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 		return err
 	}
 	padding := int(len(fmt.Sprintf("%d", tot)))
-	promptStr := "(n)ext, (s)ave, (t)ag, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
+	promptStr := "(n)ext, (s)ave, (q)uit %" + fmt.Sprintf("%d", padding) + fmt.Sprintf("d/%d > ", tot)
 
 	stmt := SQLDisplayItems
 	if app.Limit > 0 {
@@ -484,7 +484,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	}
 	rows, err := db.Query(stmt, "")
 	if err != nil {
-		return err
+		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
 	i := 0
 	readItems := []string{}
@@ -544,6 +544,9 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			case "":
 				prompt = false
 				ClearScreen()
+			case "o":
+				OpenInBrowser(app.in, app.out, app.eout, link)
+				prompt = true
 			case "n":
 				readItems = append(readItems, link)
 				prompt = false

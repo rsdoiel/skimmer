@@ -1,6 +1,6 @@
-%skimmer(1) skimmer user manual | version 0.0.5-dev eeb8576
+%skimmer(1) skimmer user manual | version 0.0.5 1bea272
 % R. S. Doiel
-% 2023-10-11
+% 2023-10-12
 
 # NAME
 
@@ -63,12 +63,11 @@ removed. Otherwise time can be specified as a date in YYYY-MM-DD format or
 timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
-: display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press
+: display an item and prompt for next action. e.g. (n)ext, (s)ave, (q)uit. If you press
 enter the next item will be displayed without marking changing the items state (e.g. marking it
 read). If you press "n" the item will be marked as read before displaying the next item. If you
-press "s" the item will be tagged as saved and next item will be displayed. If you press "t" you
-can tag the items. Tagged items are treated as save but the next item is not fetched.
-Pressing "q" will quit interactive mode without changing the last items state.
+press "s" the saved and next item will be displayed.  Pressing "q" will quit interactive mode
+without changing the last item's state.
 
 -urls
 : Output the contents of the SQLite 3 database channels table as a newsboat style URLs list
@@ -87,12 +86,11 @@ Now that my-news.skim exists we can read it with
 skimmer my-news.skim
 ~~~
 
-Update and read the my-news.skim file by first using the urls file then using the
-`.skim` file.
+Update and read interactively.
 
 ~~~
 skimmer my-news.urls
-skimmer my-news.skim
+skimmer -i my-news.skim
 ~~~
 
 skimmer can prune it's own database and also limit the count of items displayed.
