@@ -207,7 +207,7 @@ func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed
 	return nil
 }
 
-func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
+func saveItem(db *sql.DB, feedLabel string, feed *gofeed.Feed, item *gofeed.Item) error {
 	var (
 		published string
 		updated   string
@@ -217,6 +217,10 @@ func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	}
 	if item.PublishedParsed != nil {
 		published = item.PublishedParsed.Format("2006-01-02 15:04:05")
+	}
+	//FIXME: Need to make sure item.Link is a complete URL.
+	if strings.HasPrefix(item.Link, "/") {
+		item.Link = fmt.Sprintf("%s%s", feed.Link, item.Link)
 	}
 	stmt := SQLUpdateItem
 	_, err := db.Exec(stmt,
@@ -322,21 +326,18 @@ func (app *Skimmer) Download(db *sql.DB) error {
 		rptTime := time.Now()
 		reportProgress := false
 		tot := feed.Len()
-		// FIXME: the logger should really be writing to app.out or app.eout
 		fmt.Fprintf(app.out, "processing %d items from %s\n", tot, v)
 		i := 0
 		for _, item := range feed.Items {
 			// Add items from feed to database table
-			if err := saveItem(db, v, item); err != nil {
+			if err := saveItem(db, v, feed, item); err != nil {
 				return err
 			}
 			if rptTime, reportProgress = CheckWaitInterval(rptTime, (20 * time.Second)); reportProgress {
-				// FIXME: the logger should really be writing to app.out or app.eout
 				fmt.Fprintf(app.out, "(%d/%d) %s", i, tot, ProgressETA(t0, i, tot))
 			}
 			i++
 		}
-		// FIXME: the logger should really be writing to app.out or app.eout
 		fmt.Fprintf(app.out, "processed %d/%d from %s\n", i, tot, v)
 	}
 	if eCnt > 0 {
@@ -378,9 +379,7 @@ func (app *Skimmer) PruneItems(db *sql.DB, pruneDT time.Time) error {
 }
 
 func (app *Skimmer) DisplayItem(link string, title string, description string, updated string, published string, label string, tags string) error {
-
 	// Then see about formatting things.
-
 	pressTime := published
 	if updated != "" {
 		pressTime = updated
