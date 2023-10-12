@@ -69,7 +69,7 @@ VALUES (
 	SQLItemCount = `SELECT COUNT(*) FROM items;`
 
 	// SQLItemStats returns a list of rows with totals per status
-	SQLItemStats = `SELECT status, COUNT(*) FROM items GROUP BY status ORDER BY status`
+	SQLItemStats = `SELECT IIF(status = '', 'unread', status) AS status, COUNT(*) FROM items GROUP BY status ORDER BY status`
 
 	// SQLDisplayItems returns a list of items in decending chronological order.
 	SQLDisplayItems = `SELECT link, title, description, 
