@@ -8,6 +8,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"regexp"
@@ -94,7 +95,6 @@ func (app *Skimmer) Setup(fPath string) error {
 		if _, err := os.Stat(fName); os.IsNotExist(err) {
 			stmt := fmt.Sprintf(SQLCreateTables, app.AppName, time.Now().Format("2006-01-02"))
 			dsn := fName
-			//fmt.Printf("DEBUG SQLite 3 dsn -> %q\n", dsn)
 			db, err := sql.Open("sqlite", dsn)
 			if err != nil {
 				return err
@@ -137,8 +137,8 @@ func (app *Skimmer) ReadUrls(fName string) error {
 
 // webget retrieves a feed and parses it.
 // Uses mmcdole's gofeed, see docs at https://pkg.go.dev/github.com/mmcdole/gofeed
-func webget(url string) (*gofeed.Feed, error) {
-	res, err := http.Get(url)
+func webget(href string) (*gofeed.Feed, error) {
+	res, err := http.Get(href)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,15 @@ func webget(url string) (*gofeed.Feed, error) {
 	fp := gofeed.NewParser()
 	feed, err := fp.Parse(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("feed error for %q, %s", url, err)
+		return nil, fmt.Errorf("feed error for %q, %s", href, err)
+	}
+	if feed.Link == "" || feed.Link == "/" {
+		u, err := url.Parse(href)
+		if err != nil {
+			return nil, err
+		}
+		u.Path = "/"
+		feed.Link = u.String()
 	}
 	return feed, nil
 }
@@ -168,10 +176,10 @@ func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed
 		authorsStr    string
 		categoriesStr string
 	)
+	linksStr = link
+	title = feedLabel
 	if feedLabel == "" {
 		title = channel.Title
-	} else {
-		title = feedLabel
 	}
 	if channel.Links != nil {
 		src, err = JSONMarshal(channel.Links)
@@ -207,7 +215,7 @@ func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed
 	return nil
 }
 
-func saveItem(db *sql.DB, feedLabel string, feed *gofeed.Feed, item *gofeed.Item) error {
+func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	var (
 		published string
 		updated   string
@@ -217,10 +225,6 @@ func saveItem(db *sql.DB, feedLabel string, feed *gofeed.Feed, item *gofeed.Item
 	}
 	if item.PublishedParsed != nil {
 		published = item.PublishedParsed.Format("2006-01-02 15:04:05")
-	}
-	//FIXME: Need to make sure item.Link is a complete URL.
-	if strings.HasPrefix(item.Link, "/") {
-		item.Link = fmt.Sprintf("%s%s", feed.Link, item.Link)
 	}
 	stmt := SQLUpdateItem
 	_, err := db.Exec(stmt,
@@ -329,8 +333,11 @@ func (app *Skimmer) Download(db *sql.DB) error {
 		fmt.Fprintf(app.out, "processing %d items from %s\n", tot, v)
 		i := 0
 		for _, item := range feed.Items {
+			if strings.HasPrefix(item.Link, "/") {
+				item.Link = fmt.Sprintf("%s%s", strings.TrimSuffix(feed.Link, "/"), item.Link)
+			}
 			// Add items from feed to database table
-			if err := saveItem(db, v, feed, item); err != nil {
+			if err := saveItem(db, v, item); err != nil {
 				return err
 			}
 			if rptTime, reportProgress = CheckWaitInterval(rptTime, (20 * time.Second)); reportProgress {
