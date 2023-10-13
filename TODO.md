@@ -11,6 +11,7 @@
 - [x] Add a stats option to show the items in the database
 - [ ] Add an option to list items for a specific feed
 - [ ] Document how skimmer+skim2md+pandoc can be used to create a personal aggregation page
+- [ ] Reviews newsboat document on urls file, make sure I cover what is supported, see https://wiki.archlinux.org/title/Newsboat
 
 ## Someday, maybe
 
