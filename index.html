@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="EN">
+  <title>R. S. Doiel, Software Engineer/Analyst - README</title>
+
+  <link rel="stylesheet" type="text/css"  href="/printfonts/print.css" media="print" />
+  <link rel="stylesheet" type="text/css"  href="/webfonts/fonts.css" media="screen" />
+  <link rel="stylesheet" type="text/css"  href="/css/site.css" media="screen" />
+  <link title="RSS feed for rsdoiel's blog" rel="alternate" type="application/rss+xml" href="https://rsdoiel.github.io/rss.xml" />
+  <link title="markdown source for page" rel="alternative" type="application/markdown" href="README.md">
+</head>
+<body>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="user-manual.html">User Manual</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="INSTALL.html">Install</a></li>
+<li><a href="search.html">Project Search</a></li>
+<li><a href="ideas.html">Someday, Maybe</a></li>
+<li><a href="https://github.com/rsdoiel/stngo">GitHub</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+</nav>
+
+<section>
+<!--  <h1>README</h1> -->
+
+<h1 id="skimmer">skimmer</h1>
+<p>skimmer is a lightweight feed reader inspired by <a href="https://newsboat.org">newsboat</a> and <strong>yarnc</strong> from <a href="https://git.mills.io/yarnsocial/yarn">yarn.social</a>. skimmer is very minimal and deliberately lacks features. That is to say skimmer’s best feature is what it doesn’t do. skimmer tries to do two things well.</p>
+<ol type="1">
+<li>Read a list of URLs, fetch the feeds and write the items to an SQLite 3 database</li>
+<li>Display the items in the SQLite 3 database in reverse chronological order</li>
+</ol>
+<p>That’s it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems. Even if you invoke it in “interactive” mode your choices are limited, press enter and go to next item, press “n” and mark the item read, press “s” and save the item, press “q” and quit interactive mode.</p>
+<p>By storing the item information in an SQLite3 database (like newsboat’s cache.db file) I can re-purpose the feed content as needed. An example would be generating a personal news aggregation page. Another might be to convert the entries to BibTeX and manage them as reference. Lots of options are possible.</p>
+<h2 id="skimmers-url-list">skimmer’s url list</h2>
+<p>As mentioned skimmer was very much inspired by newsboat. In fact it uses newsboat’s urls list format. That’s because skimmer isn’t trying to replace newsboat as a reader of all feeds but instead gives me more options for how I read the feeds I’ve collected.</p>
+<p>The newsboat urls file boils down to a list of urls, one per line with an optional “label” added after the url using the notation of space, double quote, tilde, label content followed by a double quote and end of line. That’s really easy to parse. You can add comments using the hash mark with hash mark and anything to the right ignored when the urls are read in to skimmer.</p>
+<h2 id="skimmers-sqlite-3-database">skimmer’s SQLite 3 database</h2>
+<p>skimmer uses SQLite 3 database with two tables for managing feeds and their content. It doesn’t use newsboat’s cache.db. The name of the skimmer database ends in “.skim” and pairs with the name of the urls file. Example if I have a urls list named “my_news.txt” skimmer will use a database file (and create it if it doesn’t exist) called “my_news.skim”. Each time skimmer reads the urls file it will replace the content in the skimmer database file except for any notations about a given item having been read or saved.</p>
+<h2 id="skimmer-feed-types">skimmer feed types</h2>
+<p>Presently skimmer is focused on reading RSS 2, Atom and jsonfeeds as that is provided by the Go package skimmer uses (i.e. <a href="https://github.com/mmcdole/goread">goread</a>). Someday, maybe, I hope to include support for Gopher or Gemini feeds.</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<pre><code>skimmer [OPTIONS] URL_LIST_FILENAME
+skimmer [OPTIONS] SKIMMER_DB_FILENAME [TIME_RANGE]</code></pre>
+<p>skimmer have two ways to invoke it. You can fetch the contents from list of URLs in newsboat urls file format. You can read the items from the related skimmer database.</p>
+<h2 id="options">OPTIONS</h2>
+<dl>
+<dt>-help</dt>
+<dd>display a help page
+</dd>
+<dt>-license</dt>
+<dd>display license
+</dd>
+<dt>-version</dt>
+<dd>display version number and build hash
+</dd>
+<dt>-limit N</dt>
+<dd>Limit the display the N most recent items
+</dd>
+<dt>-prune</dt>
+<dd>The deletes items from the items table for the skimmer file provided. If a time range is provided then the items in the time range will be deleted. If a single time is provided everything older than that time is deleted. A time can be specified in several ways. An alias of “today” would remove all items older than today. If “now” is specified then all items older then the current time would be removed. Otherwise time can be specified as a date in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
+</dd>
+<dt>-i, -interactive</dt>
+<dd>display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press enter the next item will be displayed without marking changing the items state (e.g. marking it read). If you press “n” the item will be marked as read before displaying the next item. If you press “s” the item will be tagged as saved and next item will be displayed. If you press “t” you can tag the items. Tagged items are treated as save but the next item is not fetched. Pressing “q” will quit interactive mode without changing the last items state.
+</dd>
+</dl>
+<h1 id="examples">Examples</h1>
+<p>Fetch and read my newsboat feeds from <code>.newsboat/urls</code>. This will create a <code>.newsboat/urls.skim</code> if it doesn’t exist. Remember invoking skimmer with a URLs file will retrieve feeds and their contents and invoking skimmer with the skimmer database file will let you read them.</p>
+<pre class="shell"><code>skimmer .newsboat/urls
+skimmer .newsboat/urls.skim</code></pre>
+<p>This will fetch and read the feeds from<code>my-news.urls</code>. This will create a <code>my-news.skim</code> file. When the skimmer database is read a simplistic interactive mode is presented.</p>
+<pre class="shell"><code>skimmer my-news.urls
+skimmer -i my-news.skim</code></pre>
+<p>The same method is used to update your <code>my-news.skim</code> file and read it.</p>
+<p>Export the current state of the skimmer database channels to a urls file. Feeds that failed to be retrieved will not be in the database channels table channels table. This is an easy way to get rid of the cruft and dead feeds.</p>
+<pre class="shell"><code>skimmer -urls my-news.skim &gt;my-news.urls</code></pre>
+<p>Prune the items in the database older than today.</p>
+<pre class="shell"><code>skimmer -prune my-news.skim today</code></pre>
+<p>Prune the items older than September 30, 2023.</p>
+<pre class="shell"><code>skimmer -prune my-news.skim \
+    &quot;2023-09-30 23:59:59&quot;</code></pre>
+<h2 id="installation-instructions">Installation instructions</h2>
+<ul>
+<li><a href="INSTALL.html">INSTALL.md</a> contains the general steps to install binary releases</li>
+<li>You can download a release from <a href="https://github.com/rsdoiel/skimmer/releases" class="uri">https://github.com/rsdoiel/skimmer/releases</a></li>
+</ul>
+<h2 id="installation-from-source">Installation From Source</h2>
+<h3 id="requirements">Requirements</h3>
+<p>skimmer is an experiment. The compiled binaries are not necessarily tested. To compile from source you need to have git, make, Pandoc, SQLite3 and Go.</p>
+<ul>
+<li>Git &gt;= 2</li>
+<li>Make &gt;= 3.8 (GNU Make)</li>
+<li>Pandoc &gt; 3</li>
+<li>SQLite3 &gt; 3.4</li>
+<li>Go &gt;= 1.21.1</li>
+</ul>
+<h3 id="steps-to-compile-and-install">Steps to compile and install</h3>
+<p>Installation process I used to setup skimmer on a new machine.</p>
+<pre><code>git clone https://github.com/rsdoiel/skimmer
+cd skimmer
+make
+make install</code></pre>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>This experiment would not be possible with the authors of newsboat, SQLite3, Pandoc and the <a href="https://github.com/mmcdole/gofeed">gofeed</a> package for Go.</p>
+</section>
+
+<footer>
+</footer>
+
+</body>
+</html>
