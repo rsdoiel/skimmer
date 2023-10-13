@@ -31,7 +31,7 @@ func ParseURLList(fName string, src []byte) (map[string]string, error) {
 	line := 1
 	for s.Scan() {
 		txt := strings.TrimSpace(s.Text())
-		if !strings.HasPrefix(txt, "#") {
+		if !strings.HasPrefix(txt, "#") && txt != "" {
 			parts := strings.SplitN(txt, " ", 2)
 			switch len(parts) {
 			case 1:
@@ -152,6 +152,8 @@ func webget(href string, userAgent string) (*gofeed.Feed, error) {
 		return nil, err
 	}
 	req.Header.Set("User-Agent", userAgent)
+	// Set the accepted content types.
+	req.Header.Set("accept", "application/rss+xml, application/atom+xml, application/feed+json, application/xml, application/json;q=0.9, */*;q=0.8")
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err

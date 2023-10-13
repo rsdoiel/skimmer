@@ -1,3 +1,19 @@
-https://tech.caltech.edu/index.xml "~The California Tech (Caltech student paper)"
-http://scripting.com/rss.xml "~Dave Winer's blog"
+#https://tech.caltech.edu/index.xml "~The California Tech (Caltech student paper)"
+#http://scripting.com/rss.xml "~Dave Winer's blog"
 #https://laist.com/index.atom "~LAist"
+# This is an example of using NOAA's api.weather.gov service. See docs at 
+# 	- https://www.weather.gov/documentation/services-web-api
+# 	- https://weather-gov.github.io/api/gridpoints
+#
+# URL To use to find our focast URL (also hourly is listed)
+# 	- See https://weather-gov.github.io/api/general-faqs#geocoding
+#
+# 	https://api.weather.gov/points/34.3917,-118.5426 "~NOAA Weather API information"
+#
+# This should get our forcast but will need to be translated by skimmer into the gofeed feed struct.
+#https://api.weather.gov/gridpoints/LKN/30,57/forecast "~NOAA Forecast for Santa Clarita, CA"
+
+# NOAA RSS Libraries and Podcasts
+https://www.spc.noaa.gov/products/spcfwrss.xml "~NOAA Weather Forecasts"
+https://www.spc.noaa.gov/products/spcrss.xml "~NOAA tornado/severe thunderstorm watches, mesoscale discussions, convective outlooks, fire weather outlooks"
+
