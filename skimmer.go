@@ -53,6 +53,11 @@ type Skimmer struct {
 	// AppName holds the name of the application
 	AppName string `json:"app_name,omitempty"`
 
+	// UserAgent holds the user agent string used by skimmer.
+	// Right now I plan to default it to 
+	//       app.AppName + "/" + app.Version + "-" + ReleaseHash + " " + ReleaseDate
+	UserAgent string `json:"user_agent,omitempty"`
+
 	// DbName holds the path to the SQLite3 database
 	DBName string `json:"db_name,omitempty"`
 
@@ -80,6 +85,7 @@ type Skimmer struct {
 func NewSkimmer(appName string) (*Skimmer, error) {
 	app := new(Skimmer)
 	app.AppName = appName
+	app.UserAgent = fmt.Sprintf("%s/%s-%s %s", app.AppName, Version, ReleaseHash, ReleaseDate)
 	return app, nil
 }
 
@@ -137,8 +143,16 @@ func (app *Skimmer) ReadUrls(fName string) error {
 
 // webget retrieves a feed and parses it.
 // Uses mmcdole's gofeed, see docs at https://pkg.go.dev/github.com/mmcdole/gofeed
-func webget(href string) (*gofeed.Feed, error) {
-	res, err := http.Get(href)
+func webget(href string, userAgent string) (*gofeed.Feed, error) {
+	// NOTE: I'm assuming only http, https at this point, later this will
+	// need to be split up so I can handle Gopher, Gemini and sftp.
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", href, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("User-Agent", userAgent)
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -314,7 +328,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 	}
 	defer db.Close()
 	for k, v := range app.Urls {
-		feed, err := webget(k)
+		feed, err := webget(k, app.UserAgent)
 		if err != nil {
 			eCnt++
 			fmt.Fprintf(app.eout, "failed to get %q, %s\n", k, err)
