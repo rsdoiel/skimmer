@@ -1,4 +1,4 @@
-%skim2md(1) skim2md user manual | version 0.0.6-dev 981d7b0
+%skim2md(1) skim2md user manual | version 0.0.6 2e49518
 % R. S. Doiel
 % 2023-10-12
 
