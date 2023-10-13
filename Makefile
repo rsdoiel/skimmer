@@ -117,6 +117,7 @@ test: clean build
 	go test -test.v
 
 clean: 
+	-go clean
 	-if [ -d bin ]; then rm -fR bin; fi
 	-if [ -d dist ]; then rm -fR dist; fi
 	-if [ -d testout ]; then rm -fR testout; fi
