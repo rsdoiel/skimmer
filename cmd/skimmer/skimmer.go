@@ -173,6 +173,10 @@ func main() {
 		os.Exit(1)
 	}
 	// Setup our options
+	userAgent := os.Getenv("SKIM_USER_AGENT")
+	if userAgent == "" {
+		app.UserAgent = userAgent
+	}
 	app.Limit = limit
 	app.Prune = prune
 	app.Interactive = interactive

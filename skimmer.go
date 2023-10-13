@@ -55,7 +55,7 @@ type Skimmer struct {
 
 	// UserAgent holds the user agent string used by skimmer.
 	// Right now I plan to default it to 
-	//       app.AppName + "/" + app.Version + "-" + ReleaseHash + " " + ReleaseDate
+	//       app.AppName + "/" + app.Version + " (" + ReleaseDate + "." + ReleaseHash + ")"
 	UserAgent string `json:"user_agent,omitempty"`
 
 	// DbName holds the path to the SQLite3 database
@@ -85,7 +85,7 @@ type Skimmer struct {
 func NewSkimmer(appName string) (*Skimmer, error) {
 	app := new(Skimmer)
 	app.AppName = appName
-	app.UserAgent = fmt.Sprintf("%s/%s-%s %s", app.AppName, Version, ReleaseHash, ReleaseDate)
+	app.UserAgent = fmt.Sprintf("%s/%s (%s.%s)", app.AppName, strings.TrimPrefix(Version, "v"), ReleaseDate, ReleaseHash)
 	return app, nil
 }
 
