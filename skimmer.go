@@ -141,12 +141,26 @@ func (app *Skimmer) ReadUrls(fName string) error {
 	return nil
 }
 
+func (app *Skimmer) redirectHandler (req *http.Request, via []*http.Request) error {
+	if len(via) >= 5 {
+		urlList := []string{}
+		for _, redirect := range via {
+			urlList = append(urlList, redirect.URL.String())
+		}
+		return fmt.Errorf("stopped after 5 redirectos: %s", strings.Join(urlList, ", "))
+	}
+	fmt.Fprintf(app.eout, "redirecting from %s because %s\n", req.URL.String(), http.ErrUseLastResponse)
+ 	return http.ErrUseLastResponse
+}
+
 // webget retrieves a feed and parses it.
 // Uses mmcdole's gofeed, see docs at https://pkg.go.dev/github.com/mmcdole/gofeed
-func webget(href string, userAgent string) (*gofeed.Feed, error) {
+func (app *Skimmer) webget(href string, userAgent string) (*gofeed.Feed, error) {
 	// NOTE: I'm assuming only http, https at this point, later this will
 	// need to be split up so I can handle Gopher, Gemini and sftp.
-	client := &http.Client{}
+	client := &http.Client{
+	 	CheckRedirect: app.redirectHandler,
+	}
 	req, err := http.NewRequest("GET", href, nil)
 	if err != nil {
 		return nil, err
@@ -330,7 +344,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 	}
 	defer db.Close()
 	for k, v := range app.Urls {
-		feed, err := webget(k, app.UserAgent)
+		feed, err := app.webget(k, app.UserAgent)
 		if err != nil {
 			eCnt++
 			fmt.Fprintf(app.eout, "failed to get %q, %s\n", k, err)
@@ -541,6 +555,8 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	p.AllowElements("p")
 	p.AllowElements("b")
 	p.AllowElements("i")
+	p.AllowElements("strong")
+	p.AllowElements("em")
 	p.AllowElements("ul")
 	p.AllowElements("ol")
 	p.AllowElements("li")

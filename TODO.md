@@ -9,9 +9,24 @@
 ## Next
 
 - [x] Add a stats option to show the items in the database
+- [ ] Look implementing full text search on items table via FTS4 or FTS5
+	- expose as command line option and in interactive mode
 - [ ] Add an option to list items for a specific feed
 - [ ] Document how skimmer+skim2md+pandoc can be used to create a personal aggregation page
 - [ ] Reviews newsboat document on urls file, make sure I cover what is supported, see https://wiki.archlinux.org/title/Newsboat
+- [ ] Evaludate Go Lua implementations, extended skimmer will lua filters on input (pre-feed parsing) and on gofeed.Feed struct
+      and to filter items in or out from a feed (e.g. flag items for "read" or "save" items that have some identifable element)
+      - [x] https://github.com/arnodel/golua a Lua 5.4 implementation
+      	- No releases, last commit Febraury 2023
+      - [ ] https://github.com/RyouZhang/go-lua (a Lua Jit and embedable environment)
+      	- Has releases, last commit April 2023, last release was April 2023
+      - [ ] https://github.com/yuin/gopher-lua Lua 5.1 implementation
+      	- Has releases, last commit Oct 2023, two releases
+      - [ ] https://github.com/Shopify/go-lua A Lua 5.2 imeplementation
+      	- No releases, last commit October 2022, used by Shopify since 2014
+      - [ ] https://github.com/vlorc/lua-vm
+      	- Has releases, last commit in 2021, last release Nov. 2020
+
 
 ## Someday, maybe
 
