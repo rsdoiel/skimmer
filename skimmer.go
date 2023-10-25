@@ -175,8 +175,16 @@ func (app *Skimmer) webget(href string, userAgent string) (*gofeed.Feed, error) 
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("http error: %s", res.Status)
 	}
+	// See if we can clean up some stuff that'll break feed parsing
+	src, err := io.ReadAll(res.Body)
+	if err != err {
+		return nil, err
+	}
+	src = bytes.ReplaceAll(src , []byte(``), []byte(``))
+	buf := bytes.NewBuffer(src)
+
 	fp := gofeed.NewParser()
-	feed, err := fp.Parse(res.Body)
+	feed, err := fp.Parse(buf)
 	if err != nil {
 		return nil, fmt.Errorf("feed error for %q, %s", href, err)
 	}
