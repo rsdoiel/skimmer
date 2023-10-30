@@ -8,6 +8,8 @@
 
 ## Next
 
+- [ ] User-Agents may need to be set per feed, this may require a change in format of the urls file, CSV is starting to make more sense to manage a list of urls
+- [ ] stats should use the current saved/read queues in reflecting current stats or trigger updates for read/saved then run stats
 - [x] Add a stats option to show the items in the database
 - [ ] Look implementing full text search on items table via FTS4 or FTS5
 	- expose as command line option and in interactive mode

@@ -85,7 +85,7 @@ type Skimmer struct {
 func NewSkimmer(appName string) (*Skimmer, error) {
 	app := new(Skimmer)
 	app.AppName = appName
-	app.UserAgent = fmt.Sprintf("%s/%s (%s.%s)", app.AppName, strings.TrimPrefix(Version, "v"), ReleaseDate, ReleaseHash)
+	app.UserAgent = fmt.Sprintf("User-Agent: %s/%s", app.AppName, strings.TrimPrefix(Version, "v"))
 	return app, nil
 }
 
