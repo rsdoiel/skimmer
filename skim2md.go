@@ -70,8 +70,7 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 
 `, app.Title, time.Now().Format("2006-01-02 15:04:05"))
 	} else {
-		fmt.Fprintf(app.out, `# Updates
-
+		fmt.Fprintf(app.out, `
 (date: %s)
 
 `, time.Now().Format("2006-01-02 15:04:05"))
