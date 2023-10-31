@@ -345,12 +345,14 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 // Download the contents from app.Urls
 func (app *Skimmer) Download(db *sql.DB) error {
 	eCnt := 0
+	/*
 	dsn := app.DBName
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
+	*/
 	for k, v := range app.Urls {
 		feed, err := app.webget(k, app.UserAgent)
 		if err != nil {
@@ -472,7 +474,7 @@ func (app *Skimmer) Write(db *sql.DB) error {
 			tags        string
 		)
 		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
-			fmt.Fprint(app.eout, "%s\n", err)
+			fmt.Fprintf(app.eout, "%s\n", err)
 			continue
 		}
 		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {

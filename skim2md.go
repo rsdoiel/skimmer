@@ -92,7 +92,7 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 			tags        string
 		)
 		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
-			fmt.Fprint(app.eout, "%s\n", err)
+			fmt.Fprintf(app.eout, "%s\n", err)
 			continue
 		}
 		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
