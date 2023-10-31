@@ -180,7 +180,7 @@ func (app *Skimmer) webget(href string, userAgent string) (*gofeed.Feed, error) 
 	if err != err {
 		return nil, err
 	}
-	src = bytes.ReplaceAll(src , []byte(``), []byte(``))
+	src = bytes.ReplaceAll(src , []byte(``), []byte(``))
 	buf := bytes.NewBuffer(src)
 
 	fp := gofeed.NewParser()
