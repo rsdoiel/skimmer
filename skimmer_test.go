@@ -23,12 +23,12 @@ https://www.theguardian.com/us/rss "~The Guardian US Edition"
 		t.FailNow()
 	}
 	expectedKey := "https://laist.com/index.atom"
-	expectedVal := `"~The LAist"`
+	expectedVal := `The LAist`
 	if val, ok := m[expectedKey]; !ok {
 		t.Errorf("expected value for %q, key not found in map", expectedKey)
 		t.FailNow()
-	} else if strings.Compare(val, expectedVal) != 0 {
-		t.Errorf("expected %q, got %q", expectedVal, val)
+	} else if strings.Compare(val.Label, expectedVal) != 0 {
+		t.Errorf("expected %q, got %q", expectedVal, val.Label)
 
 	}
 }

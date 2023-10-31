@@ -16,6 +16,13 @@ As mentioned skimmer was very much inspired by newsboat. In fact it uses newsboa
 
 The newsboat urls file boils down to a list of urls, one per line with an optional "label" added after the url using the notation of space, double quote, tilde, label content followed by a double quote and end of line. That's really easy to parse.  You can add comments using the hash mark with hash mark and anything to the right ignored when the urls are read in to skimmer.
 
+UPDATE: 2023-10-31, In using the experimental skimmer app in practive I have found some feed sources still white list access based on user agent strings
+(not something that is concidered a "best practice" today). Unfortunately it is highly in conconsistant to know which string is accepted. As a result
+maintaining a list of feeds is really challenging unless you can specific a user agent string per feed source for those that need it. As a result I've
+add an additional column of content to the newsboat url file format. A user agent can be included after a feed's label by adding a space and the user
+agent string value.
+
+
 ## skimmer's SQLite 3 database
 
 skimmer uses SQLite 3 database with two tables for managing feeds and their content. It doesn't use newsboat's cache.db. The name of the skimmer database ends in ".skim" and pairs with the name of the urls file. Example if I have

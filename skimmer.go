@@ -23,28 +23,50 @@ import (
 
 // ParseURLList takes a filename and byte slice source, parses the contents
 // returning a map of urls to labels and an error value.
-func ParseURLList(fName string, src []byte) (map[string]string, error) {
-	urls := map[string]string{}
+func ParseURLList(fName string, src []byte) (map[string]*FeedSource, error) {
+	urls := map[string]*FeedSource{}
 	// Parse the url value collecting our keys and values
 	s := bufio.NewScanner(bytes.NewBuffer(src))
-	key, val := "", ""
+	key, val, userAgent := "", "", ""
 	line := 1
 	for s.Scan() {
 		txt := strings.TrimSpace(s.Text())
-		if !strings.HasPrefix(txt, "#") && txt != "" {
-			parts := strings.SplitN(txt, " ", 2)
+		if strings.HasPrefix(txt, "#") {
+			txt = ""
+		}
+		if txt != "" {
+			parts := strings.SplitN(txt, ` "`, 2)
 			switch len(parts) {
 			case 1:
-				key, val = parts[0], ""
+				key, val, userAgent = parts[0], "", ""
 			case 2:
-				key, val = parts[0], parts[1]
+				key, val, userAgent = parts[0], parts[1], ""
+				pos := strings.LastIndex(val, `"`)
+				if pos > -1 {
+					if len(val) > pos {
+						userAgent = strings.TrimSpace(val[pos+1:])
+					}
+					val = strings.TrimSpace(val[0:pos])
+				}
+				val = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(val, `~`), `"`))
 			}
-			urls[key] = val
-			key, val = "", ""
+			urls[key] = &FeedSource{
+				Url: key,
+				Label: val,
+				UserAgent: userAgent,
+			}
 		}
 		line++
 	}
 	return urls, nil
+}
+
+// FeedSource describes the source of a feed. It includes the URL,
+// an optional label, user agent string.
+type FeedSource struct {
+	Url string `json:"url,omitempty"`
+	Label string `json:"label,omitempty"`
+	UserAgent string `json:"user_agent,omitempty"`
 }
 
 // Skimmer is the application structure that holds configuration
@@ -62,7 +84,7 @@ type Skimmer struct {
 	DBName string `json:"db_name,omitempty"`
 
 	// Urls are the map of urls to labels to be fetched or read
-	Urls map[string]string `json:"urls,omitempty"`
+	Urls map[string]*FeedSource `json:"urls,omitempty"`
 
 	// Limit contrains the number of items shown
 	Limit int `json:"limit,omitempty"`
@@ -313,7 +335,7 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 	defer rows.Close()
 	lines := []string{}
 	if app.Urls == nil {
-		app.Urls = map[string]string{}
+		app.Urls = map[string]*FeedSource{}
 	}
 	for rows.Next() {
 		var (
@@ -329,11 +351,11 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 		if link != "" {
 			if title != "" {
 				lines = append(lines, fmt.Sprintf(`%s "~%s"%s`, link, title, "\n"))
-				app.Urls[link] = fmt.Sprintf(`"~%s"`, title)
+				app.Urls[link].Label = title
 			} else {
 				lines = append(lines, fmt.Sprintf(`%s%s`, link, "\n"))
-				app.Urls[link] = ""
 			}
+			app.Urls[link].Url = link
 		}
 	}
 	if err = rows.Err(); err != nil {
@@ -354,13 +376,17 @@ func (app *Skimmer) Download(db *sql.DB) error {
 	defer db.Close()
 	*/
 	for k, v := range app.Urls {
-		feed, err := app.webget(k, app.UserAgent)
+		userAgent := v.UserAgent
+		if userAgent == "" {
+			userAgent = app.UserAgent
+		}
+		feed, err := app.webget(k, userAgent)
 		if err != nil {
 			eCnt++
 			fmt.Fprintf(app.eout, "failed to get %q, %s\n", k, err)
 			continue
 		}
-		if err := saveChannel(db, k, v, feed); err != nil {
+		if err := saveChannel(db, k, v.Label, feed); err != nil {
 			fmt.Fprintf(app.eout, "failed to save chanel %q, %s\n", k, err)
 			continue
 		}
@@ -370,14 +396,14 @@ func (app *Skimmer) Download(db *sql.DB) error {
 		rptTime := time.Now()
 		reportProgress := false
 		tot := feed.Len()
-		fmt.Fprintf(app.out, "processing %d items from %s\n", tot, v)
+		fmt.Fprintf(app.out, "processing %d items from %+v\n", tot, v)
 		i := 0
 		for _, item := range feed.Items {
 			if strings.HasPrefix(item.Link, "/") {
 				item.Link = fmt.Sprintf("%s%s", strings.TrimSuffix(feed.Link, "/"), item.Link)
 			}
 			// Add items from feed to database table
-			if err := saveItem(db, v, item); err != nil {
+			if err := saveItem(db, v.Label, item); err != nil {
 				return err
 			}
 			if rptTime, reportProgress = CheckWaitInterval(rptTime, (20 * time.Second)); reportProgress {
@@ -385,7 +411,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 			}
 			i++
 		}
-		fmt.Fprintf(app.out, "processed %d/%d from %s\n", i, tot, v)
+		fmt.Fprintf(app.out, "processed %d/%d from %+v\n", i, tot, v)
 	}
 	if eCnt > 0 {
 		return fmt.Errorf("%d errors encounter downloading feeds", eCnt)
