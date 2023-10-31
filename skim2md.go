@@ -69,6 +69,12 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 (date: %s)
 
 `, app.Title, time.Now().Format("2006-01-02 15:04:05"))
+	} else {
+		fmt.Fprintf(app.out, `# Updates
+
+(date: %s)
+
+`, time.Now().Format("2006-01-02 15:04:05"))
 	}
 	stmt := SQLDisplayItems
 	rows, err := db.Query(stmt, "saved")
