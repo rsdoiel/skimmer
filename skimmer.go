@@ -396,7 +396,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 		rptTime := time.Now()
 		reportProgress := false
 		tot := feed.Len()
-		fmt.Fprintf(app.out, "processing %d items from %+v\n", tot, v)
+		fmt.Fprintf(app.out, "processing %d items from %s %s\n", tot, v.Label, v.UserAgent)
 		i := 0
 		for _, item := range feed.Items {
 			if strings.HasPrefix(item.Link, "/") {
@@ -411,7 +411,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 			}
 			i++
 		}
-		fmt.Fprintf(app.out, "processed %d/%d from %+v\n", i, tot, v)
+		fmt.Fprintf(app.out, "processed %d/%d from %s %s\n", i, tot, v.Label, v.UserAgent)
 	}
 	if eCnt > 0 {
 		return fmt.Errorf("%d errors encounter downloading feeds", eCnt)
