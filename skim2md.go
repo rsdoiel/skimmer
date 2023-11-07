@@ -34,11 +34,14 @@ func NewSkim2Md(appName string) (*Skim2Md, error) {
 func (app *Skim2Md) DisplayItem(link string, title string, description string, updated string, published string, label string, tags string) error {
 	// Then see about formatting things.
 	pressTime := published
-	if updated != "" {
-		pressTime = updated
-	}
 	if len(pressTime) > 10 {
 		pressTime = pressTime[0:10]
+	}
+	if updated != "" {
+		if len(updated) > 10 {
+			updated = updated[0:10]
+		}
+		pressTime += ", updated: " + updated
 	}
 	if strings.HasPrefix(label, `"~`) {
 		label = strings.Trim(label, `"~`)
