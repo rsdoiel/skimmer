@@ -8,7 +8,10 @@
 
 ## Next
 
+- [ ] There are feed like things (e.g. Weather Forcast as DWML documents) I would like to include in news reading, need to figure it if this is in skimmer or related tool
+- [ ] Per feed I need the option to provide specific headers and user agent
 - [ ] User-Agents may need to be set per feed, this may require a change in format of the urls file, CSV is starting to make more sense to manage a list of urls
+	- [ ] NOAA Weather API suggests including a contact email in header string, for problem responses, should provide for that
 - [ ] stats should use the current saved/read queues in reflecting current stats or trigger updates for read/saved then run stats
 - [x] Add a stats option to show the items in the database
 - [ ] Look implementing full text search on items table via FTS4 or FTS5
