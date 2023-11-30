@@ -8,7 +8,12 @@
 
 ## Next
 
-- [ ] There are feed like things (e.g. Weather Forcast as DWML documents) I would like to include in news reading, need to figure it if this is in skimmer or related tool
+- [ ] There are feed like pages and API (e.g. Weather Forcast as DWML documents) I would like to include in news reading, need to figure it if this is in skimmer or related tool
+- [ ] I need a way to save adhoc lists of pages to an RSS feed that can be ingested by skimmer
+- [ ] I need a way to take a web page that has a list of links and transform it into an RSS feed (e.g. for blogs that don't provide RSS but do provide a list of posts in HTML)
+- [ ] Add button to add metadata frontmatter to generated Markdown output in skim2md (needed by Antenna to make archived pages PageFind search friendly)
+- [ ] Add an option to include a "save to pocket" button for each RSS item displayed in skim2md
+    - See https://getpocket.com/publisher/button_docs (shows how to explicitly add a perma link to for use by save to pocket)
 - [ ] Per feed I need the option to provide specific headers and user agent
 - [ ] User-Agents may need to be set per feed, this may require a change in format of the urls file, CSV is starting to make more sense to manage a list of urls
 	- [ ] NOAA Weather API suggests including a contact email in header string, for problem responses, should provide for that
