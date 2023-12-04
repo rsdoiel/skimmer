@@ -65,7 +65,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 %s
 
 <span class="feed-item-link">
-<a href="%s">%s</a> <a href="https://getpocket.com/save" class="pocket-btn" data-lang="en" data-save-url="%s" data-pocket-align="left">Save to Pocket</a>
+<a href="%s">%s</a> <a href="https://getpocket.com/save" class="pocket-btn" data-lang="en" data-save-url="%s">Save to Pocket</a>
 </span>
 
 `, title, description, link, link, link)
