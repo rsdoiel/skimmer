@@ -4,7 +4,7 @@
     "license": "https://spdx.org/licenses/MIT",
     "codeRepository": "git+https://github.com/rsdoiel/skimmer",
     "dateCreated": "2023-10-06",
-    "dateReleased": "2023-10-31",
+    "dateReleased": "2023-11-30",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
     "version": "0.0.8-dev",

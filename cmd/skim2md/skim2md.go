@@ -42,6 +42,12 @@ to the display in a Markdown friendly way.
 -title
 : Set a page title to be included in the output of saved items
 
+-frontmatter
+: add frontmatter to Markdown output
+
+-pocket
+: add "save to pocket" link for each RSS Item displayed
+
 # EXAMPLE
 
 In the example we fetch URL content, read some feeds, save some interactively
@@ -63,11 +69,14 @@ func main() {
 	appName := path.Base(os.Args[0])
 
 	showHelp, showLicense, showVersion := false, false, false
+	frontmatter, pocket := false, false
 	title := ""
 	flag.BoolVar(&showHelp, "help", showHelp, "display help")
 	flag.BoolVar(&showLicense, "license", showLicense, "display license")
 	flag.BoolVar(&showVersion, "version", showVersion, "display version")
 	flag.StringVar(&title, "title", title, "set the page title for output")
+	flag.BoolVar(&frontmatter, "frontmatter", frontmatter, "add frontmatter to output")
+	flag.BoolVar(&pocket, "pocket", frontmatter, "add 'save to pocket' link for RSS items")
 	flag.Parse()
 
 	args := flag.Args()
@@ -96,7 +105,7 @@ func main() {
     }
 	app.Title = title
 
-	if err := app.Run(out, eout, args); err != nil {
+	if err := app.Run(out, eout, args, frontmatter, pocket); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		os.Exit(1)
 	}

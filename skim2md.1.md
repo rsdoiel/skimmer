@@ -1,6 +1,6 @@
-%skim2md(1) skim2md user manual | version 0.0.8-dev 41c2861
+%skim2md(1) skim2md user manual | version 0.0.8-dev c0f6a89
 % R. S. Doiel
-% 2023-11-07
+% 2023-12-04
 
 # NAME 
 
@@ -28,6 +28,12 @@ to the display in a Markdown friendly way.
 
 -title
 : Set a page title to be included in the output of saved items
+
+-frontmatter
+: add frontmatter to Markdown output
+
+-pocket
+: add "save to pocket" link for each RSS Item displayed
 
 # EXAMPLE
 

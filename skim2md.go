@@ -20,6 +20,12 @@ type Skim2Md struct {
 	// when generating the markdown of saved items
 	Title string `json:"title,omitempty"`
 
+	// FrontMatter, if true insert Frontmatter block in Markdown output
+	FrontMatter bool `json:"frontmatter,omitempty"`
+
+	// PocketButton, if true insert a "save to pocket" button for each RSS item output
+	PocketButton bool
+
 	out io.Writer
 	eout io.Writer
 }
@@ -51,7 +57,20 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 	} else {
 		title = fmt.Sprintf("## %s\n\ndate: %s, from: %s", title, pressTime, label)
 	}
-	fmt.Fprintf(app.out, `---
+	if app.PocketButton {
+		fmt.Fprintf(app.out, `---
+
+%s
+
+%s
+
+<span class="feed-item-link">
+<a href="%s">%s</a> <a href="https://getpocket.com/save" class="pocket-btn" data-lang="en" data-save-url="%s" data-pocket-align="left">Save to Pocket</a>
+</span>
+
+`, title, description, link, link, link)
+	} else {
+		fmt.Fprintf(app.out, `---
 
 %s
 
@@ -60,23 +79,33 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 <%s>
 
 `, title, description, link)
+	}
 	return nil
 }
 
 
 // Write, display the contents from database
 func (app *Skim2Md) Write(db *sql.DB) error {
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	if app.FrontMatter {
+		fmt.Fprintf(app.out, "---\n")
+		if app.Title != "" {
+			fmt.Fprintf(app.out, "title: %s\n", app.Title)
+		}
+		fmt.Fprintf(app.out, "updated: %s\n", timestamp)
+		fmt.Fprintf(app.out, "---\n\n")
+	}
 	if app.Title != "" {
 		fmt.Fprintf(app.out, `# %s
 
 (date: %s)
 
-`, app.Title, time.Now().Format("2006-01-02 15:04:05"))
+`, app.Title, timestamp)
 	} else {
 		fmt.Fprintf(app.out, `
 (date: %s)
 
-`, time.Now().Format("2006-01-02 15:04:05"))
+`, timestamp)
 	}
 	stmt := SQLDisplayItems
 	rows, err := db.Query(stmt, "saved")
@@ -105,16 +134,25 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 	if err := rows.Err(); err != nil {
 		return err
 	}
+	if app.PocketButton {
+		fmt.Fprintf(app.out, `
+
+<script type="text/javascript">!function(d,i){if(!d.getElementById(i)){var j=d.createElement("script");j.id=i;j.src="https://widgets.getpocket.com/v1/j/btn.js?v=1";var w=d.getElementById(i);d.body.appendChild(j);}}(document,"pocket-btn-js");</script>
+
+`)
+	}
 	return nil
 }
 
-func (app *Skim2Md) Run(out io.Writer, eout io.Writer, args []string) error {
+func (app *Skim2Md) Run(out io.Writer, eout io.Writer, args []string, frontMatter bool, pocketButton bool) error {
 	if len(args) < 1 {
 		return fmt.Errorf("missing skimmer database file")
 	}
 	if len(args) > 1 {
-		return fmt.Errorf("expected only one skimmer database file")
+		return fmt.Errorf("expected only one skimmer database file %+v", args)
 	}
+	app.FrontMatter = frontMatter
+	app.PocketButton = pocketButton
 	app.out = out
 	app.eout = eout
 	dsn := args[0]
