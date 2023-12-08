@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="EN">
+  <title>R. S. Doiel, Software Engineer/Analyst - TODO</title>
+
+  <link rel="stylesheet" type="text/css"  href="/printfonts/print.css" media="print" />
+  <link rel="stylesheet" type="text/css"  href="/webfonts/fonts.css" media="screen" />
+  <link rel="stylesheet" type="text/css"  href="/css/site.css" media="screen" />
+  <link title="RSS feed for rsdoiel's blog" rel="alternate" type="application/rss+xml" href="https://rsdoiel.github.io/rss.xml" />
+  <link title="markdown source for page" rel="alternative" type="application/markdown" href="TODO.md">
+</head>
+<body>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="user-manual.html">User Manual</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="INSTALL.html">Install</a></li>
+<li><a href="search.html">Project Search</a></li>
+<li><a href="ideas.html">Someday, Maybe</a></li>
+<li><a href="https://github.com/rsdoiel/stngo">GitHub</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+</nav>
+
+<section>
+<!--  <h1>TODO</h1> -->
+
+<h1 id="action-items">Action Items</h1>
+<h2 id="bugs">Bugs</h2>
+<h2 id="next">Next</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />I would like a tool that you can
+point at a URL and it’ll return the feed link if one is found in the
+markup or usually places</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />check in WP location for
+feed</label></li>
+<li><label><input type="checkbox" />Microblog’s location for
+feed</label></li>
+<li><label><input type="checkbox" />Check substack location for
+feed</label></li>
+<li><label><input type="checkbox" />Check for Mastodon’s RSS feed if
+linked in page</label></li>
+<li><label><input type="checkbox" />Check for Bluesky feed if Bluesky
+starts supporting RSS</label></li>
+<li><label><input type="checkbox" />Check medium location of
+feed</label></li>
+<li><label><input type="checkbox" />check for index.xml, rss.xml,
+atom.xml or page basename plus .xml for feed</label></li>
+<li><label><input type="checkbox" />check for the JSON feed
+names</label></li>
+</ul></li>
+<li><label><input type="checkbox" />There are feed like pages and API
+(e.g. Weather Forcast as DWML documents) I would like to include in news
+reading, need to figure it if this is in skimmer or related tool, it
+might even be as simple as writing a suitable Web Component</label></li>
+<li><label><input type="checkbox" />I need a way to take the saved
+content and render a new RSS feed, e.g. a skim2rss</label></li>
+<li><label><input type="checkbox" />I need a way to take a webpage with
+links and render an RSS 2 feed, there is existing software that does
+this, html2rss, checkout
+https://github.com/html2rss/html2rss</label></li>
+<li><label><input type="checkbox" />I need a way to save adhoc lists of
+items to an RSS feed</label></li>
+<li><label><input type="checkbox" />I need a simple tool that can take a
+list saved URLs and generate RSS from them by retrieving them and
+populating an item for each</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />See if there is an existing tool
+like html2rss that does this or if I could just use a Pandoc markdown
+doc as a list and use html2rss</label></li>
+<li><label><input type="checkbox" />figure description and
+link</label></li>
+<li><label><input type="checkbox" />figure out title
+(optional)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />I need a way to take a web page, or
+a list of web pages and transform page links into RSS</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Look at <a
+href="html2rss.github.io">html2rss</a> works but without Ruby that has a
+list of links and transform it into an RSS feed (e.g. for blogs that
+don’t provide RSS but do provide a list of posts in HTML)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />I should think about a skim2html
+that doesn’t rely on Pandoc if I get a decent HTML structure worked
+out</label></li>
+<li><label><input type="checkbox" />Look implementing full text search
+via SQLite on items table via FTS4 or FTS5</label>
+<ul>
+<li>expose as command line option and in interactive mode</li>
+</ul></li>
+<li><label><input type="checkbox" />Evaludate Go Lua implementations,
+extended skimmer will lua filters on input (pre-feed parsing) and on
+gofeed.Feed struct and to filter items in or out from a feed (e.g. flag
+items for “read” or “save” items that have some identifable element) -
+[x] https://github.com/arnodel/golua a Lua 5.4 implementation - No
+releases, last commit Febraury 2023 - [ ]
+https://github.com/RyouZhang/go-lua (a Lua Jit and embedable
+environment) - Has releases, last commit April 2023, last release was
+April 2023 - [ ] https://github.com/yuin/gopher-lua Lua 5.1
+implementation - Has releases, last commit Oct 2023, two releases - [ ]
+https://github.com/Shopify/go-lua A Lua 5.2 imeplementation - No
+releases, last commit October 2022, used by Shopify since 2014 - [ ]
+https://github.com/vlorc/lua-vm - Has releases, last commit in 2021,
+last release Nov. 2020</label></li>
+<li><label><input type="checkbox" checked="" />Reviews newsboat document
+on urls file, make sure I cover what is supported, see
+https://wiki.archlinux.org/title/Newsboat</label></li>
+<li><label><input type="checkbox" checked="" />Document how
+skimmer+skim2md+pandoc can be used to create a personal aggregation page
+(NOTE: See Antenna project, that’s done there)</label></li>
+<li><label><input type="checkbox" checked="" />Per feed I need the
+option to provide specific headers and user agent (NOTE: user agent
+done, not sure I need the header really)</label></li>
+<li><label><input type="checkbox" checked="" />Add an option to list
+items for a specific feed (NOTE: this can be done via SQL query of the
+items table)</label></li>
+<li><label><input type="checkbox" checked="" />User-Agents may need to
+be set per feed, this may require a change in format of the urls file,
+CSV is starting to make more sense to manage a list of urls</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />NOAA Weather API suggests
+including a contact email in header string, for problem responses,
+should provide for that</label></li>
+</ul></li>
+<li><label><input type="checkbox" checked="" />stats should use the
+current saved/read queues in reflecting current stats or trigger updates
+for read/saved then run stats</label></li>
+<li><label><input type="checkbox" checked="" />Add button to add
+metadata frontmatter to generated Markdown output in skim2md (needed by
+Antenna to make archived pages PageFind search friendly)</label></li>
+<li><label><input type="checkbox" checked="" />Add an option to include
+a “save to pocket” button for each RSS item displayed in skim2md</label>
+<ul>
+<li>See https://getpocket.com/publisher/button_docs (shows how to
+explicitly add a perma link to for use by save to pocket)</li>
+</ul></li>
+<li><label><input type="checkbox" checked="" />Add a stats option to
+show the items in the database</label></li>
+</ul>
+<h2 id="someday-maybe">Someday, maybe</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Add SQL based filter options for
+viewing and for the actions of marking read, saved or
+ignoring</label></li>
+<li><label><input type="checkbox" />Add a full text search option to
+look for specific items</label></li>
+<li><label><input type="checkbox" />Add a “goto item” mechanism so I can
+reset what I am viewing in the result list</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />investigate using SQL LIMIT on main
+query to achieve restarting the query just before the desired
+item</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Add support to read Gopher URLs in
+skimmer</label></li>
+<li><label><input type="checkbox" />Add support to read Gemini URLs in
+skimmer</label></li>
+<li><label><input type="checkbox" />Add support to query the item
+database, sort of like dsquery in dataset</label></li>
+<li><label><input type="checkbox" />Add a way to output content to a
+local staging directory and search it with pagefind on
+localhost</label></li>
+<li><label><input type="checkbox" />Add a “open” option in interactive
+mode</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />use a similar setup as newsboat,
+document how to create a bash/bat file to invoke a GUI browser for
+macOS/Windows</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Add an “review editor” mode which
+willl bring the item into a editor session so I can write a blog post
+about it</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Use a wrapping bash/bat file for GUI
+editors like newsboat handles opening a GUI web browser</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Add lua support to add feed
+automation in a manner like Pandoc filters</label></li>
+<li><label><input type="checkbox" />Add a send via Pandoc that takes the
+saved items and builds a web page that then can be opened in the web
+browser</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />see if I can add buttons for save
+link to Pocket</label></li>
+</ul></li>
+</ul>
+</section>
+
+<footer>
+</footer>
+
+</body>
+</html>

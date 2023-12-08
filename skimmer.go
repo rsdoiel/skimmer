@@ -221,7 +221,8 @@ func (app *Skimmer) webget(href string, userAgent string) (*gofeed.Feed, error) 
 	return feed, nil
 }
 
-func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed) error {
+// SaveChannel will write the Channel information to a skimmer channel table.
+func SaveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed) error {
 	/*
 	   link, title, description, feed_link, links,
 	   updated, published,
@@ -275,7 +276,8 @@ func saveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed
 	return nil
 }
 
-func saveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
+// SaveItem saves a gofeed item to the item table in the skimmer database
+func SaveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	var (
 		published string
 		updated   string
@@ -386,7 +388,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 			fmt.Fprintf(app.eout, "failed to get %q, %s\n", k, err)
 			continue
 		}
-		if err := saveChannel(db, k, v.Label, feed); err != nil {
+		if err := SaveChannel(db, k, v.Label, feed); err != nil {
 			fmt.Fprintf(app.eout, "failed to save chanel %q, %s\n", k, err)
 			continue
 		}
@@ -403,7 +405,7 @@ func (app *Skimmer) Download(db *sql.DB) error {
 				item.Link = fmt.Sprintf("%s%s", strings.TrimSuffix(feed.Link, "/"), item.Link)
 			}
 			// Add items from feed to database table
-			if err := saveItem(db, v.Label, item); err != nil {
+			if err := SaveItem(db, v.Label, item); err != nil {
 				return err
 			}
 			if rptTime, reportProgress = CheckWaitInterval(rptTime, (20 * time.Second)); reportProgress {
@@ -460,12 +462,13 @@ func (app *Skimmer) DisplayItem(link string, title string, description string, u
 	if len(pressTime) > 10 {
 		pressTime = pressTime[0:10]
 	}
-	if title == "" {
-		title = fmt.Sprintf("@%s (date: %s)", label, pressTime)
-	} else {
-		title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
-	}
-	fmt.Fprintf(app.out, `---
+	if description != "" {
+		if title == "" {
+			title = fmt.Sprintf("@%s (date: %s)", label, pressTime)
+		} else {
+			title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
+		}
+		fmt.Fprintf(app.out, `---
 
 %s
 
@@ -475,6 +478,15 @@ func (app *Skimmer) DisplayItem(link string, title string, description string, u
 
 %s
 `, title, description, link, tags)
+	} else if title != "" {
+		fmt.Fprintf(app.out, `---
+
+## %s
+
+<%s>
+
+`, title, link)
+	}
 	return nil
 }
 

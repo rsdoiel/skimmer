@@ -4,10 +4,10 @@
     "license": "https://spdx.org/licenses/MIT",
     "codeRepository": "git+https://github.com/rsdoiel/skimmer",
     "dateCreated": "2023-10-06",
-    "dateReleased": "2023-11-30",
+    "dateReleased": "2023-12-07",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
-    "version": "0.0.8-dev",
+    "version": "0.0.8",
     "description": "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.",
     "releaseNotes": "Proof of concept.",
     "developmentStatus": "concept",
@@ -25,7 +25,7 @@
         "GNU Make >= 3.8",
         "Pandoc >= 3.1",
         "SQLite3 >= 3.43",
-        "Go >= 1.21.1"
+        "Go >= 1.21.4"
     ],
     "relatedLink": [
         "https://github.com/mmcdole/gofeed",

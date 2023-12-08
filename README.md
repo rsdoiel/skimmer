@@ -125,7 +125,7 @@ To compile from source you need to have git, make, Pandoc, SQLite3 and Go.
 - Make >= 3.8 (GNU Make)
 - Pandoc > 3
 - SQLite3 > 3.4
-- Go >= 1.21.1
+- Go >= 1.21.4
 
 ### Steps to compile and install
 

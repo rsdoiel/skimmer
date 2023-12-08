@@ -75,7 +75,7 @@ VALUES (
 	SQLDisplayItems = `SELECT link, title, description, 
 	updated, published, label, tags
 FROM items
-WHERE description != "" AND status = ?
+WHERE (description != "" OR title != "") AND status = ?
 ORDER BY published DESC, updated DESC;`
 
 	SQLMarkItem = `UPDATE items SET status = ? WHERE link = ?;`

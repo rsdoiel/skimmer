@@ -23,7 +23,9 @@
     - [ ] See if there is an existing tool like html2rss that does this or if I could just use a Pandoc markdown doc as a list and use html2rss
     - [ ] figure description and link
     - [ ] figure out title (optional)
-- [ ] I need a way to take a web page that has a list of links and transform it into an RSS feed (e.g. for blogs that don't provide RSS but do provide a list of posts in HTML)
+- [ ] I need a way to take a web page, or a list of web pages and transform page links into RSS
+    - [ ] Look at [html2rss](html2rss.github.io) works but without Ruby
+that has a list of links and transform it into an RSS feed (e.g. for blogs that don't provide RSS but do provide a list of posts in HTML)
 - [ ] I should think about a skim2html that doesn't rely on Pandoc if I get a decent HTML structure worked out
 - [ ] Look implementing full text search via SQLite on items table via FTS4 or FTS5
 	- expose as command line option and in interactive mode

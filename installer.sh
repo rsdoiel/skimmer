@@ -4,7 +4,7 @@
 # Set the package name and version to install
 #
 PACKAGE="skimmer"
-VERSION="0.0.8-dev"
+VERSION="0.0.8"
 GIT_GROUP="rsdoiel"
 RELEASE="https://github.com/$GIT_GROUP/$PACKAGE/releases/tag/v$VERSION"
 

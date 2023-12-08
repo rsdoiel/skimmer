@@ -11,7 +11,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.8-dev
+version: 0.0.8
 license-url: "https://spdx.org/licenses/MIT"
 
 
@@ -20,7 +20,7 @@ license-url: "https://spdx.org/licenses/MIT"
 About this software
 ===================
 
-## skimmer 0.0.8-dev
+## skimmer 0.0.8
 
 ### Authors
 
@@ -53,4 +53,4 @@ gofeed package by mmcdole on GitHub.
 - GNU Make &gt;= 3.8
 - Pandoc &gt;= 3.1
 - SQLite3 &gt;= 3.43
-- Go &gt;= 1.21.1
+- Go &gt;= 1.21.4
