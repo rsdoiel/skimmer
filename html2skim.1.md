@@ -1,6 +1,6 @@
-%html2skim(1) html2skim user manual | version 0.0.8 dbeaf0c
+%html2skim(1) html2skim user manual | version 0.0.8 8d7ed02
 % R. S. Doiel
-% 2023-12-07
+% 2023-12-22
 
 # NAME 
 

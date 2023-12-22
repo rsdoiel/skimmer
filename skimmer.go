@@ -171,7 +171,7 @@ func (app *Skimmer) redirectHandler (req *http.Request, via []*http.Request) err
 		}
 		return fmt.Errorf("stopped after 5 redirectos: %s", strings.Join(urlList, ", "))
 	}
-	fmt.Fprintf(app.eout, "redirecting from %s because %s\n", req.URL.String(), http.ErrUseLastResponse)
+	fmt.Fprintf(app.eout, "redirecting to %s because %s\n", req.URL.String(), http.ErrUseLastResponse)
  	return http.ErrUseLastResponse
 }
 
