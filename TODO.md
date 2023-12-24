@@ -56,6 +56,10 @@ that has a list of links and transform it into an RSS feed (e.g. for blogs that 
 
 ## Someday, maybe
 
+- [ ] Add feed detection so I can point at a URL and auto-magically return the feed URL if avaialble
+	- [ ] RSS
+	- [ ] JSON feed
+	- [ ] Atom feed
 - [ ] Add SQL based filter options for viewing and for the actions of marking read, saved or ignoring
 - [ ] Add a full text search option to look for specific items
 - [ ] Add a "goto item" mechanism so I can reset what I am viewing in the result list
