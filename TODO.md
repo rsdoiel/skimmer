@@ -3,6 +3,8 @@
 
 ## Bugs
 
+- [ ] 30x http status (exceptions? 301 and 308) redirects should return a zero error code but should get logged appropriately
+    - [ ] It is possible I should retain a non-zero exit code for http status code 301 Moved Permamently and 308 Permamently Redirected
 
 ## Next
 
