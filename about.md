@@ -11,7 +11,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.9
+version: 0.0.10
 license-url: "https://spdx.org/licenses/MIT"
 
 
@@ -20,7 +20,7 @@ license-url: "https://spdx.org/licenses/MIT"
 About this software
 ===================
 
-## skimmer 0.0.9
+## skimmer 0.0.10
 
 ### Authors
 

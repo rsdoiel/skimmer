@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS items (
 	tags JSON DEFAULT '',
 	channel TEXT,
 	retrieved DATETIME DEFAULT CURRENT_TIMESTAMP,
-	status TEXT DEFAULT ''
+	status TEXT DEFAULT '',
+	dc_ext JSON
 );
 `
 	// SQLResetChannels clear the channels talbe
@@ -55,9 +56,9 @@ categories, feed_type, feed_version
 
 	// Update a feed item in the items table
 	SQLUpdateItem = `INSERT INTO items (
-	link, title, description, updated, published, label)
+	link, title, description, updated, published, label, authors, dc_ext)
 VALUES (
-	?1, ?2, ?3, ?4, ?5, ?6
+	?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8
 ) ON CONFLICT (link) DO
   UPDATE SET title = ?2, description = ?3, updated = ?4,
       published = ?5, label = ?6;`

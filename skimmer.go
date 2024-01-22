@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html"
 	"io"
@@ -288,11 +289,30 @@ func SaveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	if item.PublishedParsed != nil {
 		published = item.PublishedParsed.Format("2006-01-02 15:04:05")
 	}
+	var (
+		dcExt []byte
+		authors []byte
+		err error
+	)
+	if item.Authors != nil {
+		authors, err = json.Marshal(item.Authors)
+		if err != nil {
+			return fmt.Errorf("failed to marshal item.Authors, %s", err)
+		}
+		//fmt.Fprintf(os.Stderr, "DEBUG authors => %s\n", authors)
+	}
+	if item.DublinCoreExt != nil {
+		dcExt, err = json.Marshal(item.DublinCoreExt)
+		if err != nil {
+			return fmt.Errorf("failed to marshal item.DublinCoreExt, %s", err)
+		}
+		//fmt.Fprintf(os.Stderr, "DEBUG dc_ext => %s\n", dcExt)
+	}
 	stmt := SQLUpdateItem
-	_, err := db.Exec(stmt,
+	_, err = db.Exec(stmt,
 		item.Link, item.Title,
 		item.Description, updated, published,
-		feedLabel)
+		feedLabel, string(authors), string(dcExt))
 	if err != nil {
 		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}
