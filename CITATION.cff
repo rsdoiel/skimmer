@@ -12,6 +12,6 @@ authors:
 
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.10
+version: 0.0.12
 license-url: "https://spdx.org/licenses/MIT"
 
