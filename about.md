@@ -12,7 +12,7 @@ authors:
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
 version: 0.0.12
-license-url: "https://spdx.org/licenses/MIT"
+license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 
 
 ---
@@ -31,7 +31,7 @@ About this software
 No no frills feed reader. Inspired by newsboat and yarnc, based on the
 gofeed package by mmcdole on GitHub.
 
-- License: <https://spdx.org/licenses/MIT>
+- License: <https://spdx.org/licenses/AGPL-3.0-or-later>
 - GitHub: <git+https://github.com/rsdoiel/skimmer>
 - Issues: <https://github.com/rsdoiel/skimmer/issues>
 

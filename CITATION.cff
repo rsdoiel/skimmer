@@ -13,5 +13,5 @@ authors:
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
 version: 0.0.12
-license-url: "https://spdx.org/licenses/MIT"
+license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 
