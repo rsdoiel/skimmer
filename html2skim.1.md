@@ -1,4 +1,4 @@
-%html2skim(1) html2skim user manual | version 0.0.12 8f1e0ed
+%html2skim(1) html2skim user manual | version 0.0.13 a1c4848
 % R. S. Doiel
 % 2024-05-20
 

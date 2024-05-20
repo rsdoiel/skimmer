@@ -5,11 +5,12 @@
     "codeRepository": "git+https://github.com/rsdoiel/skimmer",
     "dateCreated": "2023-10-06",
     "dateReleased": "2024-01-22",
+    "dateModify": "2024-05-20",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "description": "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.",
-    "releaseNotes": "Proof of concept, updated dependencies.",
+    "releaseNotes": "Proof of concept, updated dependencies. Updated license AGPL",
     "developmentStatus": "concept",
     "programmingLanguage": [
         "go"
