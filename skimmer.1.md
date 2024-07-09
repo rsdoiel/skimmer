@@ -1,6 +1,6 @@
-%skimmer(1) skimmer user manual | version 0.0.13 ec722d4
+%skimmer(1) skimmer user manual | version 0.0.13 5781ac6
 % R. S. Doiel
-% 2024-05-20
+% 2024-07-09
 
 # NAME
 
