@@ -5,7 +5,7 @@ Installation
 *skimmer* is a command line program run from a shell like Bash. You can find compiled
 version in the [releases](https://github.com/rsdoiel/skimmer/releases/latest) 
 
-## Quick install with curl
+## Quick install with curl or irm
 
 The following curl command can be used to run the installer on most
 POSIX systems. Programs are installed into `$HOME/bin`. `$HOME/bin` will
@@ -15,6 +15,13 @@ following.
 ~~~
 curl https://rsdoiel.github.io/skimmer/installer.sh | sh
 ~~~
+
+On Windows you'd use the following command
+
+~~~
+irm https://rsdoiel.github.io/skimmer/installer.ps1 | iex
+~~~
+
 
 ## Compiled version
 
