@@ -292,6 +292,7 @@ func SaveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 	var (
 		dcExt []byte
 		authors []byte
+		categories []byte
 		err error
 	)
 	if item.Authors != nil {
@@ -308,11 +309,17 @@ func SaveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 		}
 		//fmt.Fprintf(os.Stderr, "DEBUG dc_ext => %s\n", dcExt)
 	}
+	if item.Categories != nil {
+		categories, err = json.Marshal(item.Categories)
+		if err != nil {
+			return fmt.Errorf("failed to marshal item.Categories, %s", err)
+		}
+	}
 	stmt := SQLUpdateItem
 	_, err = db.Exec(stmt,
 		item.Link, item.Title,
 		item.Description, updated, published,
-		feedLabel, string(authors), string(dcExt))
+		feedLabel, string(authors), string(dcExt), string(categories))
 	if err != nil {
 		return fmt.Errorf("%s\nstmt: %s", err, stmt)
 	}

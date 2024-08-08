@@ -56,12 +56,12 @@ categories, feed_type, feed_version
 
 	// Update a feed item in the items table
 	SQLUpdateItem = `INSERT INTO items (
-	link, title, description, updated, published, label, authors, dc_ext)
+	link, title, description, updated, published, label, authors, dc_ext, tags)
 VALUES (
-	?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8
+	?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9
 ) ON CONFLICT (link) DO
   UPDATE SET title = ?2, description = ?3, updated = ?4,
-      published = ?5, label = ?6;`
+      published = ?5, label = ?6, tags = ?9;`
 
 	// Return link and title for Urls formatted output
 	SQLChannelsAsUrls = `SELECT link, title FROM channels ORDER BY link;`
