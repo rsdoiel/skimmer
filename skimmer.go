@@ -489,7 +489,7 @@ func (app *Skimmer) PruneItems(db *sql.DB, pruneDT time.Time) error {
 	return err
 }
 
-func (app *Skimmer) DisplayItem(link string, title string, description string, updated string, published string, label string, tags string) error {
+func (app *Skimmer) DisplayItem(link string, title string, description string, enclosures string, updated string, published string, label string, tags string) error {
 	// Then see about formatting things.
 	pressTime := published
 	if updated != "" {
@@ -504,16 +504,32 @@ func (app *Skimmer) DisplayItem(link string, title string, description string, u
 		} else {
 			title = fmt.Sprintf("## %s\n\ndate: %s", title, pressTime)
 		}
+		var (
+                audioElement string
+                err error
+        )
+        if enclosures != "" {
+                audioElement, err = enclosuresToAudioElement(enclosures)
+                if err != nil {
+                        fmt.Fprintf(app.eout, "could not make audio element for %s, %s", link, err)
+                        audioElement = ""
+                }
+        } else {
+                audioElement = ""
+        }
+
 		fmt.Fprintf(app.out, `---
 
 %s
 
 %s 
 
+%s 
+
 <%s>
 
 %s
-`, title, description, link, tags)
+`, title, description, audioElement, link, tags)
 	} else if title != "" {
 		fmt.Fprintf(app.out, `---
 
@@ -542,16 +558,17 @@ func (app *Skimmer) Write(db *sql.DB) error {
 			link        string
 			title       string
 			description string
+			enclosures  string
 			updated     string
 			published   string
 			label       string
 			tags        string
 		)
-		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
+		if err := rows.Scan(&link, &title, &description, &enclosures, &updated, &published, &label, &tags); err != nil {
 			fmt.Fprintf(app.eout, "%s\n", err)
 			continue
 		}
-		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(link, title, description, enclosures, updated, published, label, tags); err != nil {
 			return err
 		}
 	}
@@ -656,20 +673,21 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 			link        string
 			title       string
 			description string
+			enclosures  string
 			updated     string
 			published   string
 			label       string
 			tags        string
 		)
 		i++
-		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
+		if err := rows.Scan(&link, &title, &description, &enclosures, &updated, &published, &label, &tags); err != nil {
 			fmt.Fprintf(app.eout, "%s\n", err)
 			continue
 		}
 		// Now sanitize each element
 		title = html.UnescapeString(p.Sanitize(title))
 		description = html.UnescapeString(p.Sanitize(description))
-		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(link, title, description, enclosures, updated, published, label, tags); err != nil {
 			return err
 		}
 		// Wait for some input

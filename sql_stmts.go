@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS items (
 	link PRIMARY KEY,
 	title TEXT,
 	description TEXT,
-	enclosures JSON,
+	enclosures JSON DEFAULT '',
 	authors JSON,
 	updated DATETIME,
 	published DATETIME,

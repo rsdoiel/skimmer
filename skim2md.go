@@ -2,10 +2,14 @@ package skimmer
 
 import (
 	"io"
+	"encoding/json"
 	"fmt"
 	"database/sql"
 	"strings"
 	"time"
+	
+	// 3rd Party Packages
+	"github.com/mmcdole/gofeed"
 )
 
 // Skim2Md supports the skim2md cli.
@@ -37,7 +41,7 @@ func NewSkim2Md(appName string) (*Skim2Md, error) {
 	return app, nil
 }
 
-func (app *Skim2Md) DisplayItem(link string, title string, description string, updated string, published string, label string, tags string) error {
+func (app *Skim2Md) DisplayItem(link string, title string, description string, enclosures string, updated string, published string, label string, tags string) error {
 	// Then see about formatting things.
 	pressTime := published
 	if len(pressTime) > 10 {
@@ -57,8 +61,23 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 	} else {
 		title = fmt.Sprintf("## %s\n\ndate: %s, from: %s", title, pressTime, label)
 	}
+	var (
+		audioElement string
+		err error
+	)
+	if enclosures != "" {
+		audioElement, err = enclosuresToAudioElement(enclosures)
+		if err != nil {
+			fmt.Fprintf(app.eout, "could not make audio element for %s, %s", link, err)
+			audioElement = ""
+		}
+	} else {
+		audioElement = ""
+	}
 	if app.PocketButton {
 		fmt.Fprintf(app.out, `---
+
+%s
 
 %s
 
@@ -68,7 +87,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 <a href="%s">%s</a> <a href="https://getpocket.com/save" class="pocket-btn" data-lang="en" data-save-url="%s">Save to Pocket</a>
 </span>
 
-`, title, description, link, link, link)
+`, title, description, audioElement, link, link, link)
 	} else {
 		fmt.Fprintf(app.out, `---
 
@@ -76,9 +95,11 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, u
 
 %s 
 
+%s 
+
 <%s>
 
-`, title, description, link)
+`, title, description, audioElement, link)
 	}
 	return nil
 }
@@ -118,16 +139,17 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 			link        string
 			title       string
 			description string
+			enclosures  string
 			updated     string
 			published   string
 			label       string
 			tags        string
 		)
-		if err := rows.Scan(&link, &title, &description, &updated, &published, &label, &tags); err != nil {
+		if err := rows.Scan(&link, &title, &description, &enclosures, &updated, &published, &label, &tags); err != nil {
 			fmt.Fprintf(app.eout, "%s\n", err)
 			continue
 		}
-		if err := app.DisplayItem(link, title, description, updated, published, label, tags); err != nil {
+		if err := app.DisplayItem(link, title, description, enclosures, updated, published, label, tags); err != nil {
 			return err
 		}
 	}
@@ -166,4 +188,22 @@ func (app *Skim2Md) Run(out io.Writer, eout io.Writer, args []string, frontMatte
 		return err	
 	}
 	return nil
+}
+
+func enclosuresToAudioElement(enclosures string) (string, error) {
+	elements := []*gofeed.Enclosure{}
+	if err := json.Unmarshal([]byte(enclosures), &elements); err != nil {
+		return "", err
+	}
+	parts := []string{}
+	for _, elem := range elements {
+		parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
+	}
+	if len(elements) > 0 {
+		parts = append(parts, `<p>Your browser does not support the audio element.</p>`)
+	}
+
+	return fmt.Sprintf(`<audio controls="controls">
+%s
+</audio>`, strings.Join(parts, "\n\t")), nil
 }
