@@ -81,6 +81,10 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 		audioElement = ""
 		videoElement = ""
 	}
+	mediaElement := strings.Join([]string{
+		audioElement,
+		videoElement,
+	}, "<br>")
 	if app.PocketButton {
 		fmt.Fprintf(app.out, `---
 
@@ -94,7 +98,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 <a href="%s">%s</a> <a href="https://getpocket.com/save" class="pocket-btn" data-lang="en" data-save-url="%s">Save to Pocket</a>
 </span>
 
-`, title, description, strings.Join([]string{audioElement, videoElement}, "<br>"), link, link, link)
+`, title, description, mediaElement, link, link, link)
 	} else {
 		fmt.Fprintf(app.out, `---
 
@@ -106,7 +110,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 
 <%s>
 
-`, title, description, audioElement, link)
+`, title, description, mediaElement, link)
 	}
 	return nil
 }
@@ -223,7 +227,7 @@ func enclosuresToVideoElement(enclosures string) (string, error) {
 	}
 	parts := []string{}
 	for _, elem := range elements {
-		if strings.Contains(elem.Type, "audio") {
+		if strings.Contains(elem.Type, "video") {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
 			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
 		}

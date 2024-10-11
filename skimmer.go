@@ -663,7 +663,7 @@ func (app *Skimmer) RunInteractive(db *sql.DB) error {
 	p.AllowElements("li")
 	p.AllowElements("code")
 	p.AllowElements("pre")
-	p.AllowElements("figure")
+	//p.AllowElements("figure")
 	p.AllowElements("img")
 	p.AllowElements("blockquote")
 	//p.AllowElements("div")
