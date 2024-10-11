@@ -8,9 +8,9 @@
     "dateModify": "2024-10-11",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "description": "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.",
-    "releaseNotes": "Proof of concept, updated dependencies. Added handling for audio enclosures",
+    "releaseNotes": "Proof of concept, updated dependencies. Added handling for audio and video enclosures",
     "developmentStatus": "concept",
     "programmingLanguage": [
         "go"

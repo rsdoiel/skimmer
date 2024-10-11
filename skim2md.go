@@ -63,6 +63,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 	}
 	var (
 		audioElement string
+		videoElement string
 		err          error
 	)
 	if enclosures != "" {
@@ -71,8 +72,14 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 			fmt.Fprintf(app.eout, "could not make audio element for %s, %s", link, err)
 			audioElement = ""
 		}
+		videoElement, err = enclosuresToVideoElement(enclosures)
+		if err != nil {
+			fmt.Fprintf(app.eout, "could not make video element for %s, %s", link, err)
+			videoElement = ""
+		}
 	} else {
 		audioElement = ""
+		videoElement = ""
 	}
 	if app.PocketButton {
 		fmt.Fprintf(app.out, `---
@@ -87,7 +94,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 <a href="%s">%s</a> <a href="https://getpocket.com/save" class="pocket-btn" data-lang="en" data-save-url="%s">Save to Pocket</a>
 </span>
 
-`, title, description, audioElement, link, link, link)
+`, title, description, strings.Join([]string{audioElement, videoElement}, "<br>"), link, link, link)
 	} else {
 		fmt.Fprintf(app.out, `---
 
@@ -198,14 +205,33 @@ func enclosuresToAudioElement(enclosures string) (string, error) {
 	for _, elem := range elements {
 		if strings.Contains(elem.Type, "audio") {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
+			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
 		}
 	}
 	if len(parts) > 0 {
-		parts = append(parts, `<p>Your browser doesn't support this type of audio file</p>`)
-
 		return fmt.Sprintf(`<audio controls="controls">
 %s
 </audio>`, strings.Join(parts, "\n\t")), nil
+	}
+	return "", nil
+}
+
+func enclosuresToVideoElement(enclosures string) (string, error) {
+	elements := []*gofeed.Enclosure{}
+	if err := json.Unmarshal([]byte(enclosures), &elements); err != nil {
+		return "", err
+	}
+	parts := []string{}
+	for _, elem := range elements {
+		if strings.Contains(elem.Type, "audio") {
+			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
+			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
+		}
+	}
+	if len(parts) > 0 {
+		return fmt.Sprintf(`<video controls="controls" width="250">
+%s
+</video>`, strings.Join(parts, "\n\t")), nil
 	}
 	return "", nil
 }

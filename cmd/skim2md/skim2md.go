@@ -26,7 +26,8 @@ var (
 # DESCRIPTION
 
 {app_name} reads a skimmer DB and writes the saved or tagged items 
-to the display in a Markdown friendly way. 
+to the display in a Markdown friendly way.  This includes embedded
+audio and video elements from Podcasts and Audio casts.
 
 # OPTIONS
 
