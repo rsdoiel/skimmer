@@ -4,7 +4,7 @@
 # Set the package name and version to install
 #
 PACKAGE="skimmer"
-VERSION="0.0.14"
+VERSION="0.0.15"
 GIT_GROUP="rsdoiel"
 RELEASE="https://github.com/$GIT_GROUP/$PACKAGE/releases/tag/v$VERSION"
 if [ "$PKG_VERSION" != "" ]; then

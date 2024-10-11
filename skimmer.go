@@ -228,7 +228,7 @@ func SaveChannel(db *sql.DB, link string, feedLabel string, channel *gofeed.Feed
 	   link, title, description, feed_link, links,
 	   updated, published,
 	   authors, language, copyright, generator,
-	   categories, feed_type, feed_version
+	   categories, feed_type, feed_version, enclosure
 	*/
 	var (
 		err           error
@@ -293,6 +293,7 @@ func SaveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 		dcExt []byte
 		authors []byte
 		categories []byte
+		enclosures []byte
 		err error
 	)
 	if item.Authors != nil {
@@ -315,10 +316,18 @@ func SaveItem(db *sql.DB, feedLabel string, item *gofeed.Item) error {
 			return fmt.Errorf("failed to marshal item.Categories, %s", err)
 		}
 	}
+	if item.Enclosures != nil {
+		enclosures, err = json.Marshal(item.Enclosures)
+		if err != nil {
+			return fmt.Errorf("failed to marshal item.Enclosures, %s", err)
+		}
+	}
 	stmt := SQLUpdateItem
 	_, err = db.Exec(stmt,
 		item.Link, item.Title,
-		item.Description, updated, published,
+		item.Description, 
+		string(enclosures),
+		updated, published,
 		feedLabel, string(authors), string(dcExt), string(categories))
 	if err != nil {
 		return fmt.Errorf("%s\nstmt: %s", err, stmt)

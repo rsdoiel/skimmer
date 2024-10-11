@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS items (
 	link PRIMARY KEY,
 	title TEXT,
 	description TEXT,
+	enclosures JSON,
 	authors JSON,
 	updated DATETIME,
 	published DATETIME,
@@ -56,12 +57,12 @@ categories, feed_type, feed_version
 
 	// Update a feed item in the items table
 	SQLUpdateItem = `INSERT INTO items (
-	link, title, description, updated, published, label, authors, dc_ext, tags)
+	link, title, description, enclosures, updated, published, label, authors, dc_ext, tags)
 VALUES (
-	?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9
+	?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10
 ) ON CONFLICT (link) DO
-  UPDATE SET title = ?2, description = ?3, updated = ?4,
-      published = ?5, label = ?6, tags = ?9;`
+  UPDATE SET title = ?2, description = ?3, enclosures = ?4, updated = ?5,
+      published = ?6, label = ?7, tags = ?10;`
 
 	// Return link and title for Urls formatted output
 	SQLChannelsAsUrls = `SELECT link, title FROM channels ORDER BY link;`
@@ -73,7 +74,7 @@ VALUES (
 	SQLItemStats = `SELECT IIF(status = '', 'unread', status) AS status, COUNT(*) FROM items GROUP BY status ORDER BY status`
 
 	// SQLDisplayItems returns a list of items in decending chronological order.
-	SQLDisplayItems = `SELECT link, title, description, 
+	SQLDisplayItems = `SELECT link, title, description, enclosures,
 	updated, published, label, tags
 FROM items
 WHERE (description != "" OR title != "") AND status = ?

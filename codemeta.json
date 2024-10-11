@@ -4,11 +4,11 @@
     "license": "https://spdx.org/licenses/AGPL-3.0-or-later",
     "codeRepository": "git+https://github.com/rsdoiel/skimmer",
     "dateCreated": "2023-10-06",
-    "dateReleased": "2024-08-08",
-    "dateModify": "2024-08-08",
+    "dateReleased": "2024-10-10",
+    "dateModify": "2024-10-10",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "description": "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.",
     "releaseNotes": "Proof of concept, updated dependencies. Mapped gofeed item categories to tags",
     "developmentStatus": "concept",
@@ -26,7 +26,7 @@
         "GNU Make >= 3.8",
         "Pandoc >= 3.1",
         "SQLite3 >= 3.43",
-        "Go >= 1.22.6"
+        "Go >= 1.23.2"
     ],
     "relatedLink": [
         "https://github.com/mmcdole/gofeed",
