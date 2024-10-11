@@ -1,13 +1,13 @@
 package skimmer
 
 import (
-	"io"
+	"database/sql"
 	"encoding/json"
 	"fmt"
-	"database/sql"
+	"io"
 	"strings"
 	"time"
-	
+
 	// 3rd Party Packages
 	"github.com/mmcdole/gofeed"
 )
@@ -30,7 +30,7 @@ type Skim2Md struct {
 	// PocketButton, if true insert a "save to pocket" button for each RSS item output
 	PocketButton bool
 
-	out io.Writer
+	out  io.Writer
 	eout io.Writer
 }
 
@@ -63,7 +63,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 	}
 	var (
 		audioElement string
-		err error
+		err          error
 	)
 	if enclosures != "" {
 		audioElement, err = enclosuresToAudioElement(enclosures)
@@ -103,7 +103,6 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 	}
 	return nil
 }
-
 
 // Write, display the contents from database
 func (app *Skim2Md) Write(db *sql.DB) error {
@@ -185,7 +184,7 @@ func (app *Skim2Md) Run(out io.Writer, eout io.Writer, args []string, frontMatte
 	defer db.Close()
 
 	if err := app.Write(db); err != nil {
-		return err	
+		return err
 	}
 	return nil
 }
@@ -197,13 +196,16 @@ func enclosuresToAudioElement(enclosures string) (string, error) {
 	}
 	parts := []string{}
 	for _, elem := range elements {
-		parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
+		if strings.Contains(elem.Type, "audio") {
+			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
+		}
 	}
-	if len(elements) > 0 {
-		parts = append(parts, `<p>Your browser does not support the audio element.</p>`)
-	}
+	if len(parts) > 0 {
+		parts = append(parts, `<p>Your browser doesn't support this type of audio file</p>`)
 
-	return fmt.Sprintf(`<audio controls="controls">
+		return fmt.Sprintf(`<audio controls="controls">
 %s
 </audio>`, strings.Join(parts, "\n\t")), nil
+	}
+	return "", nil
 }
