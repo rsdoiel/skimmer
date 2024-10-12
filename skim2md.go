@@ -207,7 +207,7 @@ func enclosuresToAudioElement(enclosures string) (string, error) {
 	}
 	parts := []string{}
 	for _, elem := range elements {
-		if strings.Contains(elem.Type, "audio") {
+		if strings.Contains(elem.Type, "audio") && elem.Length != "" {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
 			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
 		}
@@ -227,7 +227,7 @@ func enclosuresToVideoElement(enclosures string) (string, error) {
 	}
 	parts := []string{}
 	for _, elem := range elements {
-		if strings.Contains(elem.Type, "video") {
+		if strings.Contains(elem.Type, "video") && elem.Length != "" {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
 			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
 		}
