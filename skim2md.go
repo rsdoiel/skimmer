@@ -211,7 +211,7 @@ func enclosuresToAudioElement(enclosures string) (string, error) {
 		if strings.Contains(elem.Type, "audio") && elem.Length != "" {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
 			if downloadLink == "" {
-				downloadLink = fmt.Sprintf(`<a href=%q target="_blank">Download %s</a>`, elem.URL, elem.Type)
+				downloadLink = fmt.Sprintf(`<a href=%q target="_blank">download %s</a>`, elem.URL, elem.Type)
 			}
 		}
 	}
@@ -234,7 +234,7 @@ func enclosuresToVideoElement(enclosures string) (string, error) {
 		if strings.Contains(elem.Type, "video") && elem.Length != "" {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
 			if downloadLink == "" {
-				downloadLink = fmt.Sprintf(`<a href=%q target="_blank">Download %s</a>`, elem.URL, elem.Type)
+				downloadLink = fmt.Sprintf(`<a href=%q target="_blank">download %s</a>`, elem.URL, elem.Type)
 			}
 		}
 	}
