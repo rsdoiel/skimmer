@@ -11,7 +11,7 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.17
+version: 0.0.18
 license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 
 
@@ -20,7 +20,7 @@ license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 About this software
 ===================
 
-## skimmer 0.0.17
+## skimmer 0.0.18
 
 ### Authors
 
