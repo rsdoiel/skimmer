@@ -213,7 +213,7 @@ func enclosuresToAudioElement(enclosures string) (string, error) {
 		}
 	}
 	if len(parts) > 0 {
-		return fmt.Sprintf(`<audio controls="controls">
+		return fmt.Sprintf(`<audio crossorigin="anonymous" controls="controls">
 %s
 </audio>`, strings.Join(parts, "\n\t")), nil
 	}
@@ -233,7 +233,7 @@ func enclosuresToVideoElement(enclosures string) (string, error) {
 		}
 	}
 	if len(parts) > 0 {
-		return fmt.Sprintf(`<video controls="controls" width="250">
+		return fmt.Sprintf(`<video crossorigin="anonymous" controls="controls" width="250">
 %s
 </video>`, strings.Join(parts, "\n\t")), nil
 	}
