@@ -206,16 +206,19 @@ func enclosuresToAudioElement(enclosures string) (string, error) {
 		return "", err
 	}
 	parts := []string{}
+	downloadLink := ""
 	for _, elem := range elements {
 		if strings.Contains(elem.Type, "audio") && elem.Length != "" {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
-			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
+			if downloadLink == "" {
+				downloadLink = fmt.Sprintf(`<a href=%q target="_blank">Download %s</a>`, elem.URL, elem.Type)
+			}
 		}
 	}
 	if len(parts) > 0 {
 		return fmt.Sprintf(`<audio crossorigin="anonymous" controls="controls">
 %s
-</audio>`, strings.Join(parts, "\n\t")), nil
+</audio> %s`, strings.Join(parts, "\n\t"), downloadLink), nil
 	}
 	return "", nil
 }
@@ -226,16 +229,19 @@ func enclosuresToVideoElement(enclosures string) (string, error) {
 		return "", err
 	}
 	parts := []string{}
+	downloadLink := ""
 	for _, elem := range elements {
 		if strings.Contains(elem.Type, "video") && elem.Length != "" {
 			parts = append(parts, fmt.Sprintf(`<source type="%s" src="%s"></source>`, elem.Type, elem.URL))
-			parts = append(parts, fmt.Sprintf(`<a href=%q target="_blank">%s</a>`, elem.URL, elem.Type))
+			if downloadLink == "" {
+				downloadLink = fmt.Sprintf(`<a href=%q target="_blank">Download %s</a>`, elem.URL, elem.Type)
+			}
 		}
 	}
 	if len(parts) > 0 {
 		return fmt.Sprintf(`<video crossorigin="anonymous" controls="controls" width="250">
 %s
-</video>`, strings.Join(parts, "\n\t")), nil
+</video> %s`, strings.Join(parts, "\n\t"), downloadLink), nil
 	}
 	return "", nil
 }
