@@ -8,9 +8,9 @@
     "dateModify": "2024-10-16",
     "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
     "name": "skimmer",
-    "version": "0.0.18",
+    "version": "0.0.19",
     "description": "No no frills feed reader. Inspired by newsboat and yarnc, based on the gofeed package by mmcdole on GitHub.",
-    "releaseNotes": "Proof of concept, updated dependencies. audio and video enclosures now have crossorigin attribute set to annonymous",
+    "releaseNotes": "Proof of concept, updated dependencies.",
     "developmentStatus": "concept",
     "programmingLanguage": [
         "go"
