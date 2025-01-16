@@ -11,16 +11,16 @@ authors:
     orcid: "https://orcid.org/0000-0003-0900-6903"
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.19
+version: 0.0.20
 license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 
-
+date-released: 2024-10-16
 ---
 
 About this software
 ===================
 
-## skimmer 0.0.19
+## skimmer 0.0.20
 
 ### Authors
 
@@ -53,4 +53,4 @@ gofeed package by mmcdole on GitHub.
 - GNU Make &gt;= 3.8
 - Pandoc &gt;= 3.1
 - SQLite3 &gt;= 3.43
-- Go &gt;= 1.23.2
+- Go &gt;= 1.23.5

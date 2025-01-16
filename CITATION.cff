@@ -12,6 +12,7 @@ authors:
 
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.19
+version: 0.0.20
 license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 
+date-released: 2024-10-16
