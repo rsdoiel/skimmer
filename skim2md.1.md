@@ -1,4 +1,4 @@
-%skim2md(1) skim2md user manual | version 0.0.20 625bb36
+%skim2md(1) skim2md user manual | version 0.0.20 04827ab
 % R. S. Doiel
 % 2025-01-16
 
