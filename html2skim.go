@@ -11,7 +11,7 @@ import (
 
 	// 3rd Party packages
 	"github.com/gocolly/colly/v2"
-	"github.com/kayako/bluemonday"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/mmcdole/gofeed"
 )
 

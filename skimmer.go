@@ -18,7 +18,7 @@ import (
 
 	// 3rd Party Packages
 	_ "github.com/glebarez/go-sqlite"
-	"github.com/kayako/bluemonday"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/mmcdole/gofeed"
 )
 
