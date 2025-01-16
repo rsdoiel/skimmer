@@ -6,7 +6,7 @@ require (
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/microcosm-cc/bluemonday v1.0.27
-	github.com/mmcdole/gofeed v1.3.0
+	github.com/mmcdole/gofeed v1.3.1-0.20250103001757-1a928bdf4a47
 )
 
 require (
