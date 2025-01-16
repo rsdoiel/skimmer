@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="EN">
+  <title>R. S. Doiel, Software Engineer/Analyst - skimmer.1</title>
+
+  <link rel="stylesheet" type="text/css"  href="/printfonts/print.css" media="print" />
+  <link rel="stylesheet" type="text/css"  href="/webfonts/fonts.css" media="screen" />
+  <link rel="stylesheet" type="text/css"  href="/css/site.css" media="screen" />
+  <link title="RSS feed for rsdoiel's blog" rel="alternate" type="application/rss+xml" href="https://rsdoiel.github.io/rss.xml" />
+  <link title="markdown source for page" rel="alternative" type="application/markdown" href="skimmer.1.md">
+</head>
+<body>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="user-manual.html">User Manual</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="INSTALL.html">Install</a></li>
+<li><a href="search.html">Project Search</a></li>
+<li><a href="ideas.html">Someday, Maybe</a></li>
+<li><a href="https://github.com/rsdoiel/stngo">GitHub</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+</nav>
+
+<section>
+<!--  <h1>skimmer.1</h1> -->
+
+<h1 id="name">NAME</h1>
+<p>skimmer</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>skimmer <a href="#options">OPTIONS</a> FILENAME [DATESTAMP]</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>skimmer is a lightweight feed reader inspired by <a
+href="https://newsboat.org">newsboat</a> and <a
+href="https://git.mills.io/yarnsocial/yarn">yarnc</a>. skimmer is very
+minimal and lacks features. That is skimmer’s best feature. skimmer
+tries to do two things well.</p>
+<ul>
+<li>Read a list of URLs and fetch the items and saving them to an SQLite
+3 database</li>
+<li>Display the contents of the SQLite3 database in reverse
+chronological order</li>
+</ul>
+<p>That’s it. That is skimmer secret power. It does only two things.
+There is no elaborate user interface beyond standard input, standard
+output and standard error found on POSIX type operating systems.</p>
+<p>skimmer needs to know what feed items to download and display. This
+done by providing a newsboat style URLs file. The feeds are read and the
+channel and item information is stored in an SQLite3 database of a
+similarly named file but with the <code>.skim</code> extension. When you
+want to read the downloaded items you invoke skimmer again with the
+<code>.skim</code> file. This allows you to easily maintain separate
+list of feeds to skim and potentially re-use the feed output.</p>
+<p>Presently skimmer is focused on reading RSS 2, Atom and
+jsonfeeds.</p>
+<p>The output format uses Pandoc’s style of markdown markup. - “—”
+starts the item record - This is followed by “##” (aka H2), followed by
+a date (updated or published), followed by title or if none an
+“@<LABEL>” where LABEL is the feed’s title. - Next is the link line
+(link is in angle brackets) - Finally this is wrapped up by the
+description content.</p>
+<h1 id="options">OPTIONS</h1>
+<dl>
+<dt>-help</dt>
+<dd>
+display help
+</dd>
+<dt>-license</dt>
+<dd>
+display license
+</dd>
+<dt>-version</dt>
+<dd>
+display version and release hash
+</dd>
+<dt>-limit N</dt>
+<dd>
+display the N most recent items.
+</dd>
+<dt>-prune</dt>
+<dd>
+The deletes items from the items table in the skimmer database that are
+older than the date or timestamp provided after the skimmer filename.
+Timestamp can be specified in several ways. An alias of “today” would
+remove all items older than today (this is the oposite behavior of
+reading items). If “now” is specified then all items older then the
+current time would be removed. Otherwise time can be specified as a date
+in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
+</dd>
+<dt>-i, -interactive</dt>
+<dd>
+display an item and prompt for next action. e.g. (n)ext, (s)ave, (q)uit.
+If you press enter the next item will be displayed without marking
+changing the items state (e.g. marking it read). If you press “n” the
+item will be marked as read before displaying the next item. If you
+press “s” the saved and next item will be displayed. Pressing “q” will
+quit interactive mode without changing the last item’s state.
+</dd>
+<dt>-urls</dt>
+<dd>
+Output the contents of the SQLite 3 database channels table as a
+newsboat style URLs list
+</dd>
+</dl>
+<h1 id="example">EXAMPLE</h1>
+<p>Create a “my-news.skim” database from “my-news.urls”.</p>
+<pre><code>{app_name] my-news.urls</code></pre>
+<p>Now that my-news.skim exists we can read it with</p>
+<pre><code>skimmer my-news.skim</code></pre>
+<p>Update and read interactively.</p>
+<pre><code>skimmer my-news.urls
+skimmer -i my-news.skim</code></pre>
+<p>skimmer can prune it’s own database and also limit the count of items
+displayed. In this example we’re pruning all the items older than today
+and displaying the recent five items.</p>
+<pre><code>skimmer -prune -limit 5 my-news.skim today</code></pre>
+<p>If I limit the number of items I am reading to about 100 or so I’ve
+found that this combination works nice.</p>
+<pre><code>skimmer -limit 100 my-news.skim | pandoc -f markdown -t plain | less -R</code></pre>
+<h1 id="acknowledgments">Acknowledgments</h1>
+<p>This project is an experiment it would not be possible without the
+authors of newsboat, SQLite3, Pandoc and mmcdole’s gofeed package have
+provided excellent free software to the planet. - RSD, 2023-10-07</p>
+</section>
+
+<footer>
+</footer>
+
+</body>
+</html>
