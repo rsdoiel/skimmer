@@ -8,10 +8,10 @@ based on the gofeed package by mmcdole on GitHub."
 authors:
   - family-names: Doiel
     given-names: R. S.
-    orcid: "https://orcid.org/0000-0003-0900-6903"
+    orcid: ""
 
 repository-code: "git+https://github.com/rsdoiel/skimmer"
-version: 0.0.20
+version: 0.0.21
 license-url: "https://spdx.org/licenses/AGPL-3.0-or-later"
 
 date-released: 2024-10-16
@@ -20,7 +20,7 @@ date-released: 2024-10-16
 About this software
 ===================
 
-## skimmer 0.0.20
+## skimmer 0.0.21
 
 ### Authors
 
