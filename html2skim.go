@@ -10,8 +10,8 @@ import (
 	"time"
 
 	// 3rd Party packages
-	//"github.com/gocolly/colly/v2"
-	"github.com/rsdoiel/colly/v2" // upstream colly is has very stale dependencies, abandoned? Using fork for now. 2025-01-16 RSD
+	"github.com/gocolly/colly/v2"
+	//"github.com/rsdoiel/colly/v2" // upstream colly is has very stale dependencies, abandoned? Using fork for now. 2025-01-16 RSD
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/mmcdole/gofeed"
 )
