@@ -64,16 +64,20 @@ space, double quote, tilde, label content followed by a double quote and
 end of line. That’s really easy to parse. You can add comments using the
 hash mark with hash mark and anything to the right ignored when the urls
 are read in to skimmer.</p>
-<p>UPDATE: 2023-10-31, In using the experimental skimmer app in practive
+<p>UPDATE: 2023-10-31, In using the experimental skimmer app in practice
 I have found some feed sources still white list access based on user
-agent strings (not something that is concidered a “best practice”
-today). Unfortunately it is highly in conconsistant to know which string
-is accepted. As a result maintaining a list of feeds is really
+agent strings. Unfortunately it is highly inconsistently to know which
+string is accepted. As a result maintaining a list of feeds is really
 challenging unless you can specific a user agent string per feed source
 for those that need it. As a result I’ve add an additional column of
 content to the newsboat url file format. A user agent can be included
 after a feed’s label by adding a space and the user agent string
 value.</p>
+<p>UPDATE: 2025-02-14, I’ve been relying on skimmer to browse my RSS
+feeds collections for a couple years now. By and large it works OK. I’ve
+noticed as various social media platforms support or continue to support
+RSS that my use as grown. I don’t know if this will be sustainted with
+the current “AI Bot” problem that is melting down the web right now.</p>
 <h2 id="skimmers-sqlite-3-database">skimmer’s SQLite 3 database</h2>
 <p>skimmer uses SQLite 3 database with two tables for managing feeds and
 their content. It doesn’t use newsboat’s cache.db. The name of the

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="EN">
+  <title>R. S. Doiel, Software Engineer/Analyst - dts_port</title>
+
+  <link rel="stylesheet" type="text/css"  href="/printfonts/print.css" media="print" />
+  <link rel="stylesheet" type="text/css"  href="/webfonts/fonts.css" media="screen" />
+  <link rel="stylesheet" type="text/css"  href="/css/site.css" media="screen" />
+  <link title="RSS feed for rsdoiel's blog" rel="alternate" type="application/rss+xml" href="https://rsdoiel.github.io/rss.xml" />
+  <link title="markdown source for page" rel="alternative" type="application/markdown" href="dts_port.md">
+</head>
+<body>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="user-manual.html">User Manual</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="INSTALL.html">Install</a></li>
+<li><a href="search.html">Project Search</a></li>
+<li><a href="ideas.html">Someday, Maybe</a></li>
+<li><a href="https://github.com/rsdoiel/stngo">GitHub</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+</nav>
+
+<section>
+<!--  <h1>dts_port</h1> -->
+
+<h1 id="denotypescript-port-of-skimmer">Deno+TypeScript Port of
+Skimmer</h1>
+<p>TypeScript seems a good fit for evolving Skimmer and this is an
+exploration of porting the Go codebase to TypeScript to be compiled by
+Deno. Just as the Go code relies and external package to do the heavy
+lifting I can rely on <a href="https://github.com/scripting">Dave
+Winer’s JavaScript modules</a> to do the heavy listing.</p>
+<h2 id="help-packages">Help Packages</h2>
+<p>The follow packages are NPM based but can be used with Deno via add
+using the “npm:” prefix.</p>
+<ul>
+<li><a
+href="https://github.com/scripting/reallysimple">reallysimple</a>,
+support various common feed formats, RSS, Atom and JSON feed</li>
+<li><a href="https://github.com/scripting/opmlPackage">OPML</a>, Dave’s
+OPML package for lists of feeds</li>
+</ul>
+<h2 id="working-with-deno">Working with deno</h2>
+<p>The following is how I added these packages for use in Skimmer</p>
+<pre class="shell"><code>deno add npm:reallysimple
+deno add npm:opml</code></pre>
+<h2 id="configuration">Configuration</h2>
+<p>The current Skimmer uses a feed file format derived from Newsboat
+feed lists. I will need to port the Go implementation of that to
+TypeScript if I wish to continue to support that simple text format.
+OPML import and export makes allot of sense as that would be
+interoperatable with other software. YAML would also be a useful
+configuration format given the readability, easy of typing and support
+across programming languages.</p>
+<h2 id="human-rendered-views">Human rendered views</h2>
+<p>Skimmer’s utilies has the ability to turn the harvested feeds into
+various formats like Markdown. There are several approach.</p>
+<ul>
+<li><a href="https://handlebarsjs.com">Handlebarsjs</a>, the Handlebars
+template engine (NPM import)</li>
+<li><a href="https://jsr.io/@libs/markdown"><span class="citation"
+data-cites="libs/markdown">@libs/markdown</span></a>, markdown to HTML
+(jsr import)</li>
+</ul>
+<h2 id="future-ideas-to-explore-after-port">Future ideas to explore
+after port</h2>
+<p>Today Skimmer is focused on reading and support a public reading site
+like <a href="https://rsdoiel.github.io/antenna">Antenna</a>. Tomorrows
+Skimmer should be fully read write enabling anyone to have their own
+Antenna as a turn key solution. An OPML list can be used to identify
+collections and the order they are to be listed on the landing page of
+the Antenna. Each collection itself could be an OPML file inguested into
+the channels tables of an SQLite3 database (each database represents a
+collection). Active collections would be use to produce an Antenna like
+website using a simple generic design.</p>
+<p>Extending Skimmer to be a feed builder. A blog is a list of POSTs.
+POST are a text file which might have metadata beyond the text content
+(e.g. title, pubDate, createDate, etc). The Metadata of a POST maps to
+the attributes of an RSS 2 item. As sugject there should be a way of
+pointing at a Markdown document and directly generate an RSS item in a
+feed. The channel of the item could be used to build a local copy of the
+a markdown blog in the file system. This would be similar to how
+<code>pttk blogit</code> works but tied into the SQLite3 database. Items
+could be rendered out to a local file system providing the basis for a
+statically hosted blog.</p>
+<p>Workflow for publishable feed:</p>
+<ul>
+<li>Write a Markdonw document some where on local disk,
+<code>edit LOCAL_DOC_NAME</code></li>
+<li>Use skimit to ingest the Markdown document, gest it with skimmer,
+<code>skimit LOCAL_DOC_NAME TARGET_FEED_NAME</code></li>
+<li>Render into a blog structured,
+<code>skim2blog TARGET_FEED_NAME [OPTIONS]</code></li>
+<li>Render RSS for blog,
+<code>skim2rss TARGET_FEED_NAME [OPTIONS]</code></li>
+</ul>
+<p>Why is this important? A small social network can be formed from two
+or more end points that both use RSS. The Antenna project shows that a
+single person can aggregate their own news and not overburden the remote
+website. It’s small ammount of procesing that can be done on an SBC like
+a Raspberry Pi 3 or 4.</p>
+<p>A means of also browsing content by hash tags and “at” tag would make
+it more like a social web engine, similarly leveraging the at tags. OPML
+can be used to ready build a person’s Antenna.</p>
+<p>NOTE: Blue Sky and Mastodon already support RSS output.</p>
+<h2 id="things-to-document">Things to document</h2>
+<ul>
+<li>Discovering a basic feed source for a website (e.g. RSS or Atom)
+<ul>
+<li>Wordpress</li>
+<li>Blue Sky</li>
+<li>Mastodon</li>
+<li>Medium</li>
+<li>Substack</li>
+<li>Viewing the HTML source</li>
+</ul></li>
+<li>Using a list of feeds
+<ul>
+<li>Newsboat text file</li>
+<li>OPML</li>
+</ul></li>
+<li>Generating a “local” feed</li>
+<li>Running a blog from a “local” feed</li>
+<li>Quoting another POST in a “local” feed</li>
+<li>Hash tag clouds and facet</li>
+<li>@ tag clouds and facets</li>
+</ul>
+</section>
+
+<footer>
+</footer>
+
+</body>
+</html>

@@ -1,32 +1,39 @@
 
-# skimmer
+# Skimmer Project
 
-skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and **yarnc** from [yarn.social](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and deliberately lacks features.  That is to say skimmer's best feature is what it doesn't do. skimmer tries to do two things well.
+The Skimmer Project includes two tools that use a common SQLite 3 database for working with feed content.
+They are **skimmer** and **ladle**.
+
+**skimmer** is a lightweight feed reader inspired by [newsboat](https://newsboat.org). skimmer is very minimal and deliberately lacks features. It has less features than newsboat. I think skimmer's best feature is what it doesn't do. skimmer tries to do two things well.
 
 1. Read a list of URLs, fetch the feeds and write the items to an SQLite 3 database
-2. Display the items in the SQLite 3 database in reverse chronological order
+2. Display the items from the SQLite 3 database in reverse chronological order
 
-That's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems. Even if you invoke it in "interactive" mode your choices are limited, press enter and go to next item, press "n" and mark the item read, press "s" and save the item, press "q" and quit interactive mode.
+That's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems. 
 
-By storing the item information in an SQLite3 database (like newsboat's cache.db file) I can re-purpose the feed content as needed. An example would be generating a personal news aggregation page. Another might be to convert the entries to BibTeX and manage them as reference. Lots of options are possible.
+If you invoke Skimmer's "interactive" mode your choices are still very limited. 
+
+- press enter and go to next item
+- press "n" and mark the item read
+- press "s" and mark the item "save" the item
+- press "q" and quit interactive mode.
+
+By storing the item information in an SQLite3 database (like newsboat's cache.db file) I can re-purpose the feed content as needed. An example is my [Antenna](https://rsdoiel.github.io/antenna) experiment. It is a personal news aggregation website. Another might be to convert the entries to BibTeX and manage them as reference. Lots of options are possible. The key here is the SQLite3 database file.
 
 ## skimmer's url list
 
-As mentioned skimmer was very much inspired by newsboat. In fact it uses newsboat's urls list format. That's because skimmer isn't trying to replace newsboat as a reader of all feeds but instead gives me more options for how I read the feeds I've collected.
+As mentioned skimmer was very much inspired by newsboat. In fact it uses and enhanced version of newsboat's urls list format. That's because skimmer isn't trying to replace newsboat as a reader of all feeds but instead gives me more options for what I can do with the feeds I've collected.
 
-The newsboat urls file boils down to a list of urls, one per line with an optional "label" added after the url using the notation of space, double quote, tilde, label content followed by a double quote and end of line. That's really easy to parse.  You can add comments using the hash mark with hash mark and anything to the right ignored when the urls are read in to skimmer.
+The newsboat urls file boils down to a list of urls, one per line with an optional "label" added after the url. That "label" is expressed as a double quote, tilde, label content followed by a double quote. One feed per line. That's really easy to parse.  You can add comments using the hash mark with hash mark and anything to the right ignored when the urls are read in to skimmer. Skimmer adds a third item on an feed's line. After the label you can include the agent string you want to use when interacting with the feed's host. That capability was added in October 2023.
 
-UPDATE: 2023-10-31, In using the experimental skimmer app in practive I have found some feed sources still white list access based on user agent strings
-(not something that is concidered a "best practice" today). Unfortunately it is highly in conconsistant to know which string is accepted. As a result
-maintaining a list of feeds is really challenging unless you can specific a user agent string per feed source for those that need it. As a result I've
-add an additional column of content to the newsboat url file format. A user agent can be included after a feed's label by adding a space and the user
-agent string value.
+> UPDATE: 2023-10-31, In using the experimental skimmer app in practice I have found some feed sources still white list access based on user agent strings. Unfortunately it is highly inconsistently to know which string is accepted. As a result maintaining a list of feeds is really challenging unless you can specific a user agent string per feed source for those that need it. As a result I've add an additional column of content to the newsboat url file format. A user agent can be included after a feed's label by adding a space and the user agent string value.
 
+>UPDATE: 2025-02-14, I've been relying on skimmer to browse my RSS feeds collections for a couple years now. By and large it works. Since I started Skimmer I've noticed how the new crop of social media platforms have also included RSS support. You can follow people using RSS feeds on Mastodon, BlueSky, and Threads. While we're also experiencing an AI driven bot meltdown on the web my hope is that RSS feed practices will continue.
 
-## skimmer's SQLite 3 database
+## Skimmer's SQLite 3 database
 
-skimmer uses SQLite 3 database with two tables for managing feeds and their content. It doesn't use newsboat's cache.db. The name of the skimmer database ends in ".skim" and pairs with the name of the urls file. Example if I have
-a urls list named "my_news.txt" skimmer will use a database file (and create it if it doesn't exist) called "my_news.skim".  Each time skimmer reads the urls file it will replace the content in the skimmer database file except for any notations about a given item having been read or saved.
+Skimmer uses SQLite 3 databases to hold collections of feeds and their items. It doesn't use newsboat's cache.db but is very much inspired by it. The name of a Skimmer database ends in ".skim" and pairs with the name of the urls in a Skimmer url LIST. file. Example if I have
+a urls list named "my_news.txt" the **skimmer** program will use a database file (and create it if it doesn't exist) called "my_news.skim".  Each time skimmer reads the urls file it will replace the content in the skimmer database file except for any notations about a given item having been read or saved.
 
 ## skimmer feed types
 
