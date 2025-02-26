@@ -35,19 +35,22 @@ export class Skimmer {
 			this.errors.push(`failed to open ${filename} database`);
 			return false;
 		}
-		const query = db.prepare<[string, string]>(stmt);
+		//const query = db.prepare<[string, string]>(stmt);
+		const query = db.prepare(stmt);
 		let ok: boolean = true;
+		const self = this;
 		for (const row of query.iter()) {
 			console.log(`DEBUG fetch row -> ${row.link}, ${row.title}`);
 			const urlFeed: string = row.link;
-			reallysimple.readFeed(urlFeed, function(err: {[key:string]: string}, theFeed: string) {
+			reallysimple.readFeed(urlFeed, function(err: {[key:string]: string}, theFeed: string): any {
 				if (err) {
-					this.errors.push(err.message);
+					self.errors.push(err.message);
 					ok = false;
 				} else {
 					//FIXME: push into the items table.
 					console.log(JSON.stringify(theFeed, undefined, 2));
 				}
+				return;
 			});
 		}
 		query.finalize();
