@@ -111,6 +111,7 @@ test: clean build
 
 clean: 
 	-go clean
+	-rm *.bak 2>/dev/null
 	-if [ -d bin ]; then rm -fR bin; fi
 	-if [ -d dist ]; then rm -fR dist; fi
 	-if [ -d testout ]; then rm -fR testout; fi
