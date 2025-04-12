@@ -3,8 +3,19 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "skimmer"
-abstract: "No no frills feed reader. Inspired by newsboat and yarnc,
-based on the gofeed package by mmcdole on GitHub."
+abstract: "Skimmer is a lightweight feed reader inspired by <a
+href="https://newsboat.org">newsboat</a>. skimmer is very minimal and
+deliberately lacks features. Skimmer’s best feature is what it doesn’t
+do. Skimmer tries to do two things well.<br />
+Read a list of URLs, fetch the feeds and write the items to an SQLite 3
+databaseDisplay the items in the SQLite 3 database in reverse
+chronological order<br />
+That’s it. That is skimmer secret power. It does only two things. There
+is no elaborate user interface beyond standard input, standard output
+and standard error found on POSIX type operating systems. Even if you
+invoke it in “interactive” mode your choices are limited, press enter
+and go to next item, press “n” and mark the item read, press “s” and
+save the item, press “q” and quit interactive mode."
 authors:
   - family-names: Doiel
     given-names: R. S.
@@ -28,8 +39,19 @@ About this software
 
 
 
-No no frills feed reader. Inspired by newsboat and yarnc, based on the
-gofeed package by mmcdole on GitHub.
+Skimmer is a lightweight feed reader inspired by <a
+href="https://newsboat.org">newsboat</a>. skimmer is very minimal and
+deliberately lacks features. Skimmer’s best feature is what it doesn’t
+do. Skimmer tries to do two things well.<br />
+Read a list of URLs, fetch the feeds and write the items to an SQLite 3
+databaseDisplay the items in the SQLite 3 database in reverse
+chronological order<br />
+That’s it. That is skimmer secret power. It does only two things. There
+is no elaborate user interface beyond standard input, standard output
+and standard error found on POSIX type operating systems. Even if you
+invoke it in “interactive” mode your choices are limited, press enter
+and go to next item, press “n” and mark the item read, press “s” and
+save the item, press “q” and quit interactive mode.
 
 - License: <https://spdx.org/licenses/AGPL-3.0-or-later>
 - GitHub: <git+https://github.com/rsdoiel/skimmer>
