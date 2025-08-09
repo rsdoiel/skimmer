@@ -59,10 +59,10 @@ CITATION.cff: .FORCE
 	cmt codemeta.json CITATION.cff
 
 about.md: .FORCE 
-	cmt codemetaa.json about.md
+	cmt codemeta.json about.md
 
 installer.sh: .FORCE
-	cmt codmeta.json installer.sh
+	cmt codemeta.json installer.sh
 	@git add -f installer.sh
 
 installer.ps1: .FORCE

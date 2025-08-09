@@ -29,41 +29,65 @@
 <section>
 <!--  <h1>README</h1> -->
 
-<h1 id="skimmer">skimmer</h1>
-<p>skimmer is a lightweight feed reader inspired by <a
-href="https://newsboat.org">newsboat</a> and <strong>yarnc</strong> from
-<a href="https://git.mills.io/yarnsocial/yarn">yarn.social</a>. skimmer
-is very minimal and deliberately lacks features. That is to say
+<h1 id="skimmer-project">Skimmer Project</h1>
+<p>The Skimmer Project is a set of tools for working with feeds. It
+currently drives the <a
+href="https://rsdoiel.github.io/antenna">Antenna</a> project.</p>
+<p>Skimmer originated as a simple terminal based feed reader.</p>
+<p><strong>skimmer</strong> is a lightweight feed reader inspired by <a
+href="https://newsboat.org">newsboat</a>. skimmer is very minimal and
+deliberately lacks features. It has less features than newsboat. I think
 skimmer’s best feature is what it doesn’t do. skimmer tries to do two
 things well.</p>
 <ol type="1">
 <li>Read a list of URLs, fetch the feeds and write the items to an
 SQLite 3 database</li>
-<li>Display the items in the SQLite 3 database in reverse chronological
-order</li>
+<li>Display the items from the SQLite 3 database in reverse
+chronological order</li>
 </ol>
 <p>That’s it. That is skimmer secret power. It does only two things.
 There is no elaborate user interface beyond standard input, standard
-output and standard error found on POSIX type operating systems. Even if
-you invoke it in “interactive” mode your choices are limited, press
-enter and go to next item, press “n” and mark the item read, press “s”
-and save the item, press “q” and quit interactive mode.</p>
+output and standard error found on POSIX type operating systems.</p>
+<p>If you invoke Skimmer’s “interactive” mode your choices are still
+very limited.</p>
+<ul>
+<li>press enter and go to next item</li>
+<li>press “n” and mark the item read</li>
+<li>press “s” and mark the item “save” the item</li>
+<li>press “q” and quit interactive mode.</li>
+</ul>
 <p>By storing the item information in an SQLite3 database (like
 newsboat’s cache.db file) I can re-purpose the feed content as needed.
-An example would be generating a personal news aggregation page. Another
-might be to convert the entries to BibTeX and manage them as reference.
-Lots of options are possible.</p>
+An example is my <a href="https://rsdoiel.github.io/antenna">Antenna</a>
+experiment. It is a personal news aggregation website. Another might be
+to convert the entries to BibTeX and manage them as reference. Lots of
+options are possible. The key here is the SQLite3 database file.</p>
+<p>included in the Go based part of the project are a few additional
+tools that helped in creating Antenna. Longer run I am thinking about
+changing horses to Deno compiled TypeScript to take advantage of the
+work that Dave Winer has done, see <a
+href="https://github.com/scripting"
+class="uri">https://github.com/scripting</a>. increasing I see Skimmer
+evolving from feed reading and link blogging tool to something more
+generalized like serving as a post creation tool allowing for publishing
+static content in Markdown through RSS feeds delivering Markdown content
+to straight up blogging and micro blogging.</p>
 <h2 id="skimmers-url-list">skimmer’s url list</h2>
 <p>As mentioned skimmer was very much inspired by newsboat. In fact it
-uses newsboat’s urls list format. That’s because skimmer isn’t trying to
-replace newsboat as a reader of all feeds but instead gives me more
-options for how I read the feeds I’ve collected.</p>
+uses and enhanced version of newsboat’s urls list format. That’s because
+skimmer isn’t trying to replace newsboat as a reader of all feeds but
+instead gives me more options for what I can do with the feeds I’ve
+collected.</p>
 <p>The newsboat urls file boils down to a list of urls, one per line
-with an optional “label” added after the url using the notation of
-space, double quote, tilde, label content followed by a double quote and
-end of line. That’s really easy to parse. You can add comments using the
-hash mark with hash mark and anything to the right ignored when the urls
-are read in to skimmer.</p>
+with an optional “label” added after the url. That “label” is expressed
+as a double quote, tilde, label content followed by a double quote. One
+feed per line. That’s really easy to parse. You can add comments using
+the hash mark with hash mark and anything to the right ignored when the
+urls are read in to skimmer. Skimmer adds a third item on an feed’s
+line. After the label you can include the agent string you want to use
+when interacting with the feed’s host. That capability was added in
+October 2023.</p>
+<blockquote>
 <p>UPDATE: 2023-10-31, In using the experimental skimmer app in practice
 I have found some feed sources still white list access based on user
 agent strings. Unfortunately it is highly inconsistently to know which
@@ -73,17 +97,23 @@ for those that need it. As a result I’ve add an additional column of
 content to the newsboat url file format. A user agent can be included
 after a feed’s label by adding a space and the user agent string
 value.</p>
+</blockquote>
+<blockquote>
 <p>UPDATE: 2025-02-14, I’ve been relying on skimmer to browse my RSS
-feeds collections for a couple years now. By and large it works OK. I’ve
-noticed as various social media platforms support or continue to support
-RSS that my use as grown. I don’t know if this will be sustainted with
-the current “AI Bot” problem that is melting down the web right now.</p>
-<h2 id="skimmers-sqlite-3-database">skimmer’s SQLite 3 database</h2>
-<p>skimmer uses SQLite 3 database with two tables for managing feeds and
-their content. It doesn’t use newsboat’s cache.db. The name of the
-skimmer database ends in “.skim” and pairs with the name of the urls
-file. Example if I have a urls list named “my_news.txt” skimmer will use
-a database file (and create it if it doesn’t exist) called
+feeds collections for a couple years now. By and large it works. Since I
+started Skimmer I’ve noticed how the new crop of social media platforms
+have also included RSS support. You can follow people using RSS feeds on
+Mastodon, BlueSky, and Threads. While we’re also experiencing an AI
+driven bot meltdown on the web my hope is that RSS feed practices will
+continue.</p>
+</blockquote>
+<h2 id="skimmers-sqlite-3-database">Skimmer’s SQLite 3 database</h2>
+<p>Skimmer uses SQLite 3 databases to hold collections of feeds and
+their items. It doesn’t use newsboat’s cache.db but is very much
+inspired by it. The name of a Skimmer database ends in “.skim” and pairs
+with the name of the urls in a Skimmer url LIST. file. Example if I have
+a urls list named “my_news.txt” the <strong>skimmer</strong> program
+will use a database file (and create it if it doesn’t exist) called
 “my_news.skim”. Each time skimmer reads the urls file it will replace
 the content in the skimmer database file except for any notations about
 a given item having been read or saved.</p>
