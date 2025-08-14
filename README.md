@@ -1,8 +1,9 @@
 
 # Skimmer Project
 
-The Skimmer Project includes two tools that use a common SQLite 3 database for working with feed content.
-They are **skimmer** and **ladle**.
+The Skimmer Project is a set of tools for working with feeds. It currently drives the [Antenna](https://rsdoiel.github.io/antenna) project.
+
+Skimmer originated as a simple terminal based feed reader. 
 
 **skimmer** is a lightweight feed reader inspired by [newsboat](https://newsboat.org). skimmer is very minimal and deliberately lacks features. It has less features than newsboat. I think skimmer's best feature is what it doesn't do. skimmer tries to do two things well.
 
@@ -19,6 +20,8 @@ If you invoke Skimmer's "interactive" mode your choices are still very limited.
 - press "q" and quit interactive mode.
 
 By storing the item information in an SQLite3 database (like newsboat's cache.db file) I can re-purpose the feed content as needed. An example is my [Antenna](https://rsdoiel.github.io/antenna) experiment. It is a personal news aggregation website. Another might be to convert the entries to BibTeX and manage them as reference. Lots of options are possible. The key here is the SQLite3 database file.
+
+included in the Go based part of the project are a few additional tools that helped in creating Antenna. Longer run I am thinking about changing horses to Deno compiled TypeScript to take advantage of the work that Dave Winer has done, see <https://github.com/scripting>.  increasing I see Skimmer evolving from feed reading and link blogging tool to something more generalized like serving as a post creation tool allowing for publishing static content in Markdown through RSS feeds delivering Markdown content to straight up blogging and micro blogging.
 
 ## skimmer's url list
 

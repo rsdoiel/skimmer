@@ -42,14 +42,7 @@ DIST_FOLDERS = bin/*
 build: version.go $(PROGRAMS) man CITATION.cff about.md installer.sh installer.ps1
 
 version.go: .FORCE
-	echo '' | pandoc --from t2t --to plain \
-		--metadata-file codemeta.json \
-		--metadata package=$(PROJECT) \
-		--metadata version=$(VERSION) \
-		--metadata release_date=$(RELEASE_DATE) \
-		--metadata release_hash=$(RELEASE_HASH) \
-		--template codemeta-version-go.tmpl \
-		LICENSE >version.go
+	cmt codemeta.json version.go
 
 $(PROGRAMS): $(PACKAGE)
 	@mkdir -p bin
@@ -63,22 +56,17 @@ $(MAN_PAGES): .FORCE
 	pandoc $@.md --from markdown --to man -s >man/man1/$@
 
 CITATION.cff: .FORCE
-	@cat codemeta.json | sed -E   's/"@context"/"at__context"/g;s/"@type"/"at__type"/g;s/"@id"/"at__id"/g' >_codemeta.json
-	@echo '' | pandoc --metadata title="Cite $(PROJECT)" --metadata-file=_codemeta.json --template=codemeta-cff.tmpl >CITATION.cff
+	cmt codemeta.json CITATION.cff
 
 about.md: .FORCE 
-	@cat codemeta.json | sed -E 's/"@context"/"at__context"/g;s/"@type"/"at__type"/g;s/"@id"/"at__id"/g' >_codemeta.json
-	@echo "" | pandoc --metadata-file=_codemeta.json --template codemeta-about.tmpl >about.md 2>/dev/null;
-	@if [ -f _codemeta.json ]; then rm _codemeta.json; fi
+	cmt codemeta.json about.md
 
 installer.sh: .FORCE
-	@echo '' | pandoc --metadata title="Installer" --metadata git_org_or_person="$(GIT_GROUP)" --metadata-file codemeta.json --template codemeta-bash-installer.tmpl >installer.sh
-	@chmod 775 installer.sh
+	cmt codemeta.json installer.sh
 	@git add -f installer.sh
 
 installer.ps1: .FORCE
-	@echo '' | pandoc --metadata title="Installer" --metadata git_org_or_person="$(GIT_GROUP)" --metadata-file codemeta.json --template codemeta-ps1-installer.tmpl >installer.ps1
-	@chmod 775 installer.ps1
+	cmt codemeta.json installer.ps1
 	@git add -f installer.ps1
 
 clean-website:
@@ -123,6 +111,7 @@ test: clean build
 
 clean: 
 	-go clean
+	-rm *.bak 2>/dev/null
 	-if [ -d bin ]; then rm -fR bin; fi
 	-if [ -d dist ]; then rm -fR dist; fi
 	-if [ -d testout ]; then rm -fR testout; fi
