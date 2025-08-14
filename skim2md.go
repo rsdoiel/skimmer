@@ -166,13 +166,6 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 	if err := rows.Err(); err != nil {
 		return err
 	}
-	if app.PocketButton {
-		fmt.Fprintf(app.out, `
-
-<script type="text/javascript">!function(d,i){if(!d.getElementById(i)){var j=d.createElement("script");j.id=i;j.src="https://widgets.getpocket.com/v1/j/btn.js?v=1";var w=d.getElementById(i);d.body.appendChild(j);}}(document,"pocket-btn-js");</script>
-
-`)
-	}
 	return nil
 }
 

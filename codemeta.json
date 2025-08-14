@@ -12,8 +12,13 @@
     }
   ],
   "dateCreated": "2023-10-06",
-  "datePublished": "2024-10-16",
+  "dateModified": "2025-08-14",
+  "datePublished": "2025-08-14",
   "description": "Skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org). skimmer is very minimal and deliberately lacks features.  Skimmer's best feature is what it doesn't do. Skimmer tries to do two things well.\n\n1. Read a list of URLs, fetch the feeds and write the items to an SQLite 3 database\n2. Display the items in the SQLite 3 database in reverse chronological order\n\nThat's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems. Even if you invoke it in \"interactive\" mode your choices are limited, press enter and go to next item, press \"n\" and mark the item read, press \"s\" and save the item, press \"q\" and quit interactive mode.",
+  "keywords": [
+    "RSS",
+    "Website genertor"
+  ],
   "name": "skimmer",
   "license": "https://spdx.org/licenses/AGPL-3.0-or-later",
   "operatingSystem": [
@@ -23,7 +28,8 @@
     "Raspberry Pi OS"
   ],
   "programmingLanguage": [
-    "go"
+    "Go",
+    "TypeScript"
   ],
   "relatedLink": [
     "https://github.com/mmcdole/gofeed",
@@ -31,14 +37,19 @@
     "https://sqlite.org"
   ],
   "softwareRequirements": [
+    "Go >= 1.24.6",
+    "Deno >= 2.4.4"
+  ],
+  "softwareSuggestions": [
     "Git >= 2.3",
     "GNU Make >= 3.8",
     "Pandoc >= 3.1",
-    "SQLite3 >= 3.43",
-    "Go >= 1.23.5"
+    "SQLite3 >= 3.43"
   ],
-  "version": "0.0.21",
-  "developmentStatus": "concept",
+  "version": "0.0.22",
+  "developmentStatus": "wip",
   "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
-  "releaseNotes": "Proof of concept, updated dependencies."
+  "releaseNotes": "Removed support for getpocket.com, Mozilla ended it. Preparing for a major rewrite.",
+  "copyrightYear": 2025,
+  "copyrightHolder": "R. S. Doiel"
 }

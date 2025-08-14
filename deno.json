@@ -1,10 +1,12 @@
 {
   "tasks": {
-    "skimmer.ts": "deno compile --allow-env --allow-ffi --allow-read --allow-write  --allow-net --output=bin/skimmer skimmer.ts"
+    "skimmer.ts": "deno compile --allow-env --allow-ffi --allow-read --allow-write  --allow-net --output=bin/skimmer skimmer.ts",
+	"skim2html.ts": "deno compile --allow-env --allow-ffi --allow-read --allow-write --allow-net --output=bin/skim2html skim2html.ts"
   },
   "imports": {
     "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
     "@feed/feed": "jsr:@feed/feed@^1.1.0",
+    "@std/assert": "jsr:@std/assert@^1.0.11",
     "@std/cli": "jsr:@std/cli@^1.0.12",
     "opml": "npm:opml@^0.5.7",
     "reallysimple": "npm:reallysimple@^0.4.29"
