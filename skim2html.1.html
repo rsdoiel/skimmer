@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="EN">
+  <title>R. S. Doiel, Software Engineer/Analyst - skim2html.1</title>
+
+  <link rel="stylesheet" type="text/css"  href="/printfonts/print.css" media="print" />
+  <link rel="stylesheet" type="text/css"  href="/webfonts/fonts.css" media="screen" />
+  <link rel="stylesheet" type="text/css"  href="/css/site.css" media="screen" />
+  <link title="RSS feed for rsdoiel's blog" rel="alternate" type="application/rss+xml" href="https://rsdoiel.github.io/rss.xml" />
+  <link title="markdown source for page" rel="alternative" type="application/markdown" href="skim2html.1.md">
+</head>
+<body>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="index.html">README</a></li>
+<li><a href="user-manual.html">User Manual</a></li>
+<li><a href="LICENSE">LICENSE</a></li>
+<li><a href="INSTALL.html">Install</a></li>
+<li><a href="search.html">Project Search</a></li>
+<li><a href="ideas.html">Someday, Maybe</a></li>
+<li><a href="https://github.com/rsdoiel/stngo">GitHub</a></li>
+<li><a href="about.html">About</a></li>
+</ul>
+</nav>
+
+<section>
+<!--  <h1>skim2html.1</h1> -->
+
+<h1 id="name">NAME</h1>
+<p>skim2html</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p>skim2html <a href="#options">OPTIONS</a> SKIM_DB_FILENAME
+[YAML_CONFIG]</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>skim2html reads a skimmer DB and related YAML file (configuration)
+writes the saved or tagged items to the display in HTML. This includes
+embedded audio and video elements from Podcasts and Audio casts.</p>
+<h1 id="configuration">CONFIGURATION</h1>
+<p>The configuration file is assumed to have a similarly named YAML file
+where the file extension is “.yaml” instead of “.skim”. If YAML_CONFIG
+is provided it’ll be used.</p>
+<p>The configuration file supports the following attributes.</p>
+<dl>
+<dt>title</dt>
+<dd>
+(optional) This title of the feed and resulting page
+</dd>
+<dt>description</dt>
+<dd>
+(optional) Any additional description (included in the head, meta
+element)
+</dd>
+<dt>CSS</dt>
+<dd>
+(optional) Path to CSS file (use <code>@import</code> to include other
+CSS)
+</dd>
+<dt>Modules</dt>
+<dd>
+(optional) a list of paths to ES6 modules to include in the page
+</dd>
+<dt>Header</dt>
+<dd>
+(optional) HTML markup for header (if not included one will be generated
+from title and timestamp)
+</dd>
+<dt>Nav</dt>
+<dd>
+(optional) HTML markup to be included for navigation
+</dd>
+<dt>Footer</dt>
+<dd>
+(optional) HTML markup to be included in the footer
+</dd>
+</dl>
+<h1 id="options">OPTIONS</h1>
+<dl>
+<dt>-help</dt>
+<dd>
+display help
+</dd>
+<dt>-version</dt>
+<dd>
+display version info
+</dd>
+<dt>-license</dt>
+<dd>
+display license
+</dd>
+</dl>
+<h1 id="example">EXAMPLE</h1>
+<p>In the example we fetch URL content, read some feeds, save some
+interactively then use skim2html to generate a webpage of saved or
+tagged items.</p>
+<pre><code>skimmer myfeeds.urls
+skimmer -i myfeeds.skim
+skim2html myfeeds.skim &gt;save_items.html</code></pre>
+<p>You could then process the “saved_items.md” file further with
+Pandoc.</p>
+</section>
+
+<footer>
+</footer>
+
+</body>
+</html>

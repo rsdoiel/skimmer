@@ -12,8 +12,8 @@
     }
   ],
   "dateCreated": "2023-10-06",
-  "dateModified": "2025-08-14",
-  "datePublished": "2025-08-14",
+  "dateModified": "2025-08-15",
+  "datePublished": "2025-08-15",
   "description": "Skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org). skimmer is very minimal and deliberately lacks features.  Skimmer's best feature is what it doesn't do. Skimmer tries to do two things well.\n\n1. Read a list of URLs, fetch the feeds and write the items to an SQLite 3 database\n2. Display the items in the SQLite 3 database in reverse chronological order\n\nThat's it. That is skimmer secret power. It does only two things. There is no elaborate user interface beyond standard input, standard output and standard error found on POSIX type operating systems. Even if you invoke it in \"interactive\" mode your choices are limited, press enter and go to next item, press \"n\" and mark the item read, press \"s\" and save the item, press \"q\" and quit interactive mode.",
   "keywords": [
     "RSS",
@@ -28,8 +28,7 @@
     "Raspberry Pi OS"
   ],
   "programmingLanguage": [
-    "Go",
-    "TypeScript"
+    "Go"
   ],
   "relatedLink": [
     "https://github.com/mmcdole/gofeed",
@@ -37,8 +36,7 @@
     "https://sqlite.org"
   ],
   "softwareRequirements": [
-    "Go >= 1.24.6",
-    "Deno >= 2.4.4"
+    "Go >= 1.24.6"
   ],
   "softwareSuggestions": [
     "Git >= 2.3",
@@ -49,7 +47,7 @@
   "version": "0.0.22",
   "developmentStatus": "wip",
   "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
-  "releaseNotes": "Removed support for getpocket.com, Mozilla ended it. Preparing for a major rewrite.",
+  "releaseNotes": "- Removed support for getpocket.com, Mozilla ended it.\n- Add new **skim2html** tool, this supercedes skim2md for website generation\n  - includes improved HTML structure around section olding article elements\n  - configurable CSS and ES6 module support\n  - configurable header, nav and footer support",
   "copyrightYear": 2025,
   "copyrightHolder": "R. S. Doiel"
 }

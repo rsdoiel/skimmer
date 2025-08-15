@@ -24,13 +24,12 @@ operating_system:
 
 programming_language:
   - Go
-  - TypeScript
 
 keywords:
   - RSS
   - Website genertor
 
-date_released: 2025-08-14
+date_released: 2025-08-15
 ---
 
 About this software
@@ -38,7 +37,11 @@ About this software
 
 ## skimmer 0.0.22
 
-Removed support for getpocket.com, Mozilla ended it. Preparing for a major rewrite.
+- Removed support for getpocket.com, Mozilla ended it.
+- Add new **skim2html** tool, this supercedes skim2md for website generation
+  - includes improved HTML structure around section olding article elements
+  - configurable CSS and ES6 module support
+  - configurable header, nav and footer support
 
 ### Authors
 
@@ -63,7 +66,6 @@ That&#x27;s it. That is skimmer secret power. It does only two things. There is 
 ### Programming languages
 
 - Go
-- TypeScript
 
 
 ### Operating Systems
@@ -77,7 +79,6 @@ That&#x27;s it. That is skimmer secret power. It does only two things. There is 
 ### Software Requirements
 
 - Go >= 1.24.6
-- Deno >= 2.4.4
 
 
 ### Software Suggestions
