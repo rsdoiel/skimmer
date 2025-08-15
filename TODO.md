@@ -5,22 +5,22 @@
 
 ## Next
 
-- [ ] Rewrite, Issue #1
-  - [ ] build skim2html, this could be written in Deno+TypeScript
-    - [ ] Use section for each aggregation
-    - [ ] Each item should be an article element in the section, attributes should include information like date published and a unique ID 
-  - [ ] Rewrite skimmer in Deno+TypeScript
-    - [ ] Need to finish port of ReallySimple to TypeScript (ts_reallysimple repo) if I want to replace skimmer.go
 - [ ] Web Components
   - Need a component that inspects the articles contained in the section element. It would then present a day oriented view that could be collasped for viewing an given day.
   - Article element could use a details/summary elements to present an article as a collapsed list, this might let me have a reading experience similar to news.scripting.org.
-- [X] Remove GetPocket support, it's gone.
 - [ ] Integrate link blogging similar to news.scripting.com's 
   - [ ] My link blog item would generate a Markdown document with front matter that then could be saved for further editing and inclusion in a blog
+- [X] Rewrite, Issue #1
+  - [X] build skim2html, this could be written in Deno+TypeScript
+    - [X] Use section for each aggregation
+    - [X] Each item should be an article element in the section, attributes should include information like date published and a unique ID 
+- [X] Remove GetPocket support, it's gone.
 
 
 ## Someday, Maybe
 
+- [ ] Rewrite skimmer in Deno+TypeScript
+    - [ ] Need to finish port of ReallySimple to TypeScript (ts_reallysimple repo) if I want to replace skimmer.go
 - [ ] I would like a tool that you can point at a URL and it'll return the feed link if one is found in the markup or usually places
     - [ ] check in WP location for feed
     - [ ] Microblog's location for feed
