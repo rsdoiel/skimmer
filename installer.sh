@@ -1,11 +1,11 @@
 #!/bin/sh
-# generated with CMTools 0.0.21 a5a689d
+# generated with CMTools 0.0.22 029a08a
 
 #
 # Set the package name and version to install
 #
 PACKAGE="skimmer"
-VERSION="0.0.21"
+VERSION="0.0.22"
 GIT_GROUP="rsdoiel"
 RELEASE="https://github.com/$GIT_GROUP/$PACKAGE/releases/tag/v$VERSION"
 if [ "$PKG_VERSION" != "" ]; then

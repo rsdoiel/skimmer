@@ -14,7 +14,7 @@ authors:
 
 
 repository_code: git+https://github.com/rsdoiel/skimmer
-version: 0.0.21
+version: 0.0.22
 license_url: https://spdx.org/licenses/AGPL-3.0-or-later
 operating_system:
   - Windows
@@ -23,18 +23,22 @@ operating_system:
   - Raspberry Pi OS
 
 programming_language:
-  - go
+  - Go
+  - TypeScript
 
+keywords:
+  - RSS
+  - Website genertor
 
-date_released: 2024-10-16
+date_released: 2025-08-14
 ---
 
 About this software
 ===================
 
-## skimmer 0.0.21
+## skimmer 0.0.22
 
-Proof of concept, updated dependencies. Updated Makefile, added CMTools to build artifacts.
+Removed support for getpocket.com, Mozilla ended it. Preparing for a major rewrite.
 
 ### Authors
 
@@ -58,7 +62,8 @@ That&#x27;s it. That is skimmer secret power. It does only two things. There is 
 
 ### Programming languages
 
-- go
+- Go
+- TypeScript
 
 
 ### Operating Systems
@@ -71,13 +76,15 @@ That&#x27;s it. That is skimmer secret power. It does only two things. There is 
 
 ### Software Requirements
 
+- Go >= 1.24.6
+- Deno >= 2.4.4
+
+
+### Software Suggestions
+
 - Git &gt;&#x3D; 2.3
 - GNU Make &gt;&#x3D; 3.8
 - Pandoc &gt;&#x3D; 3.1
 - SQLite3 &gt;&#x3D; 3.43
-- Go &gt;&#x3D; 1.23.5
-- CMTools &gt;&#x3D; 0.0.23
-
-
 
 
