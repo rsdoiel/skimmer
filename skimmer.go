@@ -808,7 +808,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 	app.out = out
 	app.eout = eout
 	if len(args) == 0 {
-		return fmt.Errorf("expected a .skim, an OPML or urls file to process")
+		return fmt.Errorf("expected a .skim or '.urls' file to process")
 	}
 	fPath := args[0]
 	xName := path.Ext(fPath)
