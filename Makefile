@@ -130,7 +130,7 @@ refresh:
 	git fetch origin
 	git pull origin $(BRANCH)
 
-publish: build website save .FORCE
+publish: website save .FORCE
 	./publish.bash
 
 
