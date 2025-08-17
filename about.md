@@ -14,7 +14,7 @@ authors:
 
 
 repository_code: git+https://github.com/rsdoiel/skimmer
-version: 0.0.22
+version: 0.0.23
 license_url: https://spdx.org/licenses/AGPL-3.0-or-later
 operating_system:
   - Windows
@@ -29,19 +29,21 @@ keywords:
   - RSS
   - Website genertor
 
-date_released: 2025-08-15
+date_released: 2025-08-17
 ---
 
 About this software
 ===================
 
-## skimmer 0.0.22
+## skimmer 0.0.23
 
 - Removed support for getpocket.com, Mozilla ended it.
 - Add new **skim2html** tool, this supercedes skim2md for website generation
   - includes improved HTML structure around section olding article elements
   - configurable CSS and ES6 module support
   - configurable header, nav and footer support
+- Updated **skimmer** to read a "skimmer.yaml" in the current directory 
+  and setup the configuration.
 
 ### Authors
 
@@ -78,7 +80,7 @@ That&#x27;s it. That is skimmer secret power. It does only two things. There is 
 
 ### Software Requirements
 
-- Go >= 1.24.6
+- Go >= 1.25.0
 
 
 ### Software Suggestions

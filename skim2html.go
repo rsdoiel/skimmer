@@ -12,7 +12,7 @@ import (
     "gopkg.in/yaml.v3"
 )
 
-// Skim2Html supports the skim2md cli.
+// Skim2Html supports the skim2html cli.
 type Skim2Html struct {
     // AppName holds the name of the application
     AppName string `json:"app_name,omitempty" yaml:"app_name,omitempty"`
@@ -108,6 +108,14 @@ func (app *Skim2Html) writeHeadElement() {
             fmt.Fprintf(app.out, "  <script type=\"module\" src=\"%s\"></script>\n", module)
         }
     }
+    // Get the current date
+    currentDate := time.Now()
+
+    // Format the date
+    formattedDate := currentDate.Format("2006-01-02")
+    fmt.Fprintf(app.out, ` <meta name="generator" content="%s/%s">
+    <meta name="date" content="%s">
+  `, "skimmer", Version, formattedDate)
 }
 
 // Write, display the contents from database

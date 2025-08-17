@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	helpText = `%{app_name}(1) skimmer user manual | version {version} {release_hash}
+	helpText = `%{app_name}(1) user manual | version {version} {release_hash}
 % R. S. Doiel
 % {release_date}
 
@@ -25,25 +25,25 @@ var (
 
 # DESCRIPTION
 
-skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
-[yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and lacks features.
-That is skimmer's best feature. skimmer tries to do two things well.
+{app_name} is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
+[yarnc](https://git.mills.io/yarnsocial/yarn). {app_name} is very minimal and lacks features.
+That is {app_name}'s best feature. {app_name} tries to do two things well.
 
 - Read a list of URLs and fetch the items and saving them to an SQLite 3 database
 - Display the contents of the SQLite3 database in reverse chronological order
 
-That's it. That is skimmer secret power. It does only two things. There is no elaborate
+That's it. That is {app_name} secret power. It does only two things. There is no elaborate
 user interface beyond standard input, standard output and standard error found on POSIX
 type operating systems.
 
-skimmer needs to know what feed items to download and display. This done by providing a
+{app_name} needs to know what feed items to download and display. This done by providing a
 newsboat style URLs file. The feeds are read and the channel and item information is
 stored in an SQLite3 database of a similarly named file but with the `+"`"+`.skim`+"`"+`
-extension. When you want to read the downloaded items you invoke skimmer again with
+extension. When you want to read the downloaded items you invoke {app_name} again with
 the `+"`"+`.skim`+"`"+` file.  This allows you to easily maintain separate list of feeds
 to skim and potentially re-use the feed output.
 
-Presently skimmer is focused on reading RSS 2, Atom and jsonfeeds.
+Presently {app_name} is focused on reading RSS 2, Atom and jsonfeeds.
 
 The output format uses Pandoc's style of markdown markup. 
 - "---" starts the item record
@@ -68,8 +68,8 @@ The output format uses Pandoc's style of markdown markup.
 : display the N most recent items.
 
 -prune 
-: The deletes items from the items table in the skimmer database that are older than the date
-or timestamp provided after the skimmer filename.  Timestamp can be specified in several ways.
+: The deletes items from the items table in the {app_name} database that are older than the date
+or timestamp provided after the {app_name} filename.  Timestamp can be specified in several ways.
 An alias of "today" would remove all items older than today (this is the oposite behavior of
 reading items). If "now" is specified then all items older then the current time would be
 removed. Otherwise time can be specified as a date in YYYY-MM-DD format or
@@ -102,8 +102,8 @@ Now that my-news.skim exists we can read it with
 Update and read interactively.
 
 ~~~
-skimmer my-news.urls
-skimmer -i my-news.skim
+{app_name} my-news.urls
+{app_name} -i my-news.skim
 ~~~
 
 {app_name} can prune it's own database and also limit the count of items displayed.
@@ -131,6 +131,7 @@ free software to the planet. - RSD, 2023-10-07
 `
 )
 
+
 func main() {
 	appName := path.Base(os.Args[0])
 	showHelp, showVersion, showLicense := false, false, false
@@ -141,7 +142,7 @@ func main() {
 	flag.BoolVar(&showLicense, "license", showLicense, "display license")
 	flag.BoolVar(&interactive, "i", interactive, "interactively display items one at a time in reverse chronologically order")
 	flag.BoolVar(&interactive, "interactive", interactive, "interactively display items one at a time in reverse chronologically order")
-	flag.BoolVar(&prune, "prune", prune, "remove items in the skimmer file for the time range provided")
+	flag.BoolVar(&prune, "prune", prune, "remove items in the skim database for the time range provided")
 	flag.IntVar(&limit, "limit", limit, "limit the number of items output")
 	flag.BoolVar(&urls, "urls", urls, "output the substribed feeds in newsboat's urls file format.")
 	flag.Parse()
@@ -174,13 +175,10 @@ func main() {
 	}
 	// Setup our options
 	userAgent := os.Getenv("SKIM_USER_AGENT")
-	if userAgent == "" {
-		app.UserAgent = userAgent
+	if err := app.LoadCfg(userAgent, limit, prune, interactive, urls); err != nil {
+		fmt.Fprintf(eout, "%s\n", err)
+		os.Exit(1)
 	}
-	app.Limit = limit
-	app.Prune = prune
-	app.Interactive = interactive
-	app.AsURLs = urls
 	if err := app.Run(in, out, eout, args); err != nil {
 		fmt.Fprintf(eout, "%s\n", err)
 		os.Exit(1)

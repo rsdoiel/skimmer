@@ -17,6 +17,7 @@ import (
 	"time"
 
 	// 3rd Party Packages
+	"gopkg.in/yaml.v3"
 	_ "github.com/glebarez/go-sqlite"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/mmcdole/gofeed"
@@ -74,30 +75,30 @@ type FeedSource struct {
 // and ties the app to the runner for the cli.
 type Skimmer struct {
 	// AppName holds the name of the application
-	AppName string `json:"app_name,omitempty"`
+	AppName string `json:"app_name,omitempty" yaml:"app_name,omitempty"`
 
 	// UserAgent holds the user agent string used by skimmer.
 	// Right now I plan to default it to 
 	//       app.AppName + "/" + app.Version + " (" + ReleaseDate + "." + ReleaseHash + ")"
-	UserAgent string `json:"user_agent,omitempty"`
+	UserAgent string `json:"user_agent,omitempty" yaml:"user_agent,omitempty"`
 
 	// DbName holds the path to the SQLite3 database
-	DBName string `json:"db_name,omitempty"`
+	DBName string `json:"db_name,omitempty" yaml:"db_name,omitempty"`
 
 	// Urls are the map of urls to labels to be fetched or read
-	Urls map[string]*FeedSource `json:"urls,omitempty"`
+	Urls map[string]*FeedSource `json:"urls,omitempty" yaml:"urls,omitempty"`
 
 	// Limit contrains the number of items shown
-	Limit int `json:"limit,omitempty"`
+	Limit int `json:"limit,omitempty" yaml:"limit,omitempty"`
 
 	// Prune contains the date to use to prune the database.
-	Prune bool `json:"prune,omitempty"`
+	Prune bool `json:"prune,omitempty" yaml:"prune,omitempty"`
 
 	// Interactive if true causes Run to display one item at a time with a minimal of input
-	Interactive bool `json:"interactive,omitempty"`
+	Interactive bool `json:"interactive,omitempty" yaml:"interactive,omitempty"`
 
-	// AsURLs, output the skimmer feeds as a newsboat style url file
-	AsURLs bool `json:"urls,omitempty"`
+	// AsUrls, output the skimmer feeds as a newsboat style url file
+	AsUrls bool `json:"as_urls,omitempty" yaml:"as_urls,omitempty"`
 
 	// Map in some private data to keep things easy to work with.
 	in   io.Reader
@@ -108,7 +109,9 @@ type Skimmer struct {
 func NewSkimmer(appName string) (*Skimmer, error) {
 	app := new(Skimmer)
 	app.AppName = appName
-	app.UserAgent = fmt.Sprintf("User-Agent: %s/%s", app.AppName, strings.TrimPrefix(Version, "v"))
+	if app.UserAgent == "" {
+		app.UserAgent = fmt.Sprintf("%s/%s", app.AppName, strings.TrimPrefix(Version, "v"))
+	}
 	return app, nil
 }
 
@@ -188,7 +191,11 @@ func (app *Skimmer) webget(href string, userAgent string) (*gofeed.Feed, error) 
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", userAgent)
+	if userAgent == "" {
+		req.Header.Set("User-Agent", userAgent)
+	} else {
+		req.Header.Set("User-Agent", app.UserAgent)
+	}
 	// Set the accepted content types.
 	req.Header.Set("accept", "application/rss+xml, application/atom+xml, application/feed+json, application/xml, application/json;q=0.9, */*;q=0.8")
 	res, err := client.Do(req)
@@ -405,14 +412,6 @@ func (app *Skimmer) ChannelsToUrls(db *sql.DB) ([]byte, error) {
 // Download the contents from app.Urls
 func (app *Skimmer) Download(db *sql.DB) error {
 	eCnt := 0
-	/*
-	dsn := app.DBName
-	db, err := sql.Open("sqlite", dsn)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-	*/
 	for k, v := range app.Urls {
 		userAgent := v.UserAgent
 		if userAgent == "" {
@@ -619,6 +618,51 @@ func displayStats(out io.Writer, db *sql.DB, dbName string) error {
 			return fmt.Errorf("%s\nstmt: %s", err, stmt)
 		}
 		fmt.Fprintf(out, "\t%s\t%d\n", status, cnt)
+	}
+	return nil
+}
+
+// LoadCfg takes the command line options, a configuration file and updates the app
+// object.
+func (app *Skimmer)LoadCfg(userAgent string, limit int, prune bool, interactive bool, asUrls bool) error {
+	cfgName := strings.TrimSuffix(app.AppName, ".exe") + ".yaml"
+	if _, err := os.Stat(cfgName); err == nil {
+		obj, err :=  NewSkimmer(app.AppName)
+		if err != nil {
+			return err
+		}
+		src, err := os.ReadFile(cfgName) 
+		if err != nil {
+			return err
+		}
+		if err := yaml.Unmarshal(src, &obj); err == nil {
+			app.UserAgent = obj.UserAgent
+			app.Urls = map[string]*FeedSource{}
+			for k, v := range obj.Urls {
+				app.Urls[k] = v
+			}
+			app.Limit = obj.Limit
+			app.Prune = obj.Prune
+			app.Interactive = obj.Interactive
+			app.AsUrls = obj.AsUrls
+		} else {
+			return fmt.Errorf("failed to parse %s, %s", cfgName, err)
+		}
+	}
+	if userAgent != "" {
+		app.UserAgent = userAgent
+	}
+	if limit > 0 {
+		app.Limit = limit
+	}
+	if prune {
+		app.Prune = prune
+	}
+	if interactive {
+		app.Interactive = interactive
+	}
+	if asUrls {
+		app.AsUrls = asUrls
 	}
 	return nil
 }
@@ -874,7 +918,7 @@ func (app *Skimmer) Run(in io.Reader, out io.Writer, eout io.Writer, args []stri
 		fmt.Fprintf(app.out, "\n%d items available to read\n", cnt)
 		return nil
 	}
-	if app.AsURLs {
+	if app.AsUrls {
 		src, err := app.ChannelsToUrls(db)
 		if err != nil {
 			return err
