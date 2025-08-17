@@ -33,6 +33,8 @@ The newsboat urls file boils down to a list of urls, one per line with an option
 
 >UPDATE: 2025-02-14, I've been relying on skimmer to browse my RSS feeds collections for a couple years now. By and large it works. Since I started Skimmer I've noticed how the new crop of social media platforms have also included RSS support. You can follow people using RSS feeds on Mastodon, BlueSky, and Threads. While we're also experiencing an AI driven bot meltdown on the web my hope is that RSS feed practices will continue.
 
+>UPDATE: 2025-08-17, Skimmer will can now use a simple YAML file for configuration. If you set the "app_name" and "version" properties in that file that'll be used as the user agent string when harvesting content from the feed sources.
+
 ## Skimmer's SQLite 3 database
 
 Skimmer uses SQLite 3 databases to hold collections of feeds and their items. It doesn't use newsboat's cache.db but is very much inspired by it. The name of a Skimmer database ends in ".skim" and pairs with the name of the urls in a Skimmer url LIST. file. Example if I have
@@ -67,12 +69,7 @@ skimmer have two ways to invoke it. You can fetch the contents from list of URLs
 : Limit the display the N most recent items
 
 -prune 
-: The deletes items from the items table for the skimmer file provided. If a time range is provided
-then the items in the time range will be deleted. If a single time is provided everything older than
-that time is deleted.  A time can be specified in several ways. An alias of "today" would remove all
-items older than today. If "now" is specified then all items older then the current time would be 
-removed. Otherwise time can be specified as a date in YYYY-MM-DD format or timestamp 
-YYYY-MM-DD HH:MM:SS format.
+: The deletes items from the items table for the skimmer file provided. If a time range is provided then the items in the time range will be deleted. If a single time is provided everything older than that time is deleted.  A time can be specified in several ways. An alias of "today" would remove all items older than today. If "now" is specified then all items older then the current time would be  removed. Otherwise time can be specified as a date in YYYY-MM-DD format or timestamp YYYY-MM-DD HH:MM:SS format.
 
 -i, -interactive
 : display an item and prompt for next action. e.g. (n)ext, (s)ave, (t)ag, (q)uit. If you press enter the next item will be displayed without marking changing the items state (e.g. marking it read). If you press "n" the item will be marked as read before displaying the next item. If you press "s" the item will be tagged as saved and next item will be displayed. If you press "t" you can tag the items. Tagged items are treated as save but the next item is not fetched. Pressing "q" will quit interactive mode without changing the last items state.
@@ -131,11 +128,11 @@ skimmer -prune my-news.skim \
 skimmer is an experiment. The compiled binaries are not necessarily tested.
 To compile from source you need to have git, make, Pandoc, SQLite3 and Go.
 
-- Git >= 2
+- Git >= 2.39
 - Make >= 3.8 (GNU Make)
-- Pandoc > 3
+- Pandoc > 3.6
 - SQLite3 > 3.4
-- Go >= 1.21.4
+- Go >= 1.25
 
 ### Steps to compile and install
 
