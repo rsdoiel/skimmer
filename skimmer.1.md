@@ -1,4 +1,4 @@
-%skimmer(1) user manual | version 0.0.23 28b79f3
+%skimmer(1) user manual | version 0.0.23 fd79036
 % R. S. Doiel
 % 2025-08-17
 

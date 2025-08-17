@@ -118,7 +118,7 @@ func (app *Skim2Html) writeHeadElement() {
     currentDate := time.Now()
 
     // Format the date
-    formattedDate := currentDate.Format("2006-01-02")
+    formattedDate := currentDate.Format(time.RFC3339)
     fmt.Fprintf(app.out, `  <meta name="generator" content="%s/%s">
   <meta name="date" content="%s">
 `, app.AppName, app.Version, formattedDate)
