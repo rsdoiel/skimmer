@@ -36,7 +36,8 @@
     "https://sqlite.org"
   ],
   "softwareRequirements": [
-    "Go >= 1.25.0"
+    "Go >= 1.25.0",
+    "CMTools >= 0.0.40"
   ],
   "softwareSuggestions": [
     "Git >= 2.3",

@@ -33,6 +33,17 @@
 <h2 id="bugs">Bugs</h2>
 <h2 id="next">Next</h2>
 <ul class="task-list">
+<li><label><input type="checkbox" />Concider replacing the Newsboat
+style urls file with a simple Markdown file containing a list of web
+links.</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />prototype a tool that converts
+Markdown list of links document into Urls format</label></li>
+<li><label><input type="checkbox" />prototype a tool that converts
+Markdown list of links document into OPML format</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Add support for OPML files for list
+of URLs</label></li>
 <li><label><input type="checkbox" />Web Components</label>
 <ul>
 <li>Need a component that inspects the articles contained in the section
@@ -51,8 +62,8 @@ editing and inclusion in a blog</label></li>
 </ul></li>
 <li><label><input type="checkbox" checked="" />Rewrite, Issue #1</label>
 <ul class="task-list">
-<li><label><input type="checkbox" checked="" />build skim2html, this
-could be written in Deno+TypeScript</label>
+<li><label><input type="checkbox" checked="" />build skim2html (this
+could be written in Deno+TypeScript, stuck with Go for now)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" />Use section for each
 aggregation</label></li>
@@ -63,6 +74,26 @@ like date published and a unique ID</label></li>
 </ul></li>
 <li><label><input type="checkbox" checked="" />Remove GetPocket support,
 it’s gone.</label></li>
+<li><label><input type="checkbox" />Think about a combined tool call
+“antenna”</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />“antenna init” would create a
+default antenna YAML file</label></li>
+<li><label><input type="checkbox" />“antenna add COMMONMARK_LIST_DOC”
+add document to the configuration</label></li>
+<li><label><input type="checkbox" />“antenna remove COMMONMARK_LIST_DOC”
+would remove the document name fromthe configuration</label></li>
+<li><label><input type="checkbox" />“antenna harvest” would interate
+through the list of COMMONMARK_LIST_DOCS and harvest each list of feed
+links</label></li>
+<li><label><input type="checkbox" />“antenna website” would generate a
+website (e.g. htdocs folder content) from the harvested content using
+the skim2html approach</label></li>
+<li><label><input type="checkbox" />“antenna view” would run a localhost
+web server for the htdocs location speificed in in the “antenna” YAML
+configuration, it could even open the default web browser for
+viewing.</label></li>
+</ul></li>
 </ul>
 <h2 id="someday-maybe">Someday, Maybe</h2>
 <ul class="task-list">

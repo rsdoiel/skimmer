@@ -15,7 +15,12 @@ import (
 // Skim2Html supports the skim2html cli.
 type Skim2Html struct {
     // AppName holds the name of the application
+    // used when generating the "generator" metadata
     AppName string `json:"app_name,omitempty" yaml:"app_name,omitempty"`
+
+    // Version holds the version of the appliction
+    // used when generating the "generator" metadata
+    Version string `json:"version,omitempty" yaml:"version,omitempty"` 
 
     // DbName holds the path to the SQLite3 database
     DBName string `json:"db_name,omitempty" yaml:"db_name,omitempty"`
@@ -51,6 +56,7 @@ type Skim2Html struct {
 func NewSkim2Html(appName string) (*Skim2Html, error) {
     app := new(Skim2Html)
     app.AppName = appName
+    app.Version = Version
     return app, nil
 }
 
@@ -72,9 +78,9 @@ func (app *Skim2Html) DisplayItem(link string, title string, description string,
     }
     // Setup the Title
     if title == "" {
-        title = fmt.Sprintf("<h1>@%s</h1><br>\n\n(date: %s, from: %s)", label, pressTime, label)
+        title = fmt.Sprintf("<h1>@%s</h1>\n\n(date: %s, from: <a href=%q>%s</a>)", label, pressTime, link, label)
     } else {
-        title = fmt.Sprintf("<h1>%s</h1>\n\n(date: %s, from: %s)", title, pressTime, label)
+        title = fmt.Sprintf("<h1>%s</h1>\n\n(date: %s, from: <a href=%q>%s</a>)", title, pressTime, link, label)
     }
 
     fmt.Fprintf(app.out, `
@@ -94,12 +100,12 @@ func (app *Skim2Html) writeHeadElement() {
     fmt.Fprintln(app.out, "<head>");
     defer fmt.Fprintln(app.out, "</head>")
     // Write out charset
-    fmt.Fprintln(app.out, "<meta charset=\"UTF-8\" />")
+    fmt.Fprintln(app.out, "  <meta charset=\"UTF-8\" />")
     // Write title
     if app.Title != "" {
       fmt.Fprintf(app.out, "  <title>%s</title>\n", app.Title)
     }
-    fmt.Fprintln(app.out, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />")
+    fmt.Fprintln(app.out, "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />")
     if app.CSS != "" {
         fmt.Fprintf(app.out, "  <link rel=\"stylesheet\" href=\"%s\" />\n", app.CSS)
     }
@@ -113,17 +119,24 @@ func (app *Skim2Html) writeHeadElement() {
 
     // Format the date
     formattedDate := currentDate.Format("2006-01-02")
-    fmt.Fprintf(app.out, ` <meta name="generator" content="%s/%s">
-    <meta name="date" content="%s">
-  `, "skimmer", Version, formattedDate)
+    fmt.Fprintf(app.out, `  <meta name="generator" content="%s/%s">
+  <meta name="date" content="%s">
+`, app.AppName, app.Version, formattedDate)
+}
+
+// indentText splits  the string into lines, then prefixes the number of
+// spaces specified to each line returning updated text
+func indentText(src string, spaces int) string {
+    lines := strings.Split(src, "\n")
+    return strings.Join(lines, "\n" + strings.Repeat(" ", spaces))
 }
 
 // Write, display the contents from database
 func (app *Skim2Html) Write(db *sql.DB) error {
     // Create the outer elements of a page.
-    fmt.Fprintf(app.out, `<!DOCS html>
+    fmt.Fprintln(app.out, `<!DOCS html>
 <html lang="en-US">`);
-    defer fmt.Fprintf(app.out, `</html>`)
+    defer fmt.Fprintln(app.out, "</html>")
     // Setup the metadata in the head element
     app.writeHeadElement()
     // Setup body element
@@ -132,7 +145,7 @@ func (app *Skim2Html) Write(db *sql.DB) error {
     // Setup header element
     timestamp := time.Now().Format("2006-01-02 15:04:05")
     if app.Header != "" {
-        fmt.Fprintf(app.out, "  <header>%s</header>\n", strings.TrimSpace(app.Header))
+        fmt.Fprintf(app.out, "  <header>\n    %s\n  </header>\n", indentText(strings.TrimSpace(app.Header), 4))
     } else if app.Title != "" {
         fmt.Fprintf(app.out, `  <header>
     <h1>%s</h1>
@@ -143,16 +156,16 @@ func (app *Skim2Html) Write(db *sql.DB) error {
 `, app.Title, timestamp)
     } else {
         fmt.Fprintf(app.out, `  <header>
-(date: %s)
+    (date: %s)
   </header>
 `, timestamp)
     }
     // Setup nav element
     if app.Nav != "" {
         fmt.Fprintf(app.out, `  <nav>
-  %s
+    %s
   </nav>
-`, app.Nav)
+`, indentText(strings.TrimSpace(app.Nav), 4))
     }
     // Setup section
     fmt.Fprintln(app.out, "  <section>")
@@ -187,7 +200,7 @@ func (app *Skim2Html) Write(db *sql.DB) error {
     }
     fmt.Fprintln(app.out, "  </section>")
     if app.Footer != "" {
-        fmt.Fprintf(app.out, "  <footer>%s</footer>\n", strings.TrimSpace(app.Footer))
+        fmt.Fprintf(app.out, "  <footer>\n    %s\n  </footer>\n", strings.TrimSpace(indentText(app.Footer, 4)))
     }
     // close the body
     return nil
@@ -216,6 +229,12 @@ func (app *Skim2Html) LoadCfg(cfgName string) error {
         return err
     }
     // Pull in the configuration elements
+    if obj.AppName != "" {
+        app.AppName = obj.AppName
+    }
+    if obj.Version != "" {
+        app.Version = obj.Version
+    }
     if obj.Title != "" {
         app.Title = obj.Title
     }

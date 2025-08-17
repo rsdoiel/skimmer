@@ -81,6 +81,7 @@ That&#x27;s it. That is skimmer secret power. It does only two things. There is 
 ### Software Requirements
 
 - Go >= 1.25.0
+- CMTools >= 0.0.40
 
 
 ### Software Suggestions

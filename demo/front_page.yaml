@@ -1,0 +1,25 @@
+app_name: antenna
+version: 0.0.3
+css: css/site.css
+header: |
+  <img class="logo" 
+      src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Antenna_1_-_The_Noun_Project.svg"
+      alt="line art showing an antenna"
+      height="80" width="60" >
+  <h1>The Antenna</h1> 
+  <h2>finding signal in the noise</h2>
+
+nav: |
+  <ul>
+    <li><a href="./">The Antenna</a></li>
+    <li><a href="README.html">Implementation</a></li>
+    <li><a href="search.html">Search</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+
+footer: |
+  Antenna is a personal aggregation of items found around the web.
+  Curated with <a href="https://rsdoiel.github.io/skimmer">skimmer</a>
+  and <a href="https://sqlite.org">sqlite</a> then rendered with
+  <a href="https://pandoc.org">Pandoc</a>.
+
