@@ -14,7 +14,7 @@ authors:
 
 
 repository_code: git+https://github.com/rsdoiel/skimmer
-version: 0.0.23
+version: 0.0.24
 license_url: https://spdx.org/licenses/AGPL-3.0-or-later
 operating_system:
   - Windows
@@ -35,15 +35,11 @@ date_released: 2025-08-17
 About this software
 ===================
 
-## skimmer 0.0.23
+## skimmer 0.0.24
 
-- Removed support for getpocket.com, Mozilla ended it.
-- Add new **skim2html** tool, this supercedes skim2md for website generation
-  - includes improved HTML structure around section olding article elements
-  - configurable CSS and ES6 module support
-  - configurable header, nav and footer support
-- Updated **skimmer** to read a "skimmer.yaml" in the current directory 
-  and setup the configuration.
+- **skim2html**, added two additional configuration options for injecting HTML into the page. 
+  - "top_content" can be used to include HTML after the nav element and before the section element
+  - "bottom_content" can be used to include HTML after the section element and before the footer element
 
 ### Authors
 

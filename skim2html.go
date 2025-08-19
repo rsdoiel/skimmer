@@ -45,6 +45,14 @@ type Skim2Html struct {
     // Nav holds the HTML markup for navigation
     Nav string `json:"nav,omitempty" yaml:"nav,omitempty"`
 
+    // TopContent holds HTML that comes before the selecton element
+    // containing articles
+    TopContent string `json:"top_content,omitempty" yaml:"top_content,omitempty"`
+
+    // BottomContent holds HTML that comes before the selecton element
+    // containing articles
+    BottomContent string `json:"bottom_content,omitempty" yaml:"bottom_content,omitempty"`
+
     // Footer holds the HTML markup for the footer
     Footer string `json:"footer,omitempty" yaml:"footer,omitempty"`
 
@@ -110,7 +118,7 @@ func (app *Skim2Html) writeHeadElement() {
         fmt.Fprintf(app.out, "  <link rel=\"stylesheet\" href=\"%s\" />\n", app.CSS)
     }
     if (app.Modules != nil) {
-        for module := range app.Modules {
+        for _, module := range app.Modules {
             fmt.Fprintf(app.out, "  <script type=\"module\" src=\"%s\"></script>\n", module)
         }
     }
@@ -167,6 +175,11 @@ func (app *Skim2Html) Write(db *sql.DB) error {
   </nav>
 `, indentText(strings.TrimSpace(app.Nav), 4))
     }
+    if app.TopContent != "" {
+        fmt.Fprintf(app.out, `
+    %s
+`, indentText(strings.TrimSpace(app.TopContent), 4))
+    }
     // Setup section
     fmt.Fprintln(app.out, "  <section>")
     stmt := SQLDisplayItems
@@ -201,6 +214,11 @@ func (app *Skim2Html) Write(db *sql.DB) error {
     fmt.Fprintln(app.out, "  </section>")
     if app.Footer != "" {
         fmt.Fprintf(app.out, "  <footer>\n    %s\n  </footer>\n", strings.TrimSpace(indentText(app.Footer, 4)))
+    }
+    if app.BottomContent != "" {
+        fmt.Fprintf(app.out, `
+    %s
+`, indentText(strings.TrimSpace(app.BottomContent), 4))
     }
     // close the body
     return nil
@@ -252,6 +270,12 @@ func (app *Skim2Html) LoadCfg(cfgName string) error {
     }
     if obj.Nav != "" {
         app.Nav = obj.Nav
+    }
+    if obj.TopContent != "" {
+        app.TopContent = obj.TopContent
+    }
+    if obj.BottomContent != "" {
+        app.BottomContent = obj.BottomContent
     }
     if obj.Footer != "" {
         app.Footer = obj.Footer
