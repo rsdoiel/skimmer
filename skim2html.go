@@ -142,7 +142,7 @@ func indentText(src string, spaces int) string {
 // Write, display the contents from database
 func (app *Skim2Html) Write(db *sql.DB) error {
     // Create the outer elements of a page.
-    fmt.Fprintln(app.out, `<!DOCS html>
+    fmt.Fprintln(app.out, `<!doctype html>
 <html lang="en-US">`);
     defer fmt.Fprintln(app.out, "</html>")
     // Setup the metadata in the head element
