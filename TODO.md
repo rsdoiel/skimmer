@@ -5,6 +5,14 @@
 
 ## Next
 
+- [ ] The "saved" tag needs a better name, it needs to indicate this item will be included an Markdown/HTML generated from the collection
+- [ ] Skimmer could be a means of curating a blog if two features were added
+  - [ ] the ability to ingest a CommonMark document with front matter as a feed item assigned to a feed collection
+  - [ ] the ability to ingesst an updated CommonMark document with front matter and an existing feed item assigned to a feed collection
+  - [ ] the ability to copy feed items from one collection to another setting tags appropriately (example "saved" to trigger publication)
+- [ ] Document how YAML configuration could be normalized between skimmer.yaml and feed page YAML
+- [ ] Document how you can define your feed list in Markdown/CommonMark as a simple list of links
+  - [ ] explain how a "feed" might be RSS but could be an HTML page holding links targetted with a CSS selector
 - [ ] Consider replacing the Newsboat style urls file with a simple Markdown file
       containing a list of web links. 
   - [ ] prototype a tool that converts Markdown list of links document into Urls format
