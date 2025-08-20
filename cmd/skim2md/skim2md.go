@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	helpText = `%{app_name}(1) {app_name} user manual | version {version} {release_hash}
+	helpText = `%{app_name}(1) user manual | version {version} {release_hash}
 % R. S. Doiel
 % {release_date}
 

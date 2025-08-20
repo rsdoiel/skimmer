@@ -4,16 +4,22 @@
 ## Bugs
 
 ## Next
-- [ ] Concider replacing the Newsboat style urls file with a simple Markdown file
+
+- [ ] Consider replacing the Newsboat style urls file with a simple Markdown file
       containing a list of web links. 
   - [ ] prototype a tool that converts Markdown list of links document into Urls format
   - [ ] prototype a tool that converts Markdown list of links document into OPML format 
+  - [ ] prototype a tool that goes from Markdown list to OPML
+  - [ ] Figure out logic of a CommonMark/Markdown list of links and how to
+        process them what ever they point too, e.g. a web page or a URL to a feed
+  - [ ] Move successfully prototyped functionality into core skimmer page so that it can be
+        run by the skimmer command line tool
 - [ ] Add support for OPML files for list of URLs
-- [ ] Web Components
+- [X] Web Components
   - Need a component that inspects the articles contained in the section element. It would then present a day oriented view that could be collasped for viewing an given day.
   - Article element could use a details/summary elements to present an article as a collapsed list, this might let me have a reading experience similar to news.scripting.org.
-- [ ] Integrate link blogging similar to news.scripting.com's 
-  - [ ] My link blog item would generate a Markdown document with front matter that then could be saved for further editing and inclusion in a blog
+- [X] Integrate link blogging similar to news.scripting.com's 
+  - [X] My link blog item would generate a Markdown document with front matter that then could be saved for further editing and inclusion in a blog
 - [X] Rewrite, Issue #1
   - [X] build skim2html (this could be written in Deno+TypeScript, stuck with Go for now)
     - [X] Use section for each aggregation

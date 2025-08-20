@@ -9,9 +9,9 @@ RELEASE_DATE=$(shell date +'%Y-%m-%d')
 
 RELEASE_HASH=$(shell git log --pretty=format:'%h' -n 1)
 
-PROGRAMS = skimmer skim2md skim2html html2skim # $(shell ls -1 cmd)
+PROGRAMS = skimmer skim2md skim2html html2skim skimdups md2urls urls2opml
 
-MAN_PAGES = skimmer.1 skim2md.1 skim2html.1 html2skim.1 # $(shell ls -1 *.1.md | sed -E 's/\.1.md/.1/g')
+MAN_PAGES = skimmer.1 skim2md.1 skim2html.1 html2skim.1 skimdups.1 md2urls.1 urls2opml.1
 
 HTML_PAGES = $(shell find . -type f | grep -E '\.html')
 

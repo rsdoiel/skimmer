@@ -14,7 +14,7 @@ authors:
 
 
 repository_code: git+https://github.com/rsdoiel/skimmer
-version: 0.0.24
+version: 0.0.25
 license_url: https://spdx.org/licenses/AGPL-3.0-or-later
 operating_system:
   - Windows
@@ -35,11 +35,12 @@ date_released: 2025-08-17
 About this software
 ===================
 
-## skimmer 0.0.24
+## skimmer 0.0.25
 
-- **skim2html**, added two additional configuration options for injecting HTML into the page. 
-  - "top_content" can be used to include HTML after the nav element and before the section element
-  - "bottom_content" can be used to include HTML after the section element and before the footer element
+- **skimdumps** is a utility to identify duplication URLs in one or more URL files.
+- **md2urls** will read a CommonMark/Markdown file extracting URLS found in a list of links.
+  The results is written to standard output in the URL File format used by skimmer. This
+  let's you maintain your list of links in a standard Markdown/CommonMark file.
 
 ### Authors
 
