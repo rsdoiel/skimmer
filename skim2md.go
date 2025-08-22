@@ -1,3 +1,20 @@
+/*
+    Skimmer is a package for working with feeds and rendering Link Blogs
+	Copyright (C) 2025  R. S. Doiel
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 package skimmer
 
 import (
@@ -12,8 +29,8 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-// Skim2Md supports the skim2md cli.
-type Skim2Md struct {
+// SkimToMd supports the skim2md cli.
+type SkimToMd struct {
 	// AppName holds the name of the application
 	AppName string `json:"app_name,omitempty"`
 
@@ -34,14 +51,14 @@ type Skim2Md struct {
 	eout io.Writer
 }
 
-// NewSkim2Md initialized a new Skim2Md struct
-func NewSkim2Md(appName string) (*Skim2Md, error) {
-	app := new(Skim2Md)
+// NewSkimToMd initialized a new SkimToMd struct
+func NewSkimToMd(appName string) (*SkimToMd, error) {
+	app := new(SkimToMd)
 	app.AppName = appName
 	return app, nil
 }
 
-func (app *Skim2Md) DisplayItem(link string, title string, description string, enclosures string, updated string, published string, label string, tags string) error {
+func (app *SkimToMd) DisplayItem(link string, title string, description string, enclosures string, updated string, published string, label string, tags string) error {
 	// Then see about formatting things.
 	pressTime := published
 	if len(pressTime) > 10 {
@@ -116,7 +133,7 @@ func (app *Skim2Md) DisplayItem(link string, title string, description string, e
 }
 
 // Write, display the contents from database
-func (app *Skim2Md) Write(db *sql.DB) error {
+func (app *SkimToMd) Write(db *sql.DB) error {
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 	if app.FrontMatter {
 		fmt.Fprintf(app.out, "---\n")
@@ -169,7 +186,7 @@ func (app *Skim2Md) Write(db *sql.DB) error {
 	return nil
 }
 
-func (app *Skim2Md) Run(out io.Writer, eout io.Writer, args []string, frontMatter bool, pocketButton bool) error {
+func (app *SkimToMd) Run(out io.Writer, eout io.Writer, args []string, frontMatter bool, pocketButton bool) error {
 	if len(args) < 1 {
 		return fmt.Errorf("missing skimmer database file")
 	}

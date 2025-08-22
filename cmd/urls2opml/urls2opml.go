@@ -1,14 +1,27 @@
+/*
+    urls2opml.go is part of Skimmer package. Skimmer is a package for working with feeds and rendering Link Blogs
+	Copyright (C) 2025  R. S. Doiel
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"path"
-	"regexp"
-	"strings"
-	"encoding/xml"
 
 	// Application package
 	"github.com/rsdoiel/skimmer"
@@ -42,36 +55,6 @@ Here's of converting "myfile.urls" to "myfile.opml".
 
 `
 )
-
-// OPML represents the overall structure of an OPML document
-type OPML struct {
-	XMLName xml.Name `xml:"opml"`
-	Version string   `xml:"version,attr"`
-	Head    Head     `xml:"head"`
-	Body    Body     `xml:"body"`
-}
-
-// Head contains metadata about the OPML file
-type Head struct {
-	Title string `xml:"title"`
-}
-
-// Outline represents each entry in the OPML document
-type Outline struct {
-	Text string `xml:"text,attr,omitempty"`
-	Description string `xml:"description,attr,omitempty"`
-	HtmlURL  string `xml:"htmlUrl,attr,omitempty"` // This field is not standard in OPML but allows us to include URLs
-	Type string `xml:"type,attr,omitempty"`
-	Version string `xml:"version,attr,omitempty"`
-	XmlURL string `xml:"xmlUrl,attr,omitempty"`
-
-}
-
-// Body contains the outline elements
-type Body struct {
-	Outlines []Outline `xml:"outline"`
-}
-
 
 func main() {
 	appName := path.Base(os.Args[0])
@@ -109,80 +92,13 @@ func main() {
 		os.Exit(1)
 	}
 	if feedTitle == "" {
-		feedTitle = args[0]
+		feedTitle, args = args[0], args[1:]
 	}
 
-	var outlines []Outline
-	for _, filePath := range args {
-		file, err := os.Open(filePath)
-		if err != nil {
-			fmt.Printf("Error opening file: %v\n", err)
-			os.Exit(1)
-		}
-		defer file.Close()
-
-		scanner := bufio.NewScanner(file)
-		re := regexp.MustCompile(`^(\S+)\s+"(~[^"]+)"$`)
-
-		for scanner.Scan() {
-			line := strings.TrimSpace(scanner.Text())
-
-			// Skip empty lines and comments
-			if len(line) == 0 || line[0] == '#' {
-				continue
-			}
-
-			matches := re.FindStringSubmatch(line)
-			if len(matches) == 3 {
-				url := matches[1]
-				label := matches[2]
-				obj := Outline{
-					Text: label,
-				}
-				switch  {
-				case strings.HasSuffix(url, ".rss") || strings.HasSuffix(url, ".xml"):
-					obj.Type = "RSS"
-					obj.Version = "RSS2"
-					obj.XmlURL = url
-					break;
-				case strings.HasSuffix(url, ".atom"):
-					obj.Type = "Atom"
-					obj.XmlURL = url
-				case strings.HasSuffix(url, ".html") || strings.HasSuffix(url, ".htm"):
-					obj.Type = "HTML"
-					obj.HtmlURL = url
-				}
-				if (obj.XmlURL != "" || obj.HtmlURL != "" ) && obj.Text != "" {
-					outlines = append(outlines, obj)
-				}
-			}
-		}
-
-		if err := scanner.Err(); err != nil {
-			fmt.Printf("Error reading file: %v\n", err)
-			os.Exit(1)
-		}
-	}
-
-	// Create OPML structure
-	opml := OPML{
-		Version: "2.0",
-		Head: Head{
-			Title: feedTitle,
-		},
-		Body: Body{
-			Outlines: outlines,
-		},
-	}
-
-	// Marshal to XML
-	output, err := xml.MarshalIndent(opml, "", "  ")
-	if err != nil {
-		fmt.Fprintf(eout, "Error marshaling XML: %v\n", err)
+	app := skimmer.NewUrlsToOpml()
+	if err := app.Run(out, feedTitle, args); err != nil {
+		fmt.Fprintln(eout, err);
 		os.Exit(1)
 	}
-
-	// Print XML declaration and OPML content
-	fmt.Fprintln(out, `<?xml version="1.0" encoding="UTF-8"?>`)
-	fmt.Fprintln(out, string(output))
+	os.Exit(0)
 }

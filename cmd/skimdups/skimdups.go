@@ -1,3 +1,20 @@
+/*
+    skimdups.go is part of Skimmer package. Skimmer is a package for working with feeds and rendering Link Blogs
+	Copyright (C) 2025  R. S. Doiel
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 package main
 
 import (
@@ -121,33 +138,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	filePaths := args[:]
-	globalUrlMap := make(map[string][]URLLocation)
-
-	for _, filePath := range filePaths {
-		fileUrlMap, err := parseFile(filePath)
-		if err != nil {
-			fmt.Printf("Error reading file %s: %v\n", filePath, err)
-			continue
-		}
-
-		for url, locations := range fileUrlMap {
-			globalUrlMap[url] = append(globalUrlMap[url], locations...)
-		}
+	app := skimmer.NewSkimDups()
+	if err := app.Run(out, eout, args); err != nil {
+		fmt.Fprintln(eout, err)
+		os.Exit(1)
 	}
-
-	hasDuplicates := false
-	for url, locations := range globalUrlMap {
-		if len(locations) > 1 {
-			hasDuplicates = true
-			fmt.Printf("Duplicate URL found: %s\n", url)
-			for _, loc := range locations {
-				fmt.Printf("  Located at file: %s, line: %d\n", loc.filePath, loc.lineNumber)
-			}
-		}
-	}
-
-	if !hasDuplicates {
-		fmt.Println("No duplicate URLs found.")
-	}
+	os.Exit(0)
 }

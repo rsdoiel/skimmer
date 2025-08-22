@@ -1,3 +1,20 @@
+/*
+    Skimmer is a package for working with feeds and rendering Link Blogs
+	Copyright (C) 2025  R. S. Doiel
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 package skimmer
 
 import (
@@ -12,8 +29,8 @@ import (
     "gopkg.in/yaml.v3"
 )
 
-// Skim2Html supports the skim2html cli.
-type Skim2Html struct {
+// SkimToHtml supports the skim2html cli.
+type SkimToHtml struct {
     // AppName holds the name of the application
     // used when generating the "generator" metadata
     AppName string `json:"app_name,omitempty" yaml:"app_name,omitempty"`
@@ -60,15 +77,15 @@ type Skim2Html struct {
     eout io.Writer
 }
 
-// NewSkim2Html initialized a new Skim2Html struct
-func NewSkim2Html(appName string) (*Skim2Html, error) {
-    app := new(Skim2Html)
+// NewSkimToHtml initialized a new SkimToHtml struct
+func NewSkimToHtml(appName string) (*SkimToHtml, error) {
+    app := new(SkimToHtml)
     app.AppName = appName
     app.Version = Version
     return app, nil
 }
 
-func (app *Skim2Html) DisplayItem(link string, title string, description string, enclosures string, updated string, published string, label string, tags string) error {
+func (app *SkimToHtml) DisplayItem(link string, title string, description string, enclosures string, updated string, published string, label string, tags string) error {
     // Setup expressing update time.
     pressTime := published
     if len(pressTime) > 10 {
@@ -104,7 +121,7 @@ func (app *Skim2Html) DisplayItem(link string, title string, description string,
     return nil
 }
 
-func (app *Skim2Html) writeHeadElement() {
+func (app *SkimToHtml) writeHeadElement() {
     fmt.Fprintln(app.out, "<head>");
     defer fmt.Fprintln(app.out, "</head>")
     // Write out charset
@@ -140,7 +157,7 @@ func indentText(src string, spaces int) string {
 }
 
 // Write, display the contents from database
-func (app *Skim2Html) Write(db *sql.DB) error {
+func (app *SkimToHtml) Write(db *sql.DB) error {
     // Create the outer elements of a page.
     fmt.Fprintln(app.out, `<!doctype html>
 <html lang="en-US">`);
@@ -237,12 +254,12 @@ func getDsnAndCfgName(args []string) (string, string) {
     return dsn, cfgName
 }
 
-func (app *Skim2Html) LoadCfg(cfgName string) error {
+func (app *SkimToHtml) LoadCfg(cfgName string) error {
     src, err := os.ReadFile(cfgName)
     if err != nil {
         return err
     }
-    obj := Skim2Html{}
+    obj := SkimToHtml{}
     if err := yaml.Unmarshal(src, &obj); err != nil {
         return err
     }
@@ -283,7 +300,7 @@ func (app *Skim2Html) LoadCfg(cfgName string) error {
     return nil
 }
 
-func (app *Skim2Html) Run(out io.Writer, eout io.Writer, args []string) error {
+func (app *SkimToHtml) Run(out io.Writer, eout io.Writer, args []string) error {
     cfgName := ""
     if len(args) < 1 {
         return fmt.Errorf("missing skimmer database file")

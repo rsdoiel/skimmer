@@ -37,10 +37,11 @@ About this software
 
 ## skimmer 0.0.25
 
-- **skimdumps** is a utility to identify duplication URLs in one or more URL files.
+- **skimdups** is a utility to identify duplication URLs in one or more URL files.
 - **md2urls** will read a CommonMark/Markdown file extracting URLS found in a list of links.
   The results is written to standard output in the URL File format used by skimmer. This
   let's you maintain your list of links in a standard Markdown/CommonMark file.
+- **urls2opml** will convert one or more URL files into an OPML file
 
 ### Authors
 

@@ -1,4 +1,4 @@
-%skimdups(1) user manual | version 0.0.25 470440b
+%skimdups(1) user manual | version 0.0.25 9005bb6
 % R. S. Doiel
 % 2025-08-20
 

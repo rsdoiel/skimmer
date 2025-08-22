@@ -1,12 +1,27 @@
+/*
+    md2urls.go is part of Skimmer package. Skimmer is a package for working with feeds and rendering Link Blogs
+	Copyright (C) 2025  R. S. Doiel
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
 	"path"
-	"regexp"
 
 	// Application package
 	"github.com/rsdoiel/skimmer"
@@ -96,30 +111,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	for _, filePath := range args {
-		file, err := os.Open(filePath)
-		if err != nil {
-			fmt.Printf("Error opening file: %v\n", err)
-			os.Exit(1)
-		}
-		defer file.Close()
-
-		scanner := bufio.NewScanner(file)
-		re := regexp.MustCompile(`\[([^\]]+)\]\(([^\)]+)\)`)
-
-		for scanner.Scan() {
-			line := scanner.Text()
-			matches := re.FindAllStringSubmatch(line, -1)
-
-			for _, match := range matches {
-				linkText := match[1]
-				url := match[2]
-				fmt.Printf("%s \"~%s\"\n", url, linkText)
-			}
-		}
-
-		if err := scanner.Err(); err != nil {
-			fmt.Printf("Error reading file: %v\n", err)
-		}
+	app := skimmer.NewMdToUrls()
+	if err := app.Run(out, eout, args); err != nil {
+		fmt.Fprintln(eout, err)
+		os.Exit(1)
 	}
+	os.Exit(0)
 }
