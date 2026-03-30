@@ -7,6 +7,7 @@ require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/mmcdole/gofeed v1.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -36,7 +37,6 @@ require (
 	golang.org/x/text v0.23.0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.37.6 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect

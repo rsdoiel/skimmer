@@ -42,9 +42,9 @@ var (
 
 # DESCRIPTION
 
-{app_name} is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
-[yarnc](https://git.mills.io/yarnsocial/yarn). {app_name} is very minimal and lacks features.
-That is {app_name}'s best feature. {app_name} tries to do two things well.
+{app_name} is a lightweight feed reader inspired by [newsboat](https://newsboat.org). 
+{app_name} is very minimal and lacks features. That is {app_name}'s best feature.
+{app_name} tries to do two things well.
 
 - Read a list of URLs and fetch the items and saving them to an SQLite 3 database
 - Display the contents of the SQLite3 database in reverse chronological order
