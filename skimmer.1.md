@@ -1,6 +1,6 @@
-%skimmer(1) user manual | version 0.0.25 9005bb6
+%skimmer(1) user manual | version 0.0.25 f3d94d0
 % R. S. Doiel
-% 2025-08-20
+% 2026-03-30
 
 # NAME
 
@@ -12,9 +12,9 @@ skimmer [OPTIONS] FILENAME [DATESTAMP]
 
 # DESCRIPTION
 
-skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org) and
-[yarnc](https://git.mills.io/yarnsocial/yarn). skimmer is very minimal and lacks features.
-That is skimmer's best feature. skimmer tries to do two things well.
+skimmer is a lightweight feed reader inspired by [newsboat](https://newsboat.org). 
+skimmer is very minimal and lacks features. That is skimmer's best feature.
+skimmer tries to do two things well.
 
 - Read a list of URLs and fetch the items and saving them to an SQLite 3 database
 - Display the contents of the SQLite3 database in reverse chronological order

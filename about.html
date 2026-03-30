@@ -19,19 +19,18 @@
 </nav>
 <section>
 <h1 id="about-this-software">About this software</h1>
-<h2 id="skimmer-0.0.23">skimmer 0.0.23</h2>
+<h2 id="skimmer-0.0.25">skimmer 0.0.25</h2>
 <ul>
-<li>Removed support for getpocket.com, Mozilla ended it.</li>
-<li>Add new <strong>skim2html</strong> tool, this supercedes skim2md for
-website generation
-<ul>
-<li>includes improved HTML structure around section olding article
-elements</li>
-<li>configurable CSS and ES6 module support</li>
-<li>configurable header, nav and footer support</li>
-</ul></li>
-<li>Updated <strong>skimmer</strong> to read a “skimmer.yaml” in the
-current directory and setup the configuration.</li>
+<li><strong>skimdups</strong> is a utility to identify duplication URLs
+in one or more URL files.</li>
+<li><strong>md2urls</strong> will read a CommonMark/Markdown file
+extracting URLS found in a list of links. The results is written to
+standard output in the URL File format used by skimmer. This let’s you
+maintain your list of links in a standard Markdown/CommonMark file.</li>
+<li><strong>urls2opml</strong> will convert one or more URL files into
+an OPML file</li>
+<li>updated so module depencencies</li>
+<li>Compilation from source expects Go 1.26.1 or better.</li>
 </ul>
 <h3 id="authors">Authors</h3>
 <ul>

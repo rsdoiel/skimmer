@@ -46,9 +46,9 @@
     "SQLite3 >= 3.43"
   ],
   "version": "0.0.25",
-  "developmentStatus": "wip",
+  "developmentStatus": "Inactive",
   "issueTracker": "https://github.com/rsdoiel/skimmer/issues",
-  "releaseNotes": "- **skimdups** is a utility to identify duplication URLs in one or more URL files.\n- **md2urls** will read a CommonMark/Markdown file extracting URLS found in a list of links.\n  The results is written to standard output in the URL File format used by skimmer. This\n  let's you maintain your list of links in a standard Markdown/CommonMark file.\n- **urls2opml** will convert one or more URL files into an OPML file",
+  "releaseNotes": "- **skimdups** is a utility to identify duplication URLs in one or more URL files.\n- **md2urls** will read a CommonMark/Markdown file extracting URLS found in a list of links.\n  The results is written to standard output in the URL File format used by skimmer. This\n  let's you maintain your list of links in a standard Markdown/CommonMark file.\n- **urls2opml** will convert one or more URL files into an OPML file\n- updated so module depencencies\n- Compilation from source expects Go 1.26.1 or better.",
   "copyrightYear": 2025,
   "copyrightHolder": "R. S. Doiel"
 }

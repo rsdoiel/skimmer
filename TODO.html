@@ -22,7 +22,32 @@
 <h2 id="bugs">Bugs</h2>
 <h2 id="next">Next</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" />Concider replacing the Newsboat
+<li><label><input type="checkbox" />The “saved” tag needs a better name,
+it needs to indicate this item will be included an Markdown/HTML
+generated from the collection</label></li>
+<li><label><input type="checkbox" />Skimmer could be a means of curating
+a blog if two features were added</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />the ability to ingest a CommonMark
+document with front matter as a feed item assigned to a feed
+collection</label></li>
+<li><label><input type="checkbox" />the ability to ingesst an updated
+CommonMark document with front matter and an existing feed item assigned
+to a feed collection</label></li>
+<li><label><input type="checkbox" />the ability to copy feed items from
+one collection to another setting tags appropriately (example “saved” to
+trigger publication)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Document how YAML configuration
+could be normalized between skimmer.yaml and feed page YAML</label></li>
+<li><label><input type="checkbox" />Document how you can define your
+feed list in Markdown/CommonMark as a simple list of links</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />explain how a “feed” might be RSS
+but could be an HTML page holding links targetted with a CSS
+selector</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Consider replacing the Newsboat
 style urls file with a simple Markdown file containing a list of web
 links.</label>
 <ul class="task-list">
@@ -30,10 +55,18 @@ links.</label>
 Markdown list of links document into Urls format</label></li>
 <li><label><input type="checkbox" />prototype a tool that converts
 Markdown list of links document into OPML format</label></li>
+<li><label><input type="checkbox" />prototype a tool that goes from
+Markdown list to OPML</label></li>
+<li><label><input type="checkbox" />Figure out logic of a
+CommonMark/Markdown list of links and how to process them what ever they
+point too, e.g. a web page or a URL to a feed</label></li>
+<li><label><input type="checkbox" />Move successfully prototyped
+functionality into core skimmer page so that it can be run by the
+skimmer command line tool</label></li>
 </ul></li>
 <li><label><input type="checkbox" />Add support for OPML files for list
 of URLs</label></li>
-<li><label><input type="checkbox" />Web Components</label>
+<li><label><input type="checkbox" checked="" />Web Components</label>
 <ul>
 <li>Need a component that inspects the articles contained in the section
 element. It would then present a day oriented view that could be
@@ -42,12 +75,12 @@ collasped for viewing an given day.</li>
 article as a collapsed list, this might let me have a reading experience
 similar to news.scripting.org.</li>
 </ul></li>
-<li><label><input type="checkbox" />Integrate link blogging similar to
-news.scripting.com’s</label>
+<li><label><input type="checkbox" checked="" />Integrate link blogging
+similar to news.scripting.com’s</label>
 <ul class="task-list">
-<li><label><input type="checkbox" />My link blog item would generate a
-Markdown document with front matter that then could be saved for further
-editing and inclusion in a blog</label></li>
+<li><label><input type="checkbox" checked="" />My link blog item would
+generate a Markdown document with front matter that then could be saved
+for further editing and inclusion in a blog</label></li>
 </ul></li>
 <li><label><input type="checkbox" checked="" />Rewrite, Issue #1</label>
 <ul class="task-list">

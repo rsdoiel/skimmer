@@ -1,5 +1,5 @@
 #!/bin/bash
-# generated with CMTools 0.0.23 b90265b
+# generated with CMTools 0.0.25 f3d94d0
 
 #
 # Release script for skimmer on GitHub using gh cli.

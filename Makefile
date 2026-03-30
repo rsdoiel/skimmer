@@ -69,10 +69,7 @@ installer.ps1: .FORCE
 	cmt codemeta.json installer.ps1
 	@git add -f installer.ps1
 
-clean-website:
-	make -f website.mak clean
-
-website: clean-website .FORCE
+website: .FORCE
 	make -f website.mak
 
 

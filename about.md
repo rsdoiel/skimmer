@@ -29,7 +29,7 @@ keywords:
   - RSS
   - Website genertor
 
-date_released: 2025-08-17
+date_released: 2026-03-30
 ---
 
 About this software
@@ -42,6 +42,8 @@ About this software
   The results is written to standard output in the URL File format used by skimmer. This
   let's you maintain your list of links in a standard Markdown/CommonMark file.
 - **urls2opml** will convert one or more URL files into an OPML file
+- updated so module depencencies
+- Compilation from source expects Go 1.26.1 or better.
 
 ### Authors
 

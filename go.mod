@@ -1,6 +1,6 @@
 module github.com/rsdoiel/skimmer
 
-go 1.23.6
+go 1.26.1
 
 require (
 	github.com/glebarez/go-sqlite v1.22.0
